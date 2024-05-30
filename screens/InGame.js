@@ -95,14 +95,46 @@ export default function App() {
     },
   };
 
+  const [shootingDirect, setShootingDirection] = useState(null);
   const [selected, setSelected] = useState("Home");
   const [positions, setPositions] = useState([]);
   const [tempPosition, setTempPosition] = useState(null);
   const [actionSelected, setActionSelected] = useState(null);
   const [showActionAlertError, setActionAlertError] = useState(false);
+  const [seconds, setSeconds] = useState(0);
+  const [isActive, setIsActive] = useState(false);
+  const [timerIcon, setTimerIcon] = useState("play");
+  const [scoreBoard, setScoreBaord] = useState({ point: 2, goal: 1 });
   const gameStatClickHandler = (action) => {
     console.log(action);
     setActionSelected(action);
+  };
+
+  useEffect(() => {
+    let interval = null;
+    if (isActive && seconds < 300) {
+      interval = setInterval(() => {
+        setSeconds((seconds) => seconds + 1);
+      }, 1000);
+    } else if (seconds >= 300) {
+      setIsActive(false);
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [isActive, seconds]);
+
+  const handleStart = () => {
+    setSeconds(0);
+    setIsActive(true);
+    if (timerIcon == "play") {
+      setTimerIcon("pause");
+    } else {
+      setTimerIcon("play");
+    }
+  };
+
+  const shootingDirectionClickHandler = (direction) => {
+    setShootingDirection(direction);
   };
   const handlePitchPress = (event) => {
     //lets see if the user selected a action beofre entering the preview stage
@@ -123,6 +155,14 @@ export default function App() {
       setPositions([...positions, tempPosition]);
       setTempPosition(null);
     }
+
+    // Add the score if it's a point to the useState scoreboard
+    if (tempPosition.action === "point") {
+      setScoreBaord((prevScoreBoard) => ({
+        ...prevScoreBoard,
+        point: prevScoreBoard.point + 1,
+      }));
+    }
   };
   const handleCancelPosition = () => {
     setTempPosition(null);
@@ -131,15 +171,40 @@ export default function App() {
     <SafeAreaView className="flex-1 bg-[#181818]">
       <View className="flex mx-auto h-auto mt-2 rounded-b-3xl w-full relative">
         <View className="flex  h-auto p-2 flex-row justify-end items-end">
-          <View className="w-full    flex-row h-10 items-center justify-between">
-            <Text className="flex text-white ml-2  ">vs Roche</Text>
-
-            <View className="flex-row items-center">
-              <Text className="text-white mr-2">James</Text>
-
+          <View className="w-full    flex-row h-10 items-center justif-center mx-auto">
+            <View className="w-[20%] ">
+              <Text className="flex mx-auto text-center items-center text-white   ">
+                vs Roche
+              </Text>
+            </View>
+            <View className="w-[20%] text-center ">
+              <Text className="text-center text-white">
+                {Math.floor(seconds / 60)}:
+                {seconds % 60 < 10 ? `0${seconds % 60}` : seconds % 60}
+              </Text>
+            </View>
+            <View className="w-[20%] text-center">
+              <Text className="text-center text-white">
+                {scoreBoard.goal}:{scoreBoard.point}
+              </Text>
+            </View>
+            <View className="w-[20%] text-center">
+              <Text className="text-center text-white">
+                {/* <Icon name="pause" width={14} color="#FD5F5F" /> */}
+                <TouchableOpacity
+                  onPress={handleStart}
+                  title="Start Timer"
+                  disabled={isActive}
+                >
+                  <Icon name={timerIcon} width={14} color="#fff" />
+                  {/* <Text className="text-white"></Text> */}
+                </TouchableOpacity>
+              </Text>
+            </View>
+            <View className="  w-[20%] text-center">
               <TouchableOpacity
                 onPress={() => setShowProfileMiniMenu(!showProfileMiniMenu)}
-                className="bg-white h-10 cursor-pointer w-10 rounded-full justify-center items-center"
+                className="bg-white h-10 cursor-pointer w-10 rounded-full justify-center mx-auto items-center"
               >
                 {!showProfileMiniMenu ? (
                   <Image
@@ -171,13 +236,12 @@ export default function App() {
         )}
       </View>
       {/* Top Mini Nav Btn groups */}
-      {!tempPosition ? (
+      {!tempPosition && shootingDirect ? (
         <View className="h-10 w-full z-[-1] flex-row items-center justify-between px-2">
           {/* Left buttons */}
           <View className="flex-row space-x-1">
             <TouchableOpacity className="bg-[#242424] w-14  p-2 rounded">
               <Text className="text-white text-center">
-                {" "}
                 <Icon name="eye" width={14} color="#fff" />
               </Text>
             </TouchableOpacity>
@@ -236,7 +300,7 @@ export default function App() {
         </View>
       ) : (
         <Text className="text-white capitalize text-xl font-bold text-center mb-3">
-          Confirm {actionSelected}
+          {actionSelected}
         </Text>
       )}
 
@@ -249,12 +313,45 @@ export default function App() {
         onStartShouldSetResponder={() => true}
         onResponderRelease={handlePitchPress}
       >
+        {/* this section of code will be rendered if the user has not selected which side of the pitch the home team is shooting into */}
+        {!shootingDirect && (
+          <>
+            <TouchableOpacity
+              onPress={() => shootingDirectionClickHandler("up")}
+              className="bg-red-600 w-full h-12 absolute"
+            ></TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => shootingDirectionClickHandler("down")}
+              className="bg-red-600 bottom-0 w-full h-12 absolute"
+            ></TouchableOpacity>
+          </>
+        )}
+
         {/* Pitch markings */}
         <View className="h-[1px] w-full bg-gray-700 top-1/2"></View>
         <View className="h-[1px] w-full bg-gray-700 top-1/4"></View>
         <View className="h-[1px] w-full bg-gray-700 top-3/4"></View>
-        <View className="h-[1px] w-full bg-gray-700 top-[90%]"></View>
+        <View className="h-[1px] w-full bg-gray-700 top-[88%]"></View>
         <View className="h-[1px] w-full bg-gray-700 top-[10%]"></View>
+        {shootingDirect === "up" ? (
+          <>
+            <View className="absolute h-2 border-b-[1px] w-[10%] left-[45%] border-l-[1px] border-r-[1px] border-green-50"></View>
+            <View className="absolute h-4 top-2 w-[10%] left-[45%] border-l-[1px] border-r-[1px] border-green-50"></View>
+          </>
+        ) : shootingDirect === "down" ? (
+          <>
+            <View className="absolute h-2 border-t-[1px] w-[10%] bottom-0 left-[45%] border-l-[1px] border-r-[1px] border-green-50"></View>
+            <View className="absolute h-4 bottom-2 w-[10%] bottom-2 left-[45%] border-l-[1px] border-r-[1px] border-green-50"></View>
+          </>
+        ) : (
+          <>
+            {/* This will be printed when shootingDirect is neither "up" nor "down" */}
+            <View className="absolute h-2 border-b-[1px] w-[10%] left-[45%] border-l-[1px] border-r-[1px] border-green-50"></View>
+            <View className="absolute h-4 top-2 w-[10%] left-[45%] border-l-[1px] border-r-[1px] border-green-50"></View>
+            <View className="absolute h-2 border-t-[1px] w-[10%] bottom-0 left-[45%] border-l-[1px] border-r-[1px] border-green-50"></View>
+            <View className="absolute h-4 bottom-2 w-[10%] bottom-2 left-[45%] border-l-[1px] border-r-[1px] border-green-50"></View>
+          </>
+        )}
 
         {showActionAlertError && <AlertComponent />}
         <View style={{ flex: 1 }}>
@@ -346,6 +443,11 @@ export default function App() {
           />
         )}
       </View>
+      {!shootingDirect && (
+        <Text className="text-white text-xl text-center mx-auto flex mt-10">
+          Select Shooting Goals
+        </Text>
+      )}
       {tempPosition && (
         <View
           className="flex flex-row w-3/4 mx-auto "
@@ -374,7 +476,7 @@ export default function App() {
         </View>
       )}
       {/* Bottom Mini Nav Btn Groups */}
-      {!tempPosition && (
+      {!tempPosition && shootingDirect && (
         <View
           className={`${
             showActionAlertError
@@ -471,17 +573,34 @@ export default function App() {
         </View>
       )}
       {/* Bottom Nav  */}
-      <View className="w-3/4 flex-1 align-middle justify-center mx-auto text-center"></View>
-      <View className="bottom-nav  w-full h-auto">
+
+      {/* <View className="w-20 bg-red-400 my-auto justify-center items-center mt-4 ml-4">
+        <Text style={styles.timer}>
+          {Math.floor(seconds / 60)}:
+          {seconds % 60 < 10 ? `0${seconds % 60}` : seconds % 60}
+        </Text>
         <TouchableOpacity
-          onPress={() => navigation.navigate("HomeDashboard")}
-          className="h-12 w-12 bg-white rounded-full mx-auto text-center"
+          onPress={handleStart}
+          title="Start Timer"
+          disabled={isActive}
         >
-          <Image
-            source={require("../../StatsPro/assets/ball.png")}
-            className="h-1/2 p-4 w-1/2 mx-auto justify-center flex my-auto rounded-full"
-          />
+          <Text>Startrr</Text>
         </TouchableOpacity>
+      </View> */}
+      <View className="flex-row justify-center w-full bg-blue-700">
+        <View className="w-1/4 bg-yellow-600" />
+        <View className="w-1/4 flex justify-center items-center">
+          <TouchableOpacity
+            onPress={() => navigation.navigate("HomeDashboard")}
+            className="h-12 w-12 bg-white rounded-full justify-center items-center"
+          >
+            <Image
+              source={require("../../StatsPro/assets/ball.png")}
+              className="h-1/2 w-1/2 p-2 justify-center items-center rounded-full"
+            />
+          </TouchableOpacity>
+        </View>
+        <View className="w-1/4 bg-red-600" />
       </View>
     </SafeAreaView>
   );
