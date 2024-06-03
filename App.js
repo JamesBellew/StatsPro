@@ -180,7 +180,11 @@ export default function App() {
           <Stack.Screen name="HomeDashboard" component={HomeDashboard} />
           <Stack.Screen name="StartGame" component={StartGame} />
           <Stack.Screen name="EditLineup" component={EditLineup} />
-          <Stack.Screen name="InGame" component={InGame} />
+          <Stack.Screen
+            name="InGame"
+            component={InGame}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="SignUp" component={SignUpScreen} />
         </Stack.Navigator>
