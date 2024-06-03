@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, act } from "react";
 import {
   SafeAreaView,
   View,
@@ -12,6 +12,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { CommonActions } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome5"; // FontAwesome5 for newer icons
+
 export default function App() {
   const navigation = useNavigation();
   const [showProfileMiniMenu, setShowProfileMiniMenu] = useState(false);
@@ -98,6 +99,7 @@ export default function App() {
   const [timerLimitReached, setTimerLimitReached] = useState(false);
   const [showStartGameModal, setShowStartGameModal] = useState(false);
   const [showIngameStatModal, setShowIngameStatModal] = useState(false);
+  const [ingameStatModalFilter, setIngameStatModalFilter] = useState("point");
   const gameStatClickHandler = (action) => {
     console.log(action);
     setActionSelected(action);
@@ -192,11 +194,16 @@ export default function App() {
     //lets see if the user selected a action beofre entering the preview stage
     if (actionSelected) {
       const { locationX, locationY } = event.nativeEvent;
+      let score = 0;
+      if (actionSelected === "point") {
+        score = scoreBoard.point + 1;
+      }
       setTempPosition({
         x: locationX,
         y: locationY,
         action: actionSelected,
         half: "first",
+        score: score,
         time: seconds,
       });
       console.log(tempPosition);
@@ -228,12 +235,17 @@ export default function App() {
   };
   const formatTime = (seconds) => {
     if (seconds < 120) {
-      return `${Math.floor(seconds / 60)} min`;
+      return `${Math.floor(seconds / 60)} `;
     } else {
-      return `${Math.floor(seconds / 60)} mins`;
+      return `${Math.floor(seconds / 60)} `;
     }
   };
-
+  const filteredPositions =
+    ingameStatModalFilter === "All"
+      ? positions
+      : positions.filter(
+          (position) => position.action === ingameStatModalFilter
+        );
   return (
     <SafeAreaView className="flex-1 bg-[#181818] overflow-visible">
       <ScrollView>
@@ -381,27 +393,67 @@ export default function App() {
           </Text>
         )}
         {showIngameStatModal && (
-          <View className="w-[96%] h-auto  bg-[#242424] pb-5 mx-auto">
-            <View className="w-full flex-row  h-auto">
+          <View className="w-[96%] h-auto  relative pb-2 mx-auto">
+            <View className="w-full absolute right-0 z-50 flex-row  h-auto">
               <TouchableOpacity
                 onPress={() => setShowIngameStatModal(false)}
-                className=" ml-5 p-2 "
+                className=" ml-5 p-2 right-2 top-[-1vh] absolute "
               >
-                <Text className="text-2xl">
+                <Text className="text-2xl rounded-full w-full">
                   {" "}
-                  <Icon name="arrow-left" width={24} color="#fff" />
+                  <Icon
+                    name="window-close"
+                    className="rounded-full w-full"
+                    size={24}
+                    color="#fff"
+                  />
                 </Text>
               </TouchableOpacity>
             </View>
+            <View className="w-full bg-[#242424] p-2 mx-auto text-center justify-center">
+              <View className="h-10 w-full z-[-1] flex-row items-center justify-between">
+                {/* Left buttons */}
+                <View className="flex-row">
+                  <TouchableOpacity className="bg-[#242424] border border-green-500 w-16 p-2 rounded">
+                    <Text className="text-white text-center">Shots</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity className="bg-[#242424] w-16 p-2 rounded">
+                    <Text className="text-white text-center">Kickouts</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity className="bg-[#242424] w-16 p-2 rounded">
+                    <Text className="text-white text-center">T/O's</Text>
+                  </TouchableOpacity>
+                </View>
 
-            {positions.map((position, index) => (
-              <View key={index} className="flex-row">
-                <Text className="p-2 border-b border-gray-200 w-3/4 mx-auto bg-white/10 rounded-md mb-1 text-white">
-                  {formatTime(position.time)} - {position.action} -{" "}
-                  {scoreBoard.point}:0
-                </Text>
+                {/* Home and Away buttons */}
+                <View className="flex-row"></View>
               </View>
-            ))}
+              <View className="flex-row text-white">
+                <Text className="w-1/4 p-1 text-white text-center">Min</Text>
+                <Text className="w-1/4 p-1 text-white text-center">Action</Text>
+                <Text className="w-1/4 p-1 text-white text-center">PLAYER</Text>
+                <Text className="w-1/4 p-1 text-white text-center">Score</Text>
+              </View>
+              {filteredPositions.map((position, index) => (
+                <View
+                  key={index}
+                  className="flex-row justify-center text-white border-b border-gray-200"
+                >
+                  <Text className="w-1/4 p-1 text-gray-400 text-center">
+                    {formatTime(position.time)}
+                  </Text>
+                  <Text className="w-1/4 p-1 text-gray-400 text-center">
+                    {position.action}
+                  </Text>
+                  <Text className="w-1/4 p-1 text-gray-400 text-center">
+                    08
+                  </Text>
+                  <Text className="w-1/4 p-1 text-gray-400 text-center">
+                    0:{position.score}
+                  </Text>
+                </View>
+              ))}
+            </View>
           </View>
         )}
         {/* Pitch View */}
@@ -418,11 +470,11 @@ export default function App() {
             <>
               <TouchableOpacity
                 onPress={() => shootingDirectionClickHandler("up")}
-                className="bg-red-600 w-full h-12 absolute"
+                className="bg-[#00E471]/50 w-2/4 z-50 left-1/4 mx-auto text-center items-center jus h-12 absolute"
               ></TouchableOpacity>
               <TouchableOpacity
                 onPress={() => shootingDirectionClickHandler("down")}
-                className="bg-red-600 bottom-0 w-full h-12 absolute"
+                className="bg-[#00E471]/50 w-2/4 z-50 left-1/4 bottom-0  h-12 absolute"
               ></TouchableOpacity>
             </>
           )}
