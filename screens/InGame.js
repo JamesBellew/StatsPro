@@ -5,14 +5,19 @@ import {
   Text,
   TouchableOpacity,
   Image,
+  ImageBackground,
   ScrollView,
+  FlatList,
   StyleSheet,
   Dimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { CommonActions } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome5"; // FontAwesome5 for newer icons
-
+import { Svg, Path } from "react-native-svg";
+import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
+import { faShirt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 export default function App() {
   const navigation = useNavigation();
   const [showProfileMiniMenu, setShowProfileMiniMenu] = useState(false);
@@ -86,6 +91,8 @@ export default function App() {
     },
   };
 
+  const { width } = Dimensions.get("window");
+  const [selectedNumber, setSelectedNumber] = useState(null);
   const [shootingDirect, setShootingDirection] = useState(null);
   const [selected, setSelected] = useState("Home");
   const [positions, setPositions] = useState([]);
@@ -100,10 +107,32 @@ export default function App() {
   const [timerLimitReached, setTimerLimitReached] = useState(false);
   const [showStartGameModal, setShowStartGameModal] = useState(false);
   const [showIngameStatModal, setShowIngameStatModal] = useState(false);
+
   const [ingameStatModalFilter, setIngameStatModalFilter] = useState("shot");
   const handleStatModalFilter = (filter) => {
     setIngameStatModalFilter(filter);
   };
+
+  // for the player numbers
+  const numbers = Array.from({ length: 15 }, (_, i) => i + 1);
+  // for the player jersey
+  const JerseySvg = ({ number }) => (
+    <Svg
+      width="50"
+      height="50"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <Path d="M16 4l1.8 2H21v7a2 2 0 0 1-2 2h-3v-2h-2v2H8v-2H6v2H3a2 2 0 0 1-2-2V6h3.2L8 4" />
+      <Text x="12" y="16" textAnchor="middle" fontSize="12" fill="black">
+        {number}
+      </Text>
+    </Svg>
+  );
   const gameStatClickHandler = (action, actionCategory) => {
     console.log(action);
     setActionSelected(action);
@@ -210,6 +239,7 @@ export default function App() {
         actionCategory: actionCategorySelected,
         half: "first",
         score: score,
+        player: 0,
         time: seconds,
       });
       console.log(tempPosition);
@@ -223,8 +253,17 @@ export default function App() {
   };
   const handleSavePosition = () => {
     if (tempPosition) {
-      setPositions([...positions, tempPosition]);
+      setTempPosition((prev) => ({
+        ...prev,
+        player: selectedNumber,
+      }));
 
+      setPositions((prev) => [
+        ...prev,
+        { ...tempPosition, player: selectedNumber },
+      ]);
+      // clear the selected player number
+      setSelectedNumber(null);
       setTempPosition(null);
     }
 
@@ -338,13 +377,19 @@ export default function App() {
         
                  w-[50%] p-2 rounded`}
               >
-                <Text className="text-white text-center">1st</Text>
+                <Text className="text-white text-center"></Text>
               </TouchableOpacity>
             </View>
 
             {/* Home and Away buttons */}
             <View className="flex-row w-[40%] justify-center   ">
               <TouchableOpacity
+                onPress={() => setShowIngameStatModal(!showIngameStatModal)}
+                className={`p-2 w-[90%] mx-auto bg-[#242424] rounded `}
+              >
+                <Text className={`text-white text-center `}>Game Stats</Text>
+              </TouchableOpacity>
+              {/* <TouchableOpacity
                 className={`p-2 w-[50%] mx-auto rounded ${
                   selected === "Home"
                     ? "border border-[#00E471]"
@@ -373,7 +418,7 @@ export default function App() {
                 >
                   Away
                 </Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
 
             {/* Right buttons */}
@@ -382,14 +427,10 @@ export default function App() {
                 onPress={() => setShowIngameStatModal(!showIngameStatModal)}
                 className="bg-[#242424] w-[50%] z-[-1] p-2 rounded"
               >
-                <Text className="text-white text-center">
-                  {" "}
-                  <Icon name="list-ol" width={14} color="#fff" />
-                </Text>
+                <Text className="text-white text-center"></Text>
               </TouchableOpacity>
               <TouchableOpacity className="bg-[#242424] w-[50%] p-2 rounded">
                 <Text className="text-white text-center">
-                  {" "}
                   {/* <Icon name="pen" width={14} color="#fff" /> */}
                 </Text>
               </TouchableOpacity>
@@ -403,15 +444,13 @@ export default function App() {
             <View className="w-full absolute right-0 z-50 flex-row  h-auto">
               <TouchableOpacity
                 onPress={() => setShowIngameStatModal(false)}
-                className=" ml-5 p-2 right-2 top-[-1vh] absolute "
+                className=" ml-5 p-2 right-2 top-3 absolute "
               >
-                <Text className="text-2xl rounded-full w-full">
-                  {" "}
-                  <Icon
-                    name="window-close"
-                    className="rounded-full w-full"
-                    size={24}
-                    color="#fff"
+                <Text className="text-xl text-white rounded-full w-full">
+                  <FontAwesomeIcon
+                    icon={faCircleXmark}
+                    size={35}
+                    color="#FFFFFF"
                   />
                 </Text>
               </TouchableOpacity>
@@ -482,7 +521,7 @@ export default function App() {
                   key={index}
                   className={`flex-row justify-center py-1 rounded-md mx-1 text-white ${
                     index % 2 === 0 ? "bg-white/10" : ""
-                  }`}
+                  } `}
                 >
                   <Text className="w-1/4 p-1 text-gray-400 text-center">
                     {formatTime(position.time)}
@@ -491,27 +530,31 @@ export default function App() {
                     {position.action}
                   </Text>
                   <Text className="w-1/4 p-1 text-gray-400 text-center">
-                    08
+                    {position.player}
                   </Text>
                   <Text className="w-1/4 p-1 text-gray-400 text-center">
                     0:{position.score}
                   </Text>
                 </TouchableOpacity>
               ))}
+              {/* <View className="w-auto justify-end flex flex-row  bg-blue-600 items-end">
+                <View className="bg-red-600 h-5 w-auto right-5 mx-2">
+                  <Text>Edit</Text>
+                </View>
+                <View className="bg-red-600 h-5 w-auto right-5">
+                  <Text>Edit</Text>
+                </View>
+              </View> */}
             </View>
           </View>
         )}
-        {actionSelected && (
-          <Text className="text-white mx-auto mt-2 capitalize font-semibold text-lg">
-            {actionSelected}
-          </Text>
-        )}
+        {actionSelected && <Text></Text>}
         {/* Pitch View */}
         <View
           className={`w-[96%] 
         ${
           tempPosition ? "shadow shadow-[#00E471]/20" : ""
-        }  mt-5 mx-auto z-10 rounded-md h-[65vh] bg-[#242424]  relative`}
+        }  mt-2 mx-auto z-10 rounded-md h-[65vh] bg-[#242424]  relative`}
           onStartShouldSetResponder={() => true}
           onResponderRelease={handlePitchPress}
         >
@@ -691,31 +734,70 @@ export default function App() {
           </Text>
         )}
         {tempPosition && (
-          <View
-            className="flex flex-row w-3/4 mx-auto "
-            // style={styles.saveButtonContainer}
-          >
-            <TouchableOpacity
-              onPress={handleSavePosition}
-              className="w-32 mx-auto text-center mt-5 flex rounded-md p-3 border border-[#00E471]"
-              // style={styles.saveButton}
+          <>
+            {/* <Text className="text-white text-center">Select Player</Text> */}
+            <View className="h-auto  border-white/10 p-2 rounded-md w-4full mt-5 mx-auto">
+              <FlatList
+                data={numbers}
+                horizontal
+                keyExtractor={(item) => item.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    className="flex justify-center items-center mx-2"
+                    style={{ width: width / 5, height: 50 }}
+                    onPress={() => setSelectedNumber(item)}
+                  >
+                    <ImageBackground
+                      source={require("../assets/jersey.png")}
+                      resizeMode="contain"
+                      className={`flex justify-center items-center ${
+                        item === selectedNumber
+                          ? "border-b border-b-1 border-b-green-500"
+                          : ""
+                      }`}
+                      style={{ width: "100%", height: "100%" }}
+                    >
+                      <Text
+                        className={`text-base font-bold ${
+                          item === selectedNumber ? "text-black" : "text-black"
+                        }`}
+                      >
+                        {item}
+                      </Text>
+                    </ImageBackground>
+                  </TouchableOpacity>
+                )}
+                showsHorizontalScrollIndicator={false}
+              />
+            </View>
+            <View
+              className="flex flex-row w-2/4 mx-auto mt-3   "
+              // style={styles.saveButtonContainer}
             >
-              <Text className="text-center w-auto h-auto rounded-full">
-                {" "}
-                <Icon name="check" width={14} color="#00E471" />
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleCancelPosition}
-              className="w-32 mx-auto mt-5 flex rounded-md p-3 border border-[#FD5F5F]"
-              // style={styles.saveButton}
-            >
-              <Text className="text-center w-auto h-auto rounded-full">
-                {" "}
-                <Icon name="ban" width={14} color="#FD5F5F" />
-              </Text>
-            </TouchableOpacity>
-          </View>
+              <TouchableOpacity
+                onPress={handleSavePosition}
+                className={`flex
+                ${selectedNumber != null ? "" : "hidden"}
+                w-[50%] mx-auto text-center     rounded-md p-3 border border-[#00E471]`}
+                // style={styles.saveButton}
+              >
+                <Text className="text-center w-auto h-auto rounded-full">
+                  {" "}
+                  <Icon name="check" width={14} color="#00E471" />
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleCancelPosition}
+                className="w-[50%] mx-auto justify-center items-center m flex rounded-md p-3 border border-[#FD5F5F]"
+                // style={styles.saveButton}
+              >
+                <Text className="text-center w-auto h-auto rounded-full">
+                  {" "}
+                  <Icon name="ban" width={14} color="#FD5F5F" />
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </>
         )}
         {/* Bottom Mini Nav Btn Groups */}
         {!tempPosition && shootingDirect && (
