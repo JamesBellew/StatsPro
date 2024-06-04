@@ -253,43 +253,43 @@ export default function App() {
           (position) => position.actionCategory === ingameStatModalFilter
         );
   return (
-    <SafeAreaView className="flex-1 bg-[#181818] overflow-visible">
+    <SafeAreaView className="flex-1 bg-[#181818]  overflow-visible">
       <ScrollView>
         {showStartGameModal && <StartGameModal />}
 
-        <View className="flex mx-auto h-auto mt-2 rounded-b-3xl w-full relative">
+        <View className="flex mx-auto h-auto mt-2 bg-[#00E471] rounded-b-3xl w-full relative">
           <View className="flex  h-auto p-2 flex-row justify-end items-end">
             <View className="w-full    flex-row h-10 items-center justif-center mx-auto">
               <View className="w-[20%] ">
-                <Text className="flex mx-auto text-center items-center text-white   ">
+                <Text className="flex mx-auto text-center items-center text-black   ">
                   vs Roche
                 </Text>
               </View>
               <View className="w-[20%] text-center ">
-                <Text className="text-center text-white">
+                <Text className="text-center font-bold text-lg text-whiblackte">
                   {Math.floor(seconds / 60)}:
                   {seconds % 60 < 10 ? `0${seconds % 60}` : seconds % 60}
                 </Text>
               </View>
               <View className="w-[20%] text-center">
-                <Text className="text-center text-white">
+                <Text className="text-center font-bold text-xl text-black">
                   {scoreBoard.goal}:{scoreBoard.point}
                 </Text>
               </View>
               <View className="w-[20%] text-center">
-                <Text className="text-center text-white">
+                <Text className="text-center text-black">
                   {/* <Icon name="pause" width={14} color="#FD5F5F" /> */}
                   <TouchableOpacity
                     onPress={handlePlayPauseClick}
                     title="Start Timer"
                     disabled={timerLimitReached}
                   >
-                    <Icon name={timerIcon} width={14} color="#fff" />
+                    <Icon name={timerIcon} width={16} color="#000" />
                     {/* <Text className="text-white"></Text> */}
                   </TouchableOpacity>
                 </Text>
               </View>
-              <View className="  w-[20%] text-center">
+              <View className="  w-[20%] font-extrabold text-2xl text-center">
                 <TouchableOpacity
                   onPress={() => setShowProfileMiniMenu(!showProfileMiniMenu)}
                   className="bg-white h-10 cursor-pointer w-10 rounded-full justify-center mx-auto items-center"
@@ -297,7 +297,7 @@ export default function App() {
                   {!showProfileMiniMenu ? (
                     <Image
                       source={require("../assets/pp.jpeg")}
-                      className="h-7 w-7 rounded-full"
+                      className="h-10 w-10 rounded-full"
                     />
                   ) : (
                     <Text>x</Text>
@@ -324,13 +324,13 @@ export default function App() {
           )}
         </View>
         {/* Top Mini Nav Btn groups */}
-        {!tempPosition && shootingDirect ? (
-          <View className="h-10 w-full z-[-1] flex-row items-center justify-between px-2">
+        {!tempPosition && shootingDirect && !showIngameStatModal ? (
+          <View className="h-10 w-full  z-[-1] flex-row items-center justify-center px-2">
             {/* Left buttons */}
             <View className="flex-row space-x-1">
               <TouchableOpacity className="bg-[#242424] w-14  p-2 rounded">
                 <Text className="text-white text-center">
-                  <Icon name="eye" width={14} color="#fff" />
+                  {/* <Icon name="eye" width={14} color="#fff" /> */}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -388,15 +388,13 @@ export default function App() {
               <TouchableOpacity className="bg-[#242424] w-14 p-2 rounded">
                 <Text className="text-white text-center">
                   {" "}
-                  <Icon name="pen" width={14} color="#fff" />
+                  {/* <Icon name="pen" width={14} color="#fff" /> */}
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
         ) : (
-          <Text className="text-white capitalize text-xl font-bold text-center mb-3">
-            {actionSelected}
-          </Text>
+          ""
         )}
         {showIngameStatModal && (
           <View className="w-[96%] h-auto  relative pb-2 mx-auto">
@@ -416,10 +414,10 @@ export default function App() {
                 </Text>
               </TouchableOpacity>
             </View>
-            <View className="w-full bg-[#242424] p-2 mx-auto text-center justify-center">
-              <View className="h-10 w-full z-[-1] flex-row items-center justify-between">
+            <View className="w-full  p-2 mx-auto text-center justify-center">
+              <View className="h-10 w-full z-[-1]  flex-row items-center justify-between">
                 {/* Left buttons */}
-                <View className="flex-row">
+                <View className="flex-row mx-auto">
                   <TouchableOpacity
                     onPress={() => handleStatModalFilter("shot")}
                     className={`bg-[#242424] ${
@@ -436,7 +434,7 @@ export default function App() {
                       ingameStatModalFilter === "kickout"
                         ? "border border-green-500"
                         : ""
-                    }  w-16 p-2 rounded`}
+                    }  w-auto p-2 rounded`}
                   >
                     <Text className="text-white text-center">Kickouts</Text>
                   </TouchableOpacity>
@@ -495,12 +493,17 @@ export default function App() {
             </View>
           </View>
         )}
+        {actionSelected && (
+          <Text className="text-white mx-auto mt-2 capitalize font-semibold text-lg">
+            {actionSelected}
+          </Text>
+        )}
         {/* Pitch View */}
         <View
           className={`w-[96%] 
         ${
           tempPosition ? "shadow shadow-[#00E471]/20" : ""
-        }  mt-1 mx-auto z-0 rounded-md h-[65vh] bg-[#242424]  relative`}
+        }  mt-5 mx-auto z-0 rounded-md h-[65vh] bg-[#242424]  relative`}
           onStartShouldSetResponder={() => true}
           onResponderRelease={handlePitchPress}
         >
@@ -519,11 +522,46 @@ export default function App() {
           )}
 
           {/* Pitch markings */}
-          <View className="h-[1px] w-full bg-gray-700 top-1/2"></View>
-          <View className="h-[1px] w-full bg-gray-700 top-1/4"></View>
-          <View className="h-[1px] w-full bg-gray-700 top-3/4"></View>
-          <View className="h-[1px] w-full bg-gray-700 top-[88%]"></View>
-          <View className="h-[1px] w-full bg-gray-700 top-[10%]"></View>
+          {/* 
+          <View
+            className="h-[1px] w-full bg-gray-700 absolute"
+            style={{ top: "10%" }}
+          ></View>
+          <View
+            className="h-[1px] w-full bg-gray-700 absolute"
+            style={{ top: "15.4%" }}
+          ></View>
+          <View
+            className="h-[1px] w-full bg-gray-700 absolute"
+            style={{ top: "34.6%" }}
+          ></View>
+          <View
+            className="h-[1px] w-full bg-gray-700 absolute"
+            style={{ top: "50%" }}
+          ></View>
+          <View
+            className="h-[1px] w-full bg-gray-700 absolute"
+            style={{ top: "65%" }}
+          ></View>
+          <View
+            className="h-[1px] w-full bg-gray-700 absolute"
+            style={{ top: "100%" }}
+          ></View>
+
+          <View
+            className="h-[1px] w-full bg-gray-700 absolute"
+            style={{ top: "90%" }}
+          ></View>
+          <View
+            className="h-[1px] w-full bg-gray-700 absolute"
+            style={{ top: "84.6%" }}
+          ></View> */}
+          {/* semi circles */}
+          {/* <View
+            className=" border-2 border-gray-700 top-[15.4%] rotate-180 h-[10%] w-[25%] mx-auto
+            rounded-tl-full rounded-tr-full"
+          ></View> */}
+
           {shootingDirect === "up" ? (
             <>
               <View className="absolute h-2 border-b-[1px] w-[10%] left-[45%] border-l-[1px] border-r-[1px] border-green-50"></View>
@@ -685,7 +723,7 @@ export default function App() {
                   onPress={() => gameStatClickHandler("kickoutWon", "kickout")}
                   className={`${
                     actionSelected == "kickoutWon" ? "border border-[#fff]" : ""
-                  } bg-[#242424] w-16 p-2 rounded`}
+                  } bg-[#242424] w-auto p-2 rounded`}
                 >
                   <Text className="text-[#00E471] text-center">Kickout</Text>
                 </TouchableOpacity>
@@ -732,7 +770,7 @@ export default function App() {
                     actionSelected == "kickoutLoss"
                       ? "border border-[#fff]"
                       : ""
-                  } bg-[#242424] w-16 p-2 rounded`}
+                  } bg-[#242424] w-auto p-2 rounded`}
                 >
                   <Text className="text-[#FD5F5F] text-center">Kickout</Text>
                 </TouchableOpacity>
@@ -784,7 +822,7 @@ export default function App() {
           <Text>Startrr</Text>
         </TouchableOpacity>
       </View> */}
-        <View className="flex-row mt-4 justify-center w-full ">
+        {/* <View className="flex-row fixed  align-bottom mt-4 bg-red-600 justify-center w-full ">
           <View className="w-1/4 " />
           <View className="w-1/4 flex justify-center items-center">
             <TouchableOpacity
@@ -798,7 +836,7 @@ export default function App() {
             </TouchableOpacity>
           </View>
           <View className="w-1/4 " />
-        </View>
+        </View> */}
       </ScrollView>
     </SafeAreaView>
   );
