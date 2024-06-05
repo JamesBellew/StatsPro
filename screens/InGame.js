@@ -112,7 +112,7 @@ export default function App() {
   const [timerLimitReached, setTimerLimitReached] = useState(false);
   const [showStartGameModal, setShowStartGameModal] = useState(false);
   const [showIngameStatModal, setShowIngameStatModal] = useState(false);
-
+  const [showEditLineupModal, setShowEditLineupModal] = useState(false);
   const [ingameStatModalFilter, setIngameStatModalFilter] = useState("shot");
   const handleStatModalFilter = (filter) => {
     setIngameStatModalFilter(filter);
@@ -205,6 +205,62 @@ export default function App() {
           </TouchableOpacity>
         </View>
       </View>
+    );
+  };
+  const EditCurrentLineupModal = () => {
+    return (
+      <>
+        <TouchableOpacity
+          className="absolute top-0 w-full h-2/4 "
+          onPress={() => setShowEditLineupModal(false)}
+        >
+          {/* <View className="w-full h-full bg-transparent"></View> */}
+        </TouchableOpacity>
+        <View className="fixed bottom-0 rounded-t-3xl w-full h-2/4 bg-white">
+          <View className=" flex-1">
+            <Text className="mx-auto font-semibold text-lg text-center mt-5">
+              Make A Substitution
+            </Text>
+            <Text className="mx-auto  text-md text-center mt-5">
+              Select a player from the startng lineup and then select a sub
+            </Text>
+            <FlatList
+              data={numbers}
+              horizontal
+              keyExtractor={(item) => item.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  className="flex my-auto justify-center items-center mx-2"
+                  style={{ width: width / 5, height: 50 }}
+                  onPress={() => setSelectedNumber(item)}
+                >
+                  <ImageBackground
+                    source={require("../assets/jersey.png")}
+                    resizeMode="contain"
+                    className={`flex justify-center items-center ${
+                      item === selectedNumber
+                        ? "border-b border-b-1 border-b-green-500"
+                        : ""
+                    }`}
+                    style={{ width: "100%", height: "100%" }}
+                  >
+                    <Text
+                      className={`text-base font-bold ${
+                        item === selectedNumber ? "text-black" : "text-black"
+                      }`}
+                    >
+                      {item}
+                    </Text>
+                  </ImageBackground>
+                </TouchableOpacity>
+              )}
+              showsHorizontalScrollIndicator={false}
+            />
+          </View>
+          <View className="flex-1 bg-blue-600"></View>
+          <View className="h-20 bg-yellow-600"></View>
+        </View>
+      </>
     );
   };
   const IngameStatPageModal = () => {
@@ -384,7 +440,10 @@ export default function App() {
                   {/* <Icon name="eye" width={14} color="#fff" /> */}
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity className="bg-[#242424] w-[50%] p-2 rounded flex justify-center items-center">
+              <TouchableOpacity
+                onPress={() => setShowEditLineupModal(!showEditLineupModal)}
+                className="bg-[#242424] w-[50%] p-2 rounded flex justify-center items-center"
+              >
                 <View className="w-full flex justify-center items-center">
                   <FontAwesomeIcon
                     icon={faPeopleGroup}
@@ -568,6 +627,7 @@ export default function App() {
         )}
         {actionSelected && <Text></Text>}
         {/* Pitch View */}
+
         <View
           className={`w-[96%] border-[.5px] border-gray-700
         ${
@@ -788,6 +848,7 @@ export default function App() {
                 showsHorizontalScrollIndicator={false}
               />
             </View>
+
             <View
               className="flex flex-row w-2/4 mx-auto mt-3   "
               // style={styles.saveButtonContainer}
@@ -922,6 +983,7 @@ export default function App() {
             </View>
           </View>
         )}
+
         {/* Bottom Nav  */}
 
         {/* <View className="w-20 bg-red-400 my-auto justify-center items-center mt-4 ml-4">
@@ -953,6 +1015,7 @@ export default function App() {
           <View className="w-1/4 " />
         </View> */}
       </ScrollView>
+      {showEditLineupModal && <EditCurrentLineupModal />}
     </SafeAreaView>
   );
 }
