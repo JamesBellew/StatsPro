@@ -16,7 +16,12 @@ import { CommonActions } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome5"; // FontAwesome5 for newer icons
 import { Svg, Path } from "react-native-svg";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
-import { faShirt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPeopleGroup,
+  faEye,
+  faChevronLeft,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 export default function App() {
   const navigation = useNavigation();
@@ -296,48 +301,55 @@ export default function App() {
       <ScrollView>
         {showStartGameModal && <StartGameModal />}
 
-        <View className="flex mx-auto h-auto mt-2 bg-[#00E471] rounded-b-3xl w-full relative">
-          <View className="flex  h-auto p-2 flex-row justify-end items-end">
-            <View className="w-full    flex-row h-10 items-center justif-center mx-auto">
-              <View className="w-[20%] ">
-                <Text className="flex mx-auto text-center items-center text-black   ">
-                  vs Roche
-                </Text>
+        <View className="flex mx-auto h-auto mt-2 rounded-b-3xl w-full relative">
+          <View className="flex  h-auto space-x-1 p-2 flex-row justify-end items-end">
+            <View className="w-[98%]     flex-row h-10 items-center justif-center mx-auto rounded-lg">
+              <View className="w-[15%] space-x-1 bg-[#242424] px-3   py-2 rounded-md ">
+                <View className="w-full flex justify-center items-center">
+                  <FontAwesomeIcon
+                    icon={faChevronLeft}
+                    size={25}
+                    color="#00E471"
+                  />
+                </View>
               </View>
-              <View className="w-[20%] text-center ">
-                <Text className="text-center font-bold text-lg text-whiblackte">
+              <View className="w-[15%]  h-full justify-center text-center ">
+                <Text className="text-center font-bold text-lg text-white">
                   {Math.floor(seconds / 60)}:
                   {seconds % 60 < 10 ? `0${seconds % 60}` : seconds % 60}
                 </Text>
               </View>
-              <View className="w-[20%] text-center">
-                <Text className="text-center font-bold text-xl text-black">
+              <View className="w-[40%] h-full justify-center text-center">
+                <Text className="text-center font-bold text-xl text-white">
                   {scoreBoard.goal}:{scoreBoard.point}
                 </Text>
               </View>
-              <View className="w-[20%] text-center">
-                <Text className="text-center text-black">
+              <View className="w-[15%] text-center  h-full ">
+                <Text className="text-center text-black mx-auto my-auto">
                   {/* <Icon name="pause" width={14} color="#FD5F5F" /> */}
                   <TouchableOpacity
                     onPress={handlePlayPauseClick}
                     title="Start Timer"
                     disabled={timerLimitReached}
                   >
-                    <Icon name={timerIcon} width={16} color="#000" />
+                    <Icon name={timerIcon} width={16} color="#fff" />
                     {/* <Text className="text-white"></Text> */}
                   </TouchableOpacity>
                 </Text>
               </View>
-              <View className="  w-[20%] font-extrabold text-2xl text-center">
+              <View className="  w-[15%]  font-extrabold text-2xl text-center">
                 <TouchableOpacity
                   onPress={() => setShowProfileMiniMenu(!showProfileMiniMenu)}
-                  className="bg-white h-10 cursor-pointer w-10 rounded-full justify-center mx-auto items-center"
+                  className=" h-10 cursor-pointer w-full rounded-md justify-center mx-auto items-center"
                 >
                   {!showProfileMiniMenu ? (
-                    <Image
-                      source={require("../assets/pp.jpeg")}
-                      className="h-10 w-10 rounded-full"
-                    />
+                    <View className="w-[50%] flex justify-center items-center">
+                      <FontAwesomeIcon
+                        icon={faUser}
+                        size={20}
+                        color="#00E471"
+                      />
+                    </View>
                   ) : (
                     <Text>x</Text>
                   )}
@@ -364,30 +376,34 @@ export default function App() {
         </View>
         {/* Top Mini Nav Btn groups */}
         {!tempPosition && shootingDirect && !showIngameStatModal ? (
-          <View className="h-10 w-full  z-[-1] flex-row items-center justify-center px-5">
+          <View className="h-10 w-[95%] mx-auto z-[-1] flex-row items-center justify-center ">
             {/* Left buttons */}
-            <View className="flex-row space-x-1 w-[30%] justify-center">
-              <TouchableOpacity className="bg-[#242424] w-[50%]  p-2 rounded">
+            <View className="flex-row s w-[30%] space-x-1  justify-center">
+              <TouchableOpacity className="bg-[#242424] w-[50%]  p-2 rounded-md">
                 <Text className="text-white text-center">
                   {/* <Icon name="eye" width={14} color="#fff" /> */}
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                className={`bg-[#242424] 
-        
-                 w-[50%] p-2 rounded`}
-              >
-                <Text className="text-white text-center"></Text>
+              <TouchableOpacity className="bg-[#242424] w-[50%] p-2 rounded flex justify-center items-center">
+                <View className="w-full flex justify-center items-center">
+                  <FontAwesomeIcon
+                    icon={faPeopleGroup}
+                    size={25}
+                    color="#FFFFFF"
+                  />
+                </View>
               </TouchableOpacity>
             </View>
 
             {/* Home and Away buttons */}
-            <View className="flex-row w-[40%] justify-center   ">
+            <View className="flex-row w-[40%]  justify-center   ">
               <TouchableOpacity
                 onPress={() => setShowIngameStatModal(!showIngameStatModal)}
-                className={`p-2 w-[90%] mx-auto bg-[#242424] rounded `}
+                className={`p-2 w-[90%] h-10 mx-auto bg-[#242424] rounded `}
               >
-                <Text className={`text-white text-center `}>Game Stats</Text>
+                <Text className={`text-white text-cente my-auto mx-auto `}>
+                  Game Stats
+                </Text>
               </TouchableOpacity>
               {/* <TouchableOpacity
                 className={`p-2 w-[50%] mx-auto rounded ${
@@ -422,12 +438,14 @@ export default function App() {
             </View>
 
             {/* Right buttons */}
-            <View className="flex-row space-x-1 z-[-1] w-[30%] justify-center  ">
+            <View className="flex-row space-x-1  z-[-1]  w-[30%] justify-center  ">
               <TouchableOpacity
                 onPress={() => setShowIngameStatModal(!showIngameStatModal)}
-                className="bg-[#242424] w-[50%] z-[-1] p-2 rounded"
+                className="bg-[#242424] w-[50%] z-[-1] border-b-2 border-b-[#00E471] p-2 rounded"
               >
-                <Text className="text-white text-center"></Text>
+                <View className="w-full flex justify-center items-center">
+                  <FontAwesomeIcon icon={faEye} size={25} color="#FFFFFF" />
+                </View>
               </TouchableOpacity>
               <TouchableOpacity className="bg-[#242424] w-[50%] p-2 rounded">
                 <Text className="text-white text-center">
@@ -551,7 +569,7 @@ export default function App() {
         {actionSelected && <Text></Text>}
         {/* Pitch View */}
         <View
-          className={`w-[96%] 
+          className={`w-[96%] border-[.5px] border-gray-700
         ${
           tempPosition ? "shadow shadow-[#00E471]/20" : ""
         }  mt-2 mx-auto z-10 rounded-md h-[65vh] bg-[#242424]  relative`}
@@ -817,7 +835,9 @@ export default function App() {
                 <TouchableOpacity
                   onPress={() => gameStatClickHandler("kickoutWon", "kickout")}
                   className={`${
-                    actionSelected == "kickoutWon" ? "border border-[#fff]" : ""
+                    actionSelected == "kickoutWon"
+                      ? "border border-b-[#fff]"
+                      : ""
                   } bg-[#242424] w-[50%] p-2 rounded`}
                 >
                   <Text className="text-[#00E471] text-center">Kickout</Text>
@@ -828,7 +848,7 @@ export default function App() {
               <View className="flex-row px-2 w-[30%] justify-center">
                 <TouchableOpacity
                   className={`${
-                    actionSelected == "point" ? "border border-[#fff]" : ""
+                    actionSelected == "point" ? "border border-b-[#fff]" : ""
                   }  p-2 w-[100%] rounded bg-[#242424] `}
                   onPress={() => gameStatClickHandler("point", "shot")}
                 >
@@ -842,7 +862,7 @@ export default function App() {
                   onPress={() => gameStatClickHandler("TurnOverWon", "T/O")}
                   className={`${
                     actionSelected == "TurnOverWon"
-                      ? "border border-[#fff]"
+                      ? "border border-b-[#fff]"
                       : ""
                   } bg-[#242424] w-[50%] p-2 rounded`}
                 >
@@ -863,7 +883,7 @@ export default function App() {
                   onPress={() => gameStatClickHandler("kickoutLoss", "kickout")}
                   className={`${
                     actionSelected == "kickoutLoss"
-                      ? "border border-[#fff]"
+                      ? "border border-b-[#fff]"
                       : ""
                   } bg-[#242424] w-[50%] p-2 rounded`}
                 >
@@ -875,7 +895,7 @@ export default function App() {
               <View className="flex-row px-2 w-[30%] justify-center ">
                 <TouchableOpacity
                   className={`${
-                    actionSelected == "Wide" ? "border border-[#fff]" : ""
+                    actionSelected == "Wide" ? "border border-b-[#fff]" : ""
                   }  p-2 w-[100%] rounded bg-[#242424] `}
                   onPress={() => gameStatClickHandler("Wide", "shot")}
                 >
@@ -889,7 +909,7 @@ export default function App() {
                   onPress={() => gameStatClickHandler("TurnOverLoss", "T/O")}
                   className={`${
                     actionSelected == "TurnOverLoss"
-                      ? "border border-[#fff]"
+                      ? "border border-b-[#fff]"
                       : ""
                   } bg-[#242424] w-[50%] p-2 rounded`}
                 >
