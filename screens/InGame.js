@@ -114,6 +114,37 @@ export default function App() {
   const [showIngameStatModal, setShowIngameStatModal] = useState(false);
   const [showEditLineupModal, setShowEditLineupModal] = useState(false);
   const [ingameStatModalFilter, setIngameStatModalFilter] = useState("shot");
+  const [substitution, setSubstitution] = useState([
+    {
+      startingPlayer: null,
+      subPlayer: null,
+    },
+  ]);
+  const initialLineUp = [];
+  for (let i = 1; i <= 32; i++) {
+    initialLineUp.push({
+      playerNumber: i,
+      onPitch: i <= 15,
+      playerName: `Player ${i}`,
+    });
+  }
+  const makeSubstitute = (onPitchPlayerNumber, benchPlayerNumber) => {
+    setLineUp((prevLineUp) =>
+      prevLineUp.map((player) => {
+        if (player.playerNumber === onPitchPlayerNumber) {
+          return { ...player, onPitch: false };
+        }
+        if (player.playerNumber === benchPlayerNumber) {
+          return { ...player, onPitch: true };
+        }
+        return player;
+      })
+    );
+    //close the modal for making the sub
+    setShowEditLineupModal(false);
+  };
+
+  const [lineUp, setLineUp] = useState(initialLineUp);
   const handleStatModalFilter = (filter) => {
     setIngameStatModalFilter(filter);
   };
@@ -157,11 +188,11 @@ export default function App() {
   };
   useEffect(() => {
     let interval = null;
-    if (isActive && seconds < 600) {
+    if (isActive && seconds < 2100) {
       interval = setInterval(() => {
         setSeconds((seconds) => seconds + 1);
       }, 1000);
-    } else if (seconds >= 600) {
+    } else if (seconds >= 2100) {
       setTimerLimitReached(true);
       setIsActive(false);
       clearInterval(interval);
@@ -379,7 +410,7 @@ export default function App() {
           )}
         </View>
         {/* Top Mini Nav Btn groups */}
-        {!tempPosition && shootingDirect && !showIngameStatModal ? (
+        {!tempPosition && shootingDirect ? (
           <View className="h-10 w-[95%] mx-auto z-[-1] flex-row items-center justify-center ">
             {/* Left buttons */}
             <View className="flex-row s w-[30%] space-x-1  justify-center">
@@ -389,8 +420,14 @@ export default function App() {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => setShowEditLineupModal(!showEditLineupModal)}
-                className="bg-[#242424] w-[50%] p-2 rounded flex justify-center items-center"
+                onPress={() => {
+                  setShowEditLineupModal(!showEditLineupModal);
+                  //get rid of any other modals here
+                  setShowIngameStatModal(false);
+                }}
+                className={` ${
+                  showEditLineupModal ? "border-b-2 border-b-green-500" : ""
+                } bg-[#242424] w-[50%] p-2 rounded flex justify-center items-center`}
               >
                 <View className="w-full flex justify-center items-center">
                   <FontAwesomeIcon
@@ -406,7 +443,9 @@ export default function App() {
             <View className="flex-row w-[40%]  justify-center   ">
               <TouchableOpacity
                 onPress={() => setShowIngameStatModal(!showIngameStatModal)}
-                className={`p-2 w-[90%] h-10 mx-auto bg-[#242424] rounded `}
+                className={`  ${
+                  showIngameStatModal ? "border-b-2 border-b-green-500" : ""
+                } p-2 w-[90%] h-10 mx-auto bg-[#242424] rounded `}
               >
                 <Text className={`text-white text-cente my-auto mx-auto `}>
                   Game Stats
@@ -465,25 +504,25 @@ export default function App() {
           ""
         )}
         {showIngameStatModal && (
-          <View className="w-[96%] h-auto  relative pb-2 mx-auto">
+          <View className="w-full pt-5 bg-gray-400 h-auto  absolute bottom-0 z-[50] rounded-t-3xl pb-2 mx-auto">
             <View className="w-full absolute right-0 z-50 flex-row  h-auto">
               <TouchableOpacity
                 onPress={() => setShowIngameStatModal(false)}
-                className=" ml-5 p-2 right-2 top-3 absolute "
+                className=" ml-5 p-2 right-2 top-1 absolute "
               >
-                <Text className="text-xl text-white rounded-full w-full">
+                <Text className="text-xl text-black rounded-full w-full">
                   <FontAwesomeIcon
                     icon={faCircleXmark}
                     size={35}
-                    color="#FFFFFF"
+                    color="#000"
                   />
                 </Text>
               </TouchableOpacity>
             </View>
             <View className="w-full  p-2 mx-auto text-center justify-center">
-              <View className="h-10 w-full z-[-1]  flex-row items-center justify-between">
+              <View className="h-10 w-full z-[-1]   flex-row items-center justify-between">
                 {/* Left buttons */}
-                <View className="flex-row mx-auto">
+                <View className="flex-row space-x-1 mx-auto">
                   <TouchableOpacity
                     onPress={() => handleStatModalFilter("shot")}
                     className={`bg-[#242424] ${
@@ -508,7 +547,7 @@ export default function App() {
                     onPress={() => handleStatModalFilter("T/O")}
                     className={`bg-[#242424] ${
                       ingameStatModalFilter === "T/O"
-                        ? "border border-green-500"
+                        ? "border-2 border-green-500"
                         : ""
                     }  w-16 p-2 rounded`}
                   >
@@ -529,39 +568,45 @@ export default function App() {
                 {/* Home and Away buttons */}
                 <View className="flex-row"></View>
               </View>
-              <View className="flex-row text-white">
-                <Text className="w-1/4 p-1 text-white text-center">Min</Text>
-                <Text className="w-1/4 p-1 text-white text-center">Action</Text>
-                <Text className="w-1/4 p-1 text-white text-center">Player</Text>
-                <Text className="w-1/4 p-1 text-white text-center">Score</Text>
+              <View className="flex-row mt-2">
+                <Text className="w-1/4 p-1  text-center">Min</Text>
+                <Text className="w-1/4 p-1  text-center">Action</Text>
+                <Text className="w-1/4 p-1  text-center">Player</Text>
+                <Text className="w-1/4 p-1  text-center">Score</Text>
               </View>
-              {filteredPositions.map((position, index) => (
-                <TouchableOpacity
-                  onLongPress={() => {
-                    console.log("longpressed");
-                  }}
-                  onPress={() => {
-                    console.log("pressed");
-                  }}
-                  key={index}
-                  className={`flex-row justify-center py-1 rounded-md mx-1 text-white ${
-                    index % 2 === 0 ? "bg-white/10" : ""
-                  } `}
-                >
-                  <Text className="w-1/4 p-1 text-gray-400 text-center">
-                    {formatTime(position.time)}
-                  </Text>
-                  <Text className="w-1/4 p-1 text-gray-400 text-center">
-                    {position.action}
-                  </Text>
-                  <Text className="w-1/4 p-1 text-gray-400 text-center">
-                    {position.player}
-                  </Text>
-                  <Text className="w-1/4 p-1 text-gray-400 text-center">
-                    0:{position.score}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+              {filteredPositions.length === 0 ? (
+                <Text className="text-center text-md mt-5 py-2">
+                  No {ingameStatModalFilter} data yet
+                </Text>
+              ) : (
+                filteredPositions.map((position, index) => (
+                  <TouchableOpacity
+                    onLongPress={() => {
+                      console.log("longpressed");
+                    }}
+                    onPress={() => {
+                      console.log("pressed");
+                    }}
+                    key={index}
+                    className={`flex-row justify-center py-1 rounded-md mx-1 text-white ${
+                      index % 2 === 0 ? "bg-white/50" : ""
+                    } `}
+                  >
+                    <Text className="w-1/4 p-1 text-gray-700 text-center">
+                      {formatTime(position.time)}
+                    </Text>
+                    <Text className="w-1/4 p-1 text-gray-700 text-center">
+                      {position.action}
+                    </Text>
+                    <Text className="w-1/4 p-1 text-gray-700 text-center">
+                      {position.player}
+                    </Text>
+                    <Text className="w-1/4 p-1 text-gray-700 text-center">
+                      0:{position.score}
+                    </Text>
+                  </TouchableOpacity>
+                ))
+              )}
               {/* <View className="w-auto justify-end flex flex-row  bg-blue-600 items-end">
                 <View className="bg-red-600 h-5 w-auto right-5 mx-2">
                   <Text>Edit</Text>
@@ -764,14 +809,14 @@ export default function App() {
             {/* <Text className="text-white text-center">Select Player</Text> */}
             <View className="h-auto  border-white/10 p-2 rounded-md w-4full mt-5 mx-auto">
               <FlatList
-                data={numbers}
+                data={lineUp.filter((player) => player.onPitch)}
                 horizontal
-                keyExtractor={(item) => item.toString()}
+                keyExtractor={(item) => item.playerNumber.toString()}
                 renderItem={({ item }) => (
                   <TouchableOpacity
-                    className="flex justify-center items-center mx-2"
-                    style={{ width: width / 5, height: 50 }}
-                    onPress={() => setSelectedNumber(item)}
+                    className="flex my-auto justify-center  items-center mx-2"
+                    style={{ width: width / 8, height: 50 }}
+                    onPress={() => setSelectedNumber(item.playerNumber)}
                   >
                     <ImageBackground
                       source={require("../assets/jersey.png")}
@@ -785,10 +830,12 @@ export default function App() {
                     >
                       <Text
                         className={`text-base font-bold ${
-                          item === selectedNumber ? "text-black" : "text-black"
+                          item.playerNumber === substitution.startingPlayer
+                            ? "text-black"
+                            : "text-black"
                         }`}
                       >
-                        {item}
+                        {item.playerNumber}
                       </Text>
                     </ImageBackground>
                   </TouchableOpacity>
@@ -966,12 +1013,24 @@ export default function App() {
       {showEditLineupModal && (
         <>
           <TouchableOpacity
-            onPress={() => setShowEditLineupModal(false)}
+            onPress={() => {
+              setShowEditLineupModal(false);
+              setSubstitution({
+                startingPlayer: null,
+                subPlayer: null,
+              });
+            }}
             className="h-1/2 w-full  absolute top-0"
           ></TouchableOpacity>
-          <View className="w-full absolute h-1/2 rounded-t-3xl bg-white bottom-0">
+          <View className="w-full absolute h-1/2 rounded-t-3xl bg-gray-400 bottom-0">
             <TouchableOpacity
-              onPress={() => setShowEditLineupModal(false)}
+              onPress={() => {
+                setShowEditLineupModal(false);
+                setSubstitution({
+                  startingPlayer: null,
+                  subPlayer: null,
+                });
+              }}
               className="absolute w-10 h-10 right-5 top-5 "
             >
               <Text className="text-center my-auto">
@@ -990,20 +1049,25 @@ export default function App() {
             <View className="flex-1 ">
               <Text className="ml-2 mx-auto">On Field</Text>
               <FlatList
-                data={numbers}
+                data={lineUp.filter((player) => player.onPitch)}
                 horizontal
-                keyExtractor={(item) => item.toString()}
+                keyExtractor={(item) => item.playerNumber.toString()}
                 renderItem={({ item }) => (
                   <TouchableOpacity
-                    className="flex my-auto justify-center items-center mx-2"
-                    style={{ width: width / 5, height: 50 }}
-                    onPress={() => setSelectedNumber(item)}
+                    className="flex my-auto justify-center  items-center mx-2"
+                    style={{ width: width / 8, height: 50 }}
+                    onPress={() =>
+                      setSubstitution((prevState) => ({
+                        ...prevState,
+                        startingPlayer: item.playerNumber,
+                      }))
+                    }
                   >
                     <ImageBackground
                       source={require("../assets/jersey.png")}
                       resizeMode="contain"
                       className={`flex justify-center items-center ${
-                        item === selectedNumber
+                        item.playerNumber === substitution.startingPlayer
                           ? "border-b border-b-1 border-b-green-500"
                           : ""
                       }`}
@@ -1011,10 +1075,12 @@ export default function App() {
                     >
                       <Text
                         className={`text-base font-bold ${
-                          item === selectedNumber ? "text-black" : "text-black"
+                          item.playerNumber === substitution.startingPlayer
+                            ? "text-black"
+                            : "text-black"
                         }`}
                       >
-                        {item}
+                        {item.playerNumber}
                       </Text>
                     </ImageBackground>
                   </TouchableOpacity>
@@ -1025,20 +1091,25 @@ export default function App() {
             <View className="flex-1 ">
               <Text className="mx-auto">Bench</Text>
               <FlatList
-                data={subNumbers}
+                data={lineUp.filter((player) => !player.onPitch)}
                 horizontal
-                keyExtractor={(item) => item.toString()}
+                keyExtractor={(item) => item.playerNumber.toString()}
                 renderItem={({ item }) => (
                   <TouchableOpacity
-                    className="flex my-auto justify-center items-center mx-2"
-                    style={{ width: width / 5, height: 50 }}
-                    onPress={() => setSelectedNumber(item)}
+                    className="flex my-auto justify-center  items-center mx-2"
+                    style={{ width: width / 8, height: 50 }}
+                    onPress={() =>
+                      setSubstitution((prevState) => ({
+                        ...prevState,
+                        subPlayer: item.playerNumber,
+                      }))
+                    }
                   >
                     <ImageBackground
                       source={require("../assets/jersey.png")}
                       resizeMode="contain"
                       className={`flex justify-center items-center ${
-                        item === selectedNumber
+                        item.playerNumber === substitution.subPlayer
                           ? "border-b border-b-1 border-b-green-500"
                           : ""
                       }`}
@@ -1046,10 +1117,12 @@ export default function App() {
                     >
                       <Text
                         className={`text-base font-bold ${
-                          item === selectedNumber ? "text-black" : "text-black"
+                          item.playerNumber === substitution.subPlayer
+                            ? "text-black"
+                            : "text-black"
                         }`}
                       >
-                        {item}
+                        {item.playerNumber}
                       </Text>
                     </ImageBackground>
                   </TouchableOpacity>
@@ -1058,7 +1131,24 @@ export default function App() {
               />
             </View>
             <View className="flex-1 ">
-              <TouchableOpacity className="rounded-md mx-auto my-auto p-2 w-1/4 bg-green-500">
+              <TouchableOpacity
+                disabled={!substitution.playerName && !substitution.subPlayer}
+                onPress={() => {
+                  makeSubstitute(
+                    substitution.startingPlayer,
+                    substitution.subPlayer
+                  );
+                }}
+                // if there is a starting/sub player selected make the button clickable
+                className={`rounded-md mx-auto my-auto p-2 w-1/4
+              
+                ${
+                  substitution.startingPlayer && substitution.subPlayer
+                    ? "bg-green-500"
+                    : "bg-gray-100"
+                }
+                `}
+              >
                 <Text className="text-center font-semibold textlg">
                   Make Sub
                 </Text>
