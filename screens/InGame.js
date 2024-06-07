@@ -120,6 +120,7 @@ export default function App() {
 
   // for the player numbers
   const numbers = Array.from({ length: 15 }, (_, i) => i + 1);
+  const subNumbers = Array.from({ length: 15 }, (_, i) => i + 16);
   // for the player jersey
   const JerseySvg = ({ number }) => (
     <Svg
@@ -208,60 +209,7 @@ export default function App() {
     );
   };
   const EditCurrentLineupModal = () => {
-    return (
-      <>
-        <TouchableOpacity
-          className="absolute top-0 w-full h-2/4 "
-          onPress={() => setShowEditLineupModal(false)}
-        >
-          {/* <View className="w-full h-full bg-transparent"></View> */}
-        </TouchableOpacity>
-        <View className="fixed bottom-0 rounded-t-3xl w-full h-2/4 bg-white">
-          <View className=" flex-1">
-            <Text className="mx-auto font-semibold text-lg text-center mt-5">
-              Make A Substitution
-            </Text>
-            <Text className="mx-auto  text-md text-center mt-5">
-              Select a player from the startng lineup and then select a sub
-            </Text>
-            <FlatList
-              data={numbers}
-              horizontal
-              keyExtractor={(item) => item.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  className="flex my-auto justify-center items-center mx-2"
-                  style={{ width: width / 5, height: 50 }}
-                  onPress={() => setSelectedNumber(item)}
-                >
-                  <ImageBackground
-                    source={require("../assets/jersey.png")}
-                    resizeMode="contain"
-                    className={`flex justify-center items-center ${
-                      item === selectedNumber
-                        ? "border-b border-b-1 border-b-green-500"
-                        : ""
-                    }`}
-                    style={{ width: "100%", height: "100%" }}
-                  >
-                    <Text
-                      className={`text-base font-bold ${
-                        item === selectedNumber ? "text-black" : "text-black"
-                      }`}
-                    >
-                      {item}
-                    </Text>
-                  </ImageBackground>
-                </TouchableOpacity>
-              )}
-              showsHorizontalScrollIndicator={false}
-            />
-          </View>
-          <View className="flex-1 bg-blue-600"></View>
-          <View className="h-20 bg-yellow-600"></View>
-        </View>
-      </>
-    );
+    return <View className="absolute h-1/2 w-full bg-white bottom-0"></View>;
   };
   const IngameStatPageModal = () => {
     return (
@@ -1015,7 +963,110 @@ export default function App() {
           <View className="w-1/4 " />
         </View> */}
       </ScrollView>
-      {showEditLineupModal && <EditCurrentLineupModal />}
+      {showEditLineupModal && (
+        <>
+          <TouchableOpacity
+            onPress={() => setShowEditLineupModal(false)}
+            className="h-1/2 w-full  absolute top-0"
+          ></TouchableOpacity>
+          <View className="w-full absolute h-1/2 rounded-t-3xl bg-white bottom-0">
+            <TouchableOpacity
+              onPress={() => setShowEditLineupModal(false)}
+              className="absolute w-10 h-10 right-5 top-5 "
+            >
+              <Text className="text-center my-auto">
+                <FontAwesomeIcon
+                  icon={faCircleXmark}
+                  size={35}
+                  color="#030303"
+                />
+              </Text>
+            </TouchableOpacity>
+            <View className=" py-10 w-full ">
+              <Text className="text-center my-auto text-lg font-semibold">
+                Make a Substitution
+              </Text>
+            </View>
+            <View className="flex-1 ">
+              <Text className="ml-2 mx-auto">On Field</Text>
+              <FlatList
+                data={numbers}
+                horizontal
+                keyExtractor={(item) => item.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    className="flex my-auto justify-center items-center mx-2"
+                    style={{ width: width / 5, height: 50 }}
+                    onPress={() => setSelectedNumber(item)}
+                  >
+                    <ImageBackground
+                      source={require("../assets/jersey.png")}
+                      resizeMode="contain"
+                      className={`flex justify-center items-center ${
+                        item === selectedNumber
+                          ? "border-b border-b-1 border-b-green-500"
+                          : ""
+                      }`}
+                      style={{ width: "100%", height: "100%" }}
+                    >
+                      <Text
+                        className={`text-base font-bold ${
+                          item === selectedNumber ? "text-black" : "text-black"
+                        }`}
+                      >
+                        {item}
+                      </Text>
+                    </ImageBackground>
+                  </TouchableOpacity>
+                )}
+                showsHorizontalScrollIndicator={false}
+              />
+            </View>
+            <View className="flex-1 ">
+              <Text className="mx-auto">Bench</Text>
+              <FlatList
+                data={subNumbers}
+                horizontal
+                keyExtractor={(item) => item.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    className="flex my-auto justify-center items-center mx-2"
+                    style={{ width: width / 5, height: 50 }}
+                    onPress={() => setSelectedNumber(item)}
+                  >
+                    <ImageBackground
+                      source={require("../assets/jersey.png")}
+                      resizeMode="contain"
+                      className={`flex justify-center items-center ${
+                        item === selectedNumber
+                          ? "border-b border-b-1 border-b-green-500"
+                          : ""
+                      }`}
+                      style={{ width: "100%", height: "100%" }}
+                    >
+                      <Text
+                        className={`text-base font-bold ${
+                          item === selectedNumber ? "text-black" : "text-black"
+                        }`}
+                      >
+                        {item}
+                      </Text>
+                    </ImageBackground>
+                  </TouchableOpacity>
+                )}
+                showsHorizontalScrollIndicator={false}
+              />
+            </View>
+            <View className="flex-1 ">
+              <TouchableOpacity className="rounded-md mx-auto my-auto p-2 w-1/4 bg-green-500">
+                <Text className="text-center font-semibold textlg">
+                  Make Sub
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </>
+      )}
     </SafeAreaView>
   );
 }
