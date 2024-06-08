@@ -576,7 +576,7 @@ export default function App() {
               </View>
               {filteredPositions.length === 0 ? (
                 <Text className="text-center text-md mt-5 py-2">
-                  No {ingameStatModalFilter} data yet
+                  No {ingameStatModalFilter} data yet,
                 </Text>
               ) : (
                 filteredPositions.map((position, index) => (
