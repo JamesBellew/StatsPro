@@ -114,6 +114,7 @@ export default function App() {
   const [showIngameStatModal, setShowIngameStatModal] = useState(false);
   const [showEditLineupModal, setShowEditLineupModal] = useState(false);
   const [ingameStatModalFilter, setIngameStatModalFilter] = useState("shot");
+  const [longPressedId, setLongPressedId] = useState(null); // State for long-pressed item ID
   const [substitution, setSubstitution] = useState([
     {
       startingPlayer: null,
@@ -264,8 +265,8 @@ export default function App() {
     //set the start game modal to show
     setShowStartGameModal(true);
   };
+  const [idCounter, setIdCounter] = useState(1);
   const handlePitchPress = (event) => {
-    //lets see if the user selected a action beofre entering the preview stage
     if (actionSelected) {
       const { locationX, locationY } = event.nativeEvent;
       let score = 0;
@@ -273,6 +274,7 @@ export default function App() {
         score = scoreBoard.point + 1;
       }
       setTempPosition({
+        id: idCounter, // Add the ID here
         x: locationX,
         y: locationY,
         action: actionSelected,
@@ -283,8 +285,11 @@ export default function App() {
         time: seconds,
       });
       console.log(tempPosition);
+
+      // Increment the ID counter
+      setIdCounter((prevIdCounter) => prevIdCounter + 1);
     } else {
-      //the user did not select an action
+      // The user did not select an action
       setActionAlertError(true);
       setTimeout(() => {
         setActionAlertError(false);
@@ -317,6 +322,11 @@ export default function App() {
   };
   const handleCancelPosition = () => {
     setTempPosition(null);
+  };
+  const deletePositionById = (id) => {
+    setPositions((prevPositions) =>
+      prevPositions.filter((position) => position.id !== id)
+    );
   };
   const formatTime = (seconds) => {
     if (seconds < 120) {
@@ -503,121 +513,7 @@ export default function App() {
         ) : (
           ""
         )}
-        {showIngameStatModal && (
-          <View className="w-full pt-5 bg-gray-400 h-auto  absolute bottom-0 z-[50] rounded-t-3xl pb-2 mx-auto">
-            <View className="w-full absolute right-0 z-50 flex-row  h-auto">
-              <TouchableOpacity
-                onPress={() => setShowIngameStatModal(false)}
-                className=" ml-5 p-2 right-2 top-1 absolute "
-              >
-                <Text className="text-xl text-black rounded-full w-full">
-                  <FontAwesomeIcon
-                    icon={faCircleXmark}
-                    size={35}
-                    color="#000"
-                  />
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View className="w-full  p-2 mx-auto text-center justify-center">
-              <View className="h-10 w-full z-[-1]   flex-row items-center justify-between">
-                {/* Left buttons */}
-                <View className="flex-row space-x-1 mx-auto">
-                  <TouchableOpacity
-                    onPress={() => handleStatModalFilter("shot")}
-                    className={`bg-[#242424] ${
-                      ingameStatModalFilter === "shot"
-                        ? "border border-green-500"
-                        : ""
-                    }  w-16 p-2 rounded`}
-                  >
-                    <Text className="text-white text-center">Shots</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => handleStatModalFilter("kickout")}
-                    className={`bg-[#242424] ${
-                      ingameStatModalFilter === "kickout"
-                        ? "border border-green-500"
-                        : ""
-                    }  w-auto p-2 rounded`}
-                  >
-                    <Text className="text-white text-center">Kickouts</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => handleStatModalFilter("T/O")}
-                    className={`bg-[#242424] ${
-                      ingameStatModalFilter === "T/O"
-                        ? "border-2 border-green-500"
-                        : ""
-                    }  w-16 p-2 rounded`}
-                  >
-                    <Text className="text-white text-center">T/O's</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => handleStatModalFilter("All")}
-                    className={`bg-[#242424] ${
-                      ingameStatModalFilter === "All"
-                        ? "border border-green-500"
-                        : ""
-                    }  w-16 p-2 rounded`}
-                  >
-                    <Text className="text-white text-center">All</Text>
-                  </TouchableOpacity>
-                </View>
 
-                {/* Home and Away buttons */}
-                <View className="flex-row"></View>
-              </View>
-              <View className="flex-row mt-2">
-                <Text className="w-1/4 p-1  text-center">Min</Text>
-                <Text className="w-1/4 p-1  text-center">Action</Text>
-                <Text className="w-1/4 p-1  text-center">Player</Text>
-                <Text className="w-1/4 p-1  text-center">Score</Text>
-              </View>
-              {filteredPositions.length === 0 ? (
-                <Text className="text-center text-md mt-5 py-2">
-                  No {ingameStatModalFilter} data yet,
-                </Text>
-              ) : (
-                filteredPositions.map((position, index) => (
-                  <TouchableOpacity
-                    onLongPress={() => {
-                      console.log("longpressed");
-                    }}
-                    onPress={() => {
-                      console.log("pressed");
-                    }}
-                    key={index}
-                    className={`flex-row justify-center py-1 rounded-md mx-1 text-white ${
-                      index % 2 === 0 ? "bg-white/50" : ""
-                    } `}
-                  >
-                    <Text className="w-1/4 p-1 text-gray-700 text-center">
-                      {formatTime(position.time)}
-                    </Text>
-                    <Text className="w-1/4 p-1 text-gray-700 text-center">
-                      {position.action}
-                    </Text>
-                    <Text className="w-1/4 p-1 text-gray-700 text-center">
-                      {position.player}
-                    </Text>
-                    <Text className="w-1/4 p-1 text-gray-700 text-center">
-                      0:{position.score}
-                    </Text>
-                  </TouchableOpacity>
-                ))
-              )}
-              {/* <View className="w-auto justify-end flex flex-row  bg-blue-600 items-end">
-                <View className="bg-red-600 h-5 w-auto right-5 mx-2">
-                  <Text>Edit</Text>
-                </View>
-                <View className="bg-red-600 h-5 w-auto right-5">
-                  <Text>Edit</Text>
-                </View>
-              </View> */}
-            </View>
-          </View>
-        )}
         {actionSelected && <Text></Text>}
         {/* Pitch View */}
 
@@ -1010,6 +906,151 @@ export default function App() {
           <View className="w-1/4 " />
         </View> */}
       </ScrollView>
+      {showIngameStatModal && (
+        <View className="w-full h-screen absolute flex flex-col">
+          {/* This view will fill the remaining space above the dynamic view */}
+          <TouchableOpacity
+            onPress={() => setShowIngameStatModal(false)}
+            className="flex-1 pointer-events-none bg-transparent"
+          >
+            {/* Content for the top view */}
+          </TouchableOpacity>
+          <View className="w-full pt-5 bg-gray-400 h-auto  absolute bottom-0 z-[50] rounded-t-3xl pb-5 mx-auto">
+            <View className="w-full absolute right-0 z-50 flex-row  h-auto">
+              <TouchableOpacity
+                onPress={() => setShowIngameStatModal(false)}
+                className=" ml-5 p-2 right-2 top-1 absolute "
+              >
+                <Text className="text-xl text-black rounded-full w-full">
+                  <FontAwesomeIcon
+                    icon={faCircleXmark}
+                    size={35}
+                    color="#000"
+                  />
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View className="w-full  mb-5  p-2 mx-auto text-center justify-center">
+              <View className="h-10  w-full z-[-1]   flex-row items-center justify-between">
+                {/* Left buttons */}
+                <View className="flex-row space-x-1 mx-auto">
+                  <TouchableOpacity
+                    onPress={() => handleStatModalFilter("shot")}
+                    className={`bg-[#242424] ${
+                      ingameStatModalFilter === "shot"
+                        ? "border border-green-500"
+                        : ""
+                    }  w-16 p-2 rounded`}
+                  >
+                    <Text className="text-white text-center">Shots</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handleStatModalFilter("kickout")}
+                    className={`bg-[#242424] ${
+                      ingameStatModalFilter === "kickout"
+                        ? "border border-green-500"
+                        : ""
+                    }  w-auto p-2 rounded`}
+                  >
+                    <Text className="text-white text-center">Kickouts</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handleStatModalFilter("T/O")}
+                    className={`bg-[#242424] ${
+                      ingameStatModalFilter === "T/O"
+                        ? "border-2 border-green-500"
+                        : ""
+                    }  w-16 p-2 rounded`}
+                  >
+                    <Text className="text-white text-center">T/O's</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handleStatModalFilter("All")}
+                    className={`bg-[#242424] ${
+                      ingameStatModalFilter === "All"
+                        ? "border border-green-500"
+                        : ""
+                    }  w-16 p-2 rounded`}
+                  >
+                    <Text className="text-white text-center">All</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* Home and Away buttons */}
+                <View className="flex-row"></View>
+              </View>
+              <View className="flex-row mt-2">
+                <Text className="w-1/4 p-1  text-center">Min</Text>
+                <Text className="w-1/4 p-1  text-center">Action</Text>
+                <Text className="w-1/4 p-1  text-center">Player</Text>
+                <Text className="w-1/4 p-1  text-center">Score</Text>
+              </View>
+              {filteredPositions.length === 0 ? (
+                <Text className="text-center text-md mt-5 py-2">
+                  No data yet,
+                </Text>
+              ) : (
+                filteredPositions.map((position, index) => (
+                  <TouchableOpacity
+                    onLongPress={() => {
+                      setLongPressedId(position.id);
+                      console.log("longpressed");
+                    }}
+                    onPress={() => {
+                      setLongPressedId(null);
+                      console.log("pressed");
+                    }}
+                    key={index}
+                    className={`flex-row justify-center py-1 rounded-md mx-1 text-white ${
+                      index % 2 === 0 ? "bg-white/50" : ""
+                    } `}
+                  >
+                    {longPressedId === position.id ? (
+                      <>
+                        <TouchableOpacity
+                          onPress={() => deletePositionById(position.id)}
+                          className=" bg-red-500 w-auto px-5 py-1 rounded-md justify-center items-center"
+                        >
+                          <Text>Delete</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => setLongPressedId(null)}
+                          className="ml-2 bg-green-500 w-auto px-5 py-1 rounded-md justify-center items-center"
+                        >
+                          <Text>Cancel</Text>
+                        </TouchableOpacity>
+                      </>
+                    ) : (
+                      <>
+                        <Text className="w-1/4 p-1 text-gray-700 text-center">
+                          {formatTime(position.time)}
+                        </Text>
+                        <Text className="w-1/4 p-1 text-gray-700 text-center">
+                          {position.action}
+                        </Text>
+                        <Text className="w-1/4 p-1 text-gray-700 text-center">
+                          {position.player}
+                        </Text>
+                        <Text className="w-1/4 p-1 text-gray-700 text-center">
+                          0:{position.score}
+                        </Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                ))
+              )}
+              {/* <View className="w-auto justify-end flex flex-row  bg-blue-600 items-end">
+                <View className="bg-red-600 h-5 w-auto right-5 mx-2">
+                  <Text>Edit</Text>
+                </View>
+                <View className="bg-red-600 h-5 w-auto right-5">
+                  <Text>Edit</Text>
+                </View>
+              </View> */}
+            </View>
+          </View>
+        </View>
+      )}
       {showEditLineupModal && (
         <>
           <TouchableOpacity
