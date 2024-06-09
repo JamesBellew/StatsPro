@@ -115,6 +115,7 @@ export default function App() {
   const [showEditLineupModal, setShowEditLineupModal] = useState(false);
   const [ingameStatModalFilter, setIngameStatModalFilter] = useState("shot");
   const [longPressedId, setLongPressedId] = useState(null); // State for long-pressed item ID
+  const [actionTimeStamp, setActionTimeStamp] = useState(0);
   const [substitution, setSubstitution] = useState([
     {
       startingPlayer: null,
@@ -273,6 +274,7 @@ export default function App() {
       if (actionSelected === "point") {
         score = scoreBoard.point + 1;
       }
+      setActionTimeStamp(seconds);
       setTempPosition({
         id: idCounter, // Add the ID here
         x: locationX,
@@ -282,9 +284,10 @@ export default function App() {
         half: "first",
         score: score,
         player: 0,
-        time: seconds,
+        time: actionTimeStamp,
       });
       console.log(tempPosition);
+      //want to set the time for the point selector so that the user can change the timestamp if needed
 
       // Increment the ID counter
       setIdCounter((prevIdCounter) => prevIdCounter + 1);
@@ -302,10 +305,11 @@ export default function App() {
         ...prev,
         player: selectedNumber,
       }));
-
+      console.log("im here boiiiiii");
+      console.log(actionTimeStamp);
       setPositions((prev) => [
         ...prev,
-        { ...tempPosition, player: selectedNumber },
+        { ...tempPosition, player: selectedNumber, time: actionTimeStamp },
       ]);
       // clear the selected player number
       setSelectedNumber(null);
@@ -738,6 +742,37 @@ export default function App() {
                 )}
                 showsHorizontalScrollIndicator={false}
               />
+              <View className="flex-row justify-center mt-2">
+                <TouchableOpacity
+                  onPress={() => {
+                    if (actionTimeStamp > 60) {
+                      setActionTimeStamp(actionTimeStamp - 60);
+                    }
+                  }}
+                  className="w-10 h-10 justify-center items-center my-auto mr-2 bg-[#242424] rounded-full p-2"
+                >
+                  <Text className="text-white text-center my-auto font-bold">
+                    -
+                  </Text>
+                </TouchableOpacity>
+                <Text className="text-center font-bold items-center my-auto text-lg  text-white">
+                  {Math.floor(actionTimeStamp / 60)} Min
+                </Text>
+                <TouchableOpacity
+                  className="w-10 h-10 justify-center items-center my-auto ml-2 bg-[#242424] rounded-full p-2"
+                  onPress={() => {
+                    setActionTimeStamp((prevTimeStamp) => {
+                      const newTimeStamp = Number(prevTimeStamp);
+                      if (newTimeStamp < 2100) {
+                        return newTimeStamp + 60;
+                      }
+                      return newTimeStamp;
+                    });
+                  }}
+                >
+                  <Text className="text-white">+</Text>
+                </TouchableOpacity>
+              </View>
             </View>
 
             <View
@@ -745,25 +780,25 @@ export default function App() {
               // style={styles.saveButtonContainer}
             >
               <TouchableOpacity
-                onPress={handleSavePosition}
+                onPress={handleCancelPosition}
                 className={`flex
-                ${selectedNumber != null ? "" : "hidden"}
-                w-[50%] mx-auto text-center     rounded-md p-3 border border-[#00E471]`}
+      
+               flex-1 mx-auto text-center     rounded-md p-3 border bg-[#FD5F5F]`}
                 // style={styles.saveButton}
               >
                 <Text className="text-center w-auto h-auto rounded-full">
-                  {" "}
-                  <Icon name="check" width={14} color="#00E471" />
+                  <Icon name="ban" width={14} color="#242424" />
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={handleCancelPosition}
-                className="w-[50%] mx-auto justify-center items-center m flex rounded-md p-3 border border-[#FD5F5F]"
+                onPress={handleSavePosition}
+                className={`         ${
+                  selectedNumber != null ? "" : "hidden"
+                } flex-1 mx-auto justify-center items-center m flex rounded-md p-3 border bg-[#00E471] `}
                 // style={styles.saveButton}
               >
                 <Text className="text-center w-auto h-auto rounded-full">
-                  {" "}
-                  <Icon name="ban" width={14} color="#FD5F5F" />
+                  <Icon name="check" width={14} color="#242424" />
                 </Text>
               </TouchableOpacity>
             </View>
