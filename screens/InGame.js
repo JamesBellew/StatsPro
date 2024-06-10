@@ -116,6 +116,7 @@ export default function App() {
   const [ingameStatModalFilter, setIngameStatModalFilter] = useState("shot");
   const [longPressedId, setLongPressedId] = useState(null); // State for long-pressed item ID
   const [actionTimeStamp, setActionTimeStamp] = useState(0);
+  const [showEditTimerModal, setShowEditTimeModal] = useState(false);
   const [substitution, setSubstitution] = useState([
     {
       startingPlayer: null,
@@ -323,14 +324,27 @@ export default function App() {
         point: prevScoreBoard.point + 1,
       }));
     }
+    if (tempPosition.action === "goal") {
+      setScoreBaord((prevScoreBoard) => ({
+        ...prevScoreBoard,
+        goal: prevScoreBoard.goal + 1,
+      }));
+    }
   };
   const handleCancelPosition = () => {
     setTempPosition(null);
   };
-  const deletePositionById = (id) => {
+  const deletePositionById = (id, action) => {
     setPositions((prevPositions) =>
       prevPositions.filter((position) => position.id !== id)
     );
+
+    if (action === "point") {
+      setScoreBaord((prevScoreBoard) => ({
+        ...prevScoreBoard,
+        point: prevScoreBoard.point - 1,
+      }));
+    }
   };
   const formatTime = (seconds) => {
     if (seconds < 120) {
@@ -362,12 +376,17 @@ export default function App() {
                   />
                 </View>
               </View>
-              <View className="w-[15%]  h-full justify-center text-center ">
+              <TouchableOpacity
+                onPress={() => setShowEditTimeModal(true)}
+                className={`${
+                  showEditTimerModal ? "border-b-2 border-b-green-500" : ""
+                } w-[15%]  rounded-md  h-full justify-center text-center `}
+              >
                 <Text className="text-center font-bold text-lg text-white">
                   {Math.floor(seconds / 60)}:
                   {seconds % 60 < 10 ? `0${seconds % 60}` : seconds % 60}
                 </Text>
-              </View>
+              </TouchableOpacity>
               <View className="w-[40%] h-full justify-center text-center">
                 <Text className="text-center font-bold text-xl text-white">
                   {scoreBoard.goal}:{scoreBoard.point}
@@ -707,7 +726,7 @@ export default function App() {
         {tempPosition && (
           <>
             {/* <Text className="text-white text-center">Select Player</Text> */}
-            <View className="h-auto  border-white/10 p-2 rounded-md w-4full mt-5 mx-auto">
+            <View className="h-auto  border-white/10 p-2 rounded-md w-4full mt-3 mx-auto">
               <FlatList
                 data={lineUp.filter((player) => player.onPitch)}
                 horizontal
@@ -722,7 +741,7 @@ export default function App() {
                       source={require("../assets/jersey.png")}
                       resizeMode="contain"
                       className={`flex justify-center items-center ${
-                        item === selectedNumber
+                        item.playerNumber === selectedNumber
                           ? "border-b border-b-1 border-b-green-500"
                           : ""
                       }`}
@@ -742,7 +761,7 @@ export default function App() {
                 )}
                 showsHorizontalScrollIndicator={false}
               />
-              <View className="flex-row justify-center mt-2">
+              <View className="flex-row justify-center ">
                 <TouchableOpacity
                   onPress={() => {
                     if (actionTimeStamp > 60) {
@@ -776,7 +795,7 @@ export default function App() {
             </View>
 
             <View
-              className="flex flex-row w-2/4 mx-auto mt-3   "
+              className="flex flex-row  w-2/4 mx-auto mt-1   "
               // style={styles.saveButtonContainer}
             >
               <TouchableOpacity
@@ -792,9 +811,9 @@ export default function App() {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={handleSavePosition}
-                className={`         ${
+                className={`  flex-1  flex     ${
                   selectedNumber != null ? "" : "hidden"
-                } flex-1 mx-auto justify-center items-center m flex rounded-md p-3 border bg-[#00E471] `}
+                }  mx-auto justify-center items-center m  rounded-md p-3 border bg-[#00E471]  `}
                 // style={styles.saveButton}
               >
                 <Text className="text-center w-auto h-auto rounded-full">
@@ -860,7 +879,7 @@ export default function App() {
                 </TouchableOpacity>
               </View>
             </View>
-            <View className="h-10 w-full   mx-auto items justify-center flex-row items-center  px-5">
+            <View className="h-10 w-full  mx-auto items justify-center flex-row items-center  px-5">
               {/* Left buttons */}
               <View className="flex-row space-x-2 justify-center w-[35%]">
                 <TouchableOpacity className="bg-[#242424] w-[50%] p-2 rounded">
@@ -904,6 +923,53 @@ export default function App() {
                 </TouchableOpacity>
                 <TouchableOpacity className="bg-[#242424] w-[50%] p-2 rounded">
                   <Text className="text-[#FD5F5F] text-center">Tackle</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View className="h-10 w-full   mx-auto items justify-center flex-row items-center  px-5">
+              {/* Left buttons */}
+              <View className="flex-row space-x-2 justify-center w-[35%]">
+                <TouchableOpacity className="bg-[#242424] w-[50%] p-2 rounded">
+                  <Text className="text-white text-center">Save</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => gameStatClickHandler("kickoutLoss", "kickout")}
+                  className={`${
+                    actionSelected == "kickoutLoss"
+                      ? "border border-b-[#fff]"
+                      : ""
+                  } bg-[#242424] w-[50%] p-2 rounded`}
+                >
+                  <Text className="text-white text-center">Kickout</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Home and Away buttons */}
+              <View className="flex-row px-2 w-[30%] justify-center ">
+                <TouchableOpacity
+                  className={`${
+                    actionSelected == "goal" ? "border border-b-[#fff]" : ""
+                  }  p-2 w-[100%] rounded bg-[#242424] `}
+                  onPress={() => gameStatClickHandler("goal", "shot")}
+                >
+                  <Text className="text-white text-center">Goal</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Right buttons */}
+              <View className="flex-row space-x-2 justify-center w-[35%]">
+                <TouchableOpacity
+                  onPress={() => gameStatClickHandler("TurnOverLoss", "T/O")}
+                  className={`${
+                    actionSelected == "TurnOverLoss"
+                      ? "border border-b-[#fff]"
+                      : ""
+                  } bg-[#242424] w-[50%] p-2 rounded`}
+                >
+                  <Text className="text-white text-center">T/O</Text>
+                </TouchableOpacity>
+                <TouchableOpacity className="bg-[#242424] w-[50%] p-2 rounded">
+                  <Text className="text-white text-center">Tackle</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -1043,7 +1109,9 @@ export default function App() {
                     {longPressedId === position.id ? (
                       <>
                         <TouchableOpacity
-                          onPress={() => deletePositionById(position.id)}
+                          onPress={() =>
+                            deletePositionById(position.id, position.action)
+                          }
                           className=" bg-red-500 w-auto px-5 py-1 rounded-md justify-center items-center"
                         >
                           <Text>Delete</Text>
@@ -1228,6 +1296,44 @@ export default function App() {
                 <Text className="text-center font-semibold textlg">
                   Make Sub
                 </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </>
+      )}
+      {showEditTimerModal && (
+        <>
+          <TouchableOpacity
+            onPress={() => setShowEditTimeModal(false)}
+            className="h-4/5 w-full  absolute top-0 bg-transparent"
+          ></TouchableOpacity>
+          <View className="w-full absolute h-1/5 flex-row rounded-t-3xl bg-gray-400 bottom-0">
+            <View className="mx-auto flex-row  h-auto">
+              <TouchableOpacity
+                onPress={() => {
+                  if (seconds > 60) {
+                    setSeconds(seconds - 60);
+                  } else {
+                    setSeconds(0);
+                  }
+                }}
+                className="bg-white mx-auto my-auto mr-5 justify-center p-2 rounded-full w-10 h-10"
+              >
+                <Text className="text-center">-</Text>
+              </TouchableOpacity>
+              <Text className="text-center font-bold text-2xl my-auto">
+                {Math.floor(seconds / 60)}:
+                {seconds % 60 < 10 ? `0${seconds % 60}` : seconds % 60}
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  if (seconds < 2100) {
+                    setSeconds(seconds + 60);
+                  }
+                }}
+                className="bg-white mx-auto my-auto ml-5 justify-center p-2 rounded-full w-10 h-10"
+              >
+                <Text className="text-center">+</Text>
               </TouchableOpacity>
             </View>
           </View>
