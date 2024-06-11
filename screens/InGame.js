@@ -117,10 +117,40 @@ export default function App() {
   const [longPressedId, setLongPressedId] = useState(null); // State for long-pressed item ID
   const [actionTimeStamp, setActionTimeStamp] = useState(0);
   const [showEditTimerModal, setShowEditTimeModal] = useState(false);
+  const [showActionShotMenu, setshowActionShotMenu] = useState(false);
+  const [showActionMenu, setShowActionMenu] = useState(false);
+  const [actionMenuActionCategory, setActionMenuActionCategory] =
+    useState(null);
   const [substitution, setSubstitution] = useState([
     {
       startingPlayer: null,
       subPlayer: null,
+    },
+  ]);
+  const [actions, setActions] = useState([
+    {
+      category: "shot",
+      action: "point",
+    },
+    {
+      category: "shot",
+      action: "goal",
+    },
+    {
+      category: "shot",
+      action: "miss",
+    },
+    {
+      category: "shot",
+      action: "short",
+    },
+    {
+      category: "kickout",
+      action: "won",
+    },
+    {
+      category: "kickout",
+      action: "lost",
     },
   ]);
   const initialLineUp = [];
@@ -177,6 +207,9 @@ export default function App() {
     console.log(action);
     setActionSelected(action);
     setActionCategorySelected(actionCategory);
+    setActionMenuActionCategory(actionCategory);
+    setShowActionMenu(!showActionMenu);
+    setshowActionShotMenu(false);
   };
   const handleStartGame = () => {
     console.log("clicked");
@@ -292,6 +325,11 @@ export default function App() {
 
       // Increment the ID counter
       setIdCounter((prevIdCounter) => prevIdCounter + 1);
+
+      //assign a unknown player for if the action is nto a shot or T/0
+      if (actionCategorySelected === "kickout") {
+        setSelectedNumber(0);
+      }
     } else {
       // The user did not select an action
       setActionAlertError(true);
@@ -345,6 +383,12 @@ export default function App() {
         point: prevScoreBoard.point - 1,
       }));
     }
+    if (action === "goal") {
+      setScoreBaord((prevScoreBoard) => ({
+        ...prevScoreBoard,
+        goal: prevScoreBoard.goal - 1,
+      }));
+    }
   };
   const formatTime = (seconds) => {
     if (seconds < 120) {
@@ -364,7 +408,7 @@ export default function App() {
       <ScrollView>
         {showStartGameModal && <StartGameModal />}
 
-        <View className="flex mx-auto h-auto mt-2 rounded-b-3xl w-full relative">
+        <View className="flex mx-auto h-auto   rounded-b-3xl w-full relative">
           <View className="flex  h-auto space-x-1 p-2 flex-row justify-end items-end">
             <View className="w-[98%]     flex-row h-10 items-center justif-center mx-auto rounded-lg">
               <View className="w-[15%] space-x-1 bg-[#242424] px-3   py-2 rounded-md ">
@@ -544,7 +588,7 @@ export default function App() {
           className={`w-[96%] border-[.5px] border-gray-700
         ${
           tempPosition ? "shadow shadow-[#00E471]/20" : ""
-        }  mt-2 mx-auto z-10 rounded-md h-[65vh] bg-[#242424]  relative`}
+        }   mx-auto  rounded-md h-[63vh] bg-[#242424]  relative`}
           onStartShouldSetResponder={() => true}
           onResponderRelease={handlePitchPress}
         >
@@ -563,6 +607,10 @@ export default function App() {
           )}
 
           {/* Pitch markings */}
+          <View
+            className="h-[1px] w-[20%] left-[40%] bg-gray-700 absolute"
+            style={{ top: "57.5%" }}
+          ></View>
           <View
             className="h-[1px] w-full bg-gray-700 absolute"
             style={{ top: "10%" }}
@@ -697,7 +745,7 @@ export default function App() {
                     left: position.x - 10,
                     width: 15,
                     height: 15,
-                    backgroundColor: "#00E471",
+                    backgroundColor: "#FFF",
                     borderRadius: 10,
                   }}
                 />
@@ -726,7 +774,7 @@ export default function App() {
         {tempPosition && (
           <>
             {/* <Text className="text-white text-center">Select Player</Text> */}
-            <View className="h-auto  border-white/10 p-2 rounded-md w-4full mt-3 mx-auto">
+            <View className="h-auto  border-white/10 p-2 rounded-md w-4full mt-2 mx-auto">
               <FlatList
                 data={lineUp.filter((player) => player.onPitch)}
                 horizontal
@@ -795,7 +843,7 @@ export default function App() {
             </View>
 
             <View
-              className="flex flex-row  w-2/4 mx-auto mt-1   "
+              className="flex flex-row  w-2/4 mx-auto    "
               // style={styles.saveButtonContainer}
             >
               <TouchableOpacity
@@ -826,39 +874,68 @@ export default function App() {
         {/* Bottom Mini Nav Btn Groups */}
         {!tempPosition && shootingDirect && (
           <View
-            className={`${
+            className={` ${
               showActionAlertError
                 ? "bg-[#00E471]/10 border  rounded-md mx-2  shadow-[#00E471]/20"
                 : ""
             }`}
           >
-            <View className="h-10  w-full mt-1 flex-row items-center justify-center px-5">
+            <View className="h-10 w-full   mt-1 flex-row items-center justify-center px-5">
               {/* Left buttons */}
               <View className="flex-row space-x-2 mx-auto  justify-center w-[35%] ">
                 <TouchableOpacity className="bg-[#242424] w-[50%] p-2 rounded">
-                  <Text className="text-[#00E471] text-center">Save</Text>
+                  <Text className="text-white text-center">Save</Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity
-                  onPress={() => gameStatClickHandler("kickoutWon", "kickout")}
+                  onPress={() => {
+                    gameStatClickHandler("kickoutWon", "kickout");
+                  }}
                   className={`${
                     actionSelected == "kickoutWon"
                       ? "border border-b-[#fff]"
                       : ""
                   } bg-[#242424] w-[50%] p-2 rounded`}
                 >
-                  <Text className="text-[#00E471] text-center">Kickout</Text>
+                  <Text className="text-white text-center">Kickout</Text>
                 </TouchableOpacity>
               </View>
 
               {/* Home and Away buttons */}
               <View className="flex-row px-2 w-[30%] justify-center">
+                {/* {showActionShotMenu && (
+                  <>
+                    <View className="absolute z-50  justify-center translate-y-[-70px] w-screen items-center mx-auto  h-18 flex-row">
+                      {actions
+                        .filter((item) => item.category === "shot")
+                        .map((item, index) => (
+                          <TouchableOpacity
+                            key={index}
+                            onPress={() => {
+                              gameStatClickHandler(item.action, item.category);
+                            }}
+                            className={`w-16 bg-[#1b1b1b] h-16 rounded-full justify-center ${
+                              index === 1 || index === 2 ? "top-[-30] mx-1" : ""
+                            }`}
+                          >
+                            <Text className="text-center text-white">
+                              {item.action}
+                            </Text>
+                          </TouchableOpacity>
+                        ))}
+                    </View>
+                  </>
+                )} */}
                 <TouchableOpacity
                   className={`${
-                    actionSelected == "point" ? "border border-b-[#fff]" : ""
+                    actionCategorySelected == "shot"
+                      ? "border border-b-[#fff]"
+                      : ""
                   }  p-2 w-[100%] rounded bg-[#242424] `}
                   onPress={() => gameStatClickHandler("point", "shot")}
+                  // onPress={() => setshowActionShotMenu(!showActionShotMenu)}
                 >
-                  <Text className="text-white text-center">Point</Text>
+                  <Text className="text-white text-center">Shot</Text>
                 </TouchableOpacity>
               </View>
 
@@ -879,100 +956,25 @@ export default function App() {
                 </TouchableOpacity>
               </View>
             </View>
-            <View className="h-10 w-full  mx-auto items justify-center flex-row items-center  px-5">
-              {/* Left buttons */}
-              <View className="flex-row space-x-2 justify-center w-[35%]">
-                <TouchableOpacity className="bg-[#242424] w-[50%] p-2 rounded">
-                  <Text className="text-[#FD5F5F] text-center">Save</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => gameStatClickHandler("kickoutLoss", "kickout")}
-                  className={`${
-                    actionSelected == "kickoutLoss"
-                      ? "border border-b-[#fff]"
-                      : ""
-                  } bg-[#242424] w-[50%] p-2 rounded`}
-                >
-                  <Text className="text-[#FD5F5F] text-center">Kickout</Text>
-                </TouchableOpacity>
+            {showActionMenu && (
+              <View className=" z-50   justify-center translate-y-[0px] w-auto items-start mt-1  mx-auto left-0  h-auto flex-row">
+                {actions
+                  .filter((item) => item.category === actionMenuActionCategory)
+                  .map((item, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      onPress={() => {
+                        gameStatClickHandler(item.action, item.category);
+                      }}
+                      className={`w-auto rounded-md py-2 mx-1 mt-2 bg-[#242424] px-4  justify-center `}
+                    >
+                      <Text className="text-center text-white">
+                        {item.action}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
               </View>
-
-              {/* Home and Away buttons */}
-              <View className="flex-row px-2 w-[30%] justify-center ">
-                <TouchableOpacity
-                  className={`${
-                    actionSelected == "Wide" ? "border border-b-[#fff]" : ""
-                  }  p-2 w-[100%] rounded bg-[#242424] `}
-                  onPress={() => gameStatClickHandler("Wide", "shot")}
-                >
-                  <Text className="text-white text-center">Wide</Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Right buttons */}
-              <View className="flex-row space-x-2 justify-center w-[35%]">
-                <TouchableOpacity
-                  onPress={() => gameStatClickHandler("TurnOverLoss", "T/O")}
-                  className={`${
-                    actionSelected == "TurnOverLoss"
-                      ? "border border-b-[#fff]"
-                      : ""
-                  } bg-[#242424] w-[50%] p-2 rounded`}
-                >
-                  <Text className="text-[#FD5F5F] text-center">T/O</Text>
-                </TouchableOpacity>
-                <TouchableOpacity className="bg-[#242424] w-[50%] p-2 rounded">
-                  <Text className="text-[#FD5F5F] text-center">Tackle</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            <View className="h-10 w-full   mx-auto items justify-center flex-row items-center  px-5">
-              {/* Left buttons */}
-              <View className="flex-row space-x-2 justify-center w-[35%]">
-                <TouchableOpacity className="bg-[#242424] w-[50%] p-2 rounded">
-                  <Text className="text-white text-center">Save</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => gameStatClickHandler("kickoutLoss", "kickout")}
-                  className={`${
-                    actionSelected == "kickoutLoss"
-                      ? "border border-b-[#fff]"
-                      : ""
-                  } bg-[#242424] w-[50%] p-2 rounded`}
-                >
-                  <Text className="text-white text-center">Kickout</Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Home and Away buttons */}
-              <View className="flex-row px-2 w-[30%] justify-center ">
-                <TouchableOpacity
-                  className={`${
-                    actionSelected == "goal" ? "border border-b-[#fff]" : ""
-                  }  p-2 w-[100%] rounded bg-[#242424] `}
-                  onPress={() => gameStatClickHandler("goal", "shot")}
-                >
-                  <Text className="text-white text-center">Goal</Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Right buttons */}
-              <View className="flex-row space-x-2 justify-center w-[35%]">
-                <TouchableOpacity
-                  onPress={() => gameStatClickHandler("TurnOverLoss", "T/O")}
-                  className={`${
-                    actionSelected == "TurnOverLoss"
-                      ? "border border-b-[#fff]"
-                      : ""
-                  } bg-[#242424] w-[50%] p-2 rounded`}
-                >
-                  <Text className="text-white text-center">T/O</Text>
-                </TouchableOpacity>
-                <TouchableOpacity className="bg-[#242424] w-[50%] p-2 rounded">
-                  <Text className="text-white text-center">Tackle</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+            )}
           </View>
         )}
 
