@@ -85,6 +85,46 @@ export default function App() {
         backgroundColor: "#242424",
       },
     },
+    point: {
+      style: {
+        width: 8,
+        height: 8,
+
+        borderRadius: 10,
+
+        backgroundColor: "green",
+      },
+    },
+    short: {
+      style: {
+        width: 8,
+        height: 8,
+
+        borderRadius: 10,
+
+        backgroundColor: "yellow",
+      },
+    },
+    miss: {
+      style: {
+        width: 8,
+        height: 8,
+
+        borderRadius: 10,
+
+        backgroundColor: "red",
+      },
+    },
+    goal: {
+      style: {
+        width: 8,
+        height: 8,
+
+        borderRadius: 10,
+
+        backgroundColor: "blue",
+      },
+    },
     kickoutWon: {
       style: {
         width: 8,
@@ -146,11 +186,11 @@ export default function App() {
     },
     {
       category: "kickout",
-      action: "won",
+      action: "kickoutLoss",
     },
     {
       category: "kickout",
-      action: "lost",
+      action: "kickoutWon",
     },
   ]);
   const initialLineUp = [];
@@ -207,7 +247,7 @@ export default function App() {
     console.log(action);
     setActionSelected(action);
     setActionCategorySelected(actionCategory);
-    setActionMenuActionCategory(actionCategory);
+
     setShowActionMenu(!showActionMenu);
     setshowActionShotMenu(false);
   };
@@ -350,6 +390,12 @@ export default function App() {
         ...prev,
         { ...tempPosition, player: selectedNumber, time: actionTimeStamp },
       ]);
+      // console.log("=================CHECKING SOMETHING===============");
+      // positions.forEach((position) => {
+      //   console.log(position);
+      //   console.log(""); // Add a blank line
+      // });
+      // console.log("====================================");
       // clear the selected player number
       setSelectedNumber(null);
       setTempPosition(null);
@@ -643,15 +689,15 @@ export default function App() {
             className=" border-2 absolute z-[-10] border-gray-700 left-[37.5%] top-[15.4%] rotate-180 h-[10%] w-[25%] mx-auto
             rounded-tl-full rounded-tr-full"
           ></View> */}
-          {/* 
-   
-         
-        
-    
-         
-        
+          {/*
 
-    
+
+
+
+
+
+
+
       */}
           {/* semi circles */}
           {/*  */}
@@ -697,6 +743,24 @@ export default function App() {
                       }}
                     >
                       <Text style={styles.xMarkerLoss}>X</Text>
+                    </View>
+                  );
+                }
+                if (position.action === "TurnOverWon") {
+                  return (
+                    <View
+                      key={index}
+                      style={{
+                        position: "absolute",
+                        top: position.y - 10,
+                        left: position.x - 10,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: 20,
+                        height: 20,
+                      }}
+                    >
+                      <Text style={styles.xMarkerWon}>X</Text>
                     </View>
                   );
                 }
@@ -849,7 +913,7 @@ export default function App() {
               <TouchableOpacity
                 onPress={handleCancelPosition}
                 className={`flex
-      
+
                flex-1 mx-auto text-center     rounded-md p-3 border bg-[#FD5F5F]`}
                 // style={styles.saveButton}
               >
@@ -889,7 +953,8 @@ export default function App() {
 
                 <TouchableOpacity
                   onPress={() => {
-                    gameStatClickHandler("kickoutWon", "kickout");
+                    setShowActionMenu(!showActionMenu);
+                    setActionMenuActionCategory("kickout");
                   }}
                   className={`${
                     actionSelected == "kickoutWon"
@@ -903,36 +968,16 @@ export default function App() {
 
               {/* Home and Away buttons */}
               <View className="flex-row px-2 w-[30%] justify-center">
-                {/* {showActionShotMenu && (
-                  <>
-                    <View className="absolute z-50  justify-center translate-y-[-70px] w-screen items-center mx-auto  h-18 flex-row">
-                      {actions
-                        .filter((item) => item.category === "shot")
-                        .map((item, index) => (
-                          <TouchableOpacity
-                            key={index}
-                            onPress={() => {
-                              gameStatClickHandler(item.action, item.category);
-                            }}
-                            className={`w-16 bg-[#1b1b1b] h-16 rounded-full justify-center ${
-                              index === 1 || index === 2 ? "top-[-30] mx-1" : ""
-                            }`}
-                          >
-                            <Text className="text-center text-white">
-                              {item.action}
-                            </Text>
-                          </TouchableOpacity>
-                        ))}
-                    </View>
-                  </>
-                )} */}
                 <TouchableOpacity
                   className={`${
                     actionCategorySelected == "shot"
                       ? "border border-b-[#fff]"
                       : ""
                   }  p-2 w-[100%] rounded bg-[#242424] `}
-                  onPress={() => gameStatClickHandler("point", "shot")}
+                  onPress={() => {
+                    setShowActionMenu(!showActionMenu);
+                    setActionMenuActionCategory("shot");
+                  }}
                   // onPress={() => setshowActionShotMenu(!showActionShotMenu)}
                 >
                   <Text className="text-white text-center">Shot</Text>
@@ -964,6 +1009,9 @@ export default function App() {
                     <TouchableOpacity
                       key={index}
                       onPress={() => {
+                        console.log("fuckkkoffff");
+                        console.log(item.action);
+                        console.log(item.category);
                         gameStatClickHandler(item.action, item.category);
                       }}
                       className={`w-auto rounded-md py-2 mx-1 mt-2 bg-[#242424] px-4  justify-center `}
@@ -1287,7 +1335,7 @@ export default function App() {
                 }}
                 // if there is a starting/sub player selected make the button clickable
                 className={`rounded-md mx-auto my-auto p-2 w-1/4
-              
+
                 ${
                   substitution.startingPlayer && substitution.subPlayer
                     ? "bg-green-500"
