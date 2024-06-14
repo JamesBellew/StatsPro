@@ -757,11 +757,11 @@ export default function App() {
             <>
               <TouchableOpacity
                 onPress={() => shootingDirectionClickHandler("up")}
-                className="bg-[#00E471]/50 w-2/4 z-50 left-1/4 mx-auto text-center items-center jus h-12 absolute"
+                className="bg-[#00E471]/50 w-full z-50 mx-auto text-center items-center jus h-[10%] absolute"
               ></TouchableOpacity>
               <TouchableOpacity
                 onPress={() => shootingDirectionClickHandler("down")}
-                className="bg-[#00E471]/50 w-2/4 z-50 left-1/4 bottom-0  h-12 absolute"
+                className="bg-[#00E471]/50 w-full z-50  bottom-0  h-[10%] absolute"
               ></TouchableOpacity>
             </>
           )}
