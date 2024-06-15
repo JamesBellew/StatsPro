@@ -19,6 +19,7 @@ import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import {
   faPeopleGroup,
   faEye,
+  faStopwatch,
   faChevronLeft,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
@@ -163,7 +164,10 @@ export default function App() {
   const [longPressedId, setLongPressedId] = useState(null); // State for long-pressed item ID
   const [actionTimeStamp, setActionTimeStamp] = useState(0);
   const [showEditTimerModal, setShowEditTimeModal] = useState(false);
+  const [currentHalf, setCurrentHalf] = useState(1);
   const [showActionShotMenu, setshowActionShotMenu] = useState(false);
+  const [showTimerAlert, setShowTimerAlert] = useState(true);
+  const [showHalftimeModal, setShowHalftimeModal] = useState(false);
   const [showActionMenu, setShowActionMenu] = useState(false);
   const [showActionsOnPitchFilter, setShowActionsOnPitchFilter] =
     useState("all");
@@ -311,17 +315,19 @@ export default function App() {
   };
   useEffect(() => {
     let interval = null;
-    if (isActive && seconds < 2100) {
+    // 2100 is 35 mins
+    if (isActive && seconds < 60) {
       interval = setInterval(() => {
         setSeconds((seconds) => seconds + 1);
       }, 1000);
-    } else if (seconds >= 2100) {
+    } else if (seconds >= 60) {
       setTimerLimitReached(true);
       setIsActive(false);
       clearInterval(interval);
     }
     return () => clearInterval(interval);
   }, [isActive, seconds]);
+
   const handleGameStart = () => {
     //start time
     handleStart();
@@ -404,6 +410,7 @@ export default function App() {
         actionCategory: actionCategorySelected,
         half: "first",
         score: score,
+        half: currentHalf,
         player: 0,
         time: actionTimeStamp,
       });
@@ -414,8 +421,10 @@ export default function App() {
       setIdCounter((prevIdCounter) => prevIdCounter + 1);
 
       //assign a unknown player for if the action is nto a shot or T/0
-      if (actionCategorySelected === "kickout") {
+      if (actionCategorySelected != "shot") {
         setSelectedNumber(0);
+      } else {
+        setSelectedNumber(null);
       }
     } else {
       // The user did not select an action
@@ -509,7 +518,28 @@ export default function App() {
     <SafeAreaView className="flex-1 bg-[#181818]  overflow-visible">
       <ScrollView>
         {showStartGameModal && <StartGameModal />}
-
+        {timerLimitReached && showTimerAlert && (
+          <>
+            <View className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+              <Text className="font-bold">35 minutes reached!</Text>
+              <Text className="block sm:inline">
+                Click on the highligted whistle Icon to start second half
+              </Text>
+              <TouchableOpacity
+                onPress={() => setShowTimerAlert(false)}
+                className="absolute top-0 bottom-0 right-0 px-4 py-3"
+              >
+                <Svg
+                  className="fill-current h-6 w-6 text-red-500"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                >
+                  <Path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+                </Svg>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
         <View className="flex mx-auto h-auto   rounded-b-3xl w-full relative">
           <View className="flex  h-auto space-x-1 p-2 flex-row justify-end items-end">
             <View className="w-[98%]     flex-row h-10 items-center justif-center mx-auto rounded-lg">
@@ -593,9 +623,24 @@ export default function App() {
           <View className="h-10 w-[95%] mx-auto z-[-1] flex-row items-center justify-center ">
             {/* Left buttons */}
             <View className="flex-row s w-[30%] space-x-1  justify-center">
-              <TouchableOpacity className="bg-[#242424] w-[50%]  p-2 rounded-md">
-                <Text className="text-white text-center">
-                  {/* <Icon name="eye" width={14} color="#fff" /> */}
+              <TouchableOpacity
+                onPress={() => setShowHalftimeModal(!showHalftimeModal)}
+                className={`bg-[#242424] w-[50%]  p-2 rounded-md
+                
+                ${
+                  timerLimitReached
+                    ? " shadow-inner shadow-sm shadow-green-500"
+                    : ""
+                }
+                
+                `}
+              >
+                <Text className="text-white my-auto mx-auto text-center">
+                  <FontAwesomeIcon
+                    icon={faStopwatch}
+                    size={23}
+                    color="#FFFFFF"
+                  />
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -1513,6 +1558,19 @@ export default function App() {
                 </Text>
               </TouchableOpacity>
             </View>
+          </View>
+        </>
+      )}
+      {showHalftimeModal && (
+        <>
+          <TouchableOpacity
+            onPress={() => setShowHalftimeModal(false)}
+            className="h-4/5 flex-1 w-full  absolute bottom-1/5 "
+          ></TouchableOpacity>
+          <View className="w-full absolute h-1/5 flex-row rounded-t-3xl bg-gray-400 bottom-0">
+            <TouchableOpacity className="mx-auto my-auto px-3 bg-green-600 py-2 rounded-md">
+              <Text>Start 2nd Half</Text>
+            </TouchableOpacity>
           </View>
         </>
       )}
