@@ -564,8 +564,12 @@ export default function App() {
                 </Text>
               </TouchableOpacity>
               <View className="w-[40%] h-full justify-center text-center">
-                <Text className="text-center font-bold text-xl text-white">
-                  {scoreBoard.goal}:{scoreBoard.point}
+                <Text className="text-center font-bold text-xl  text-green-500">
+                  {scoreBoard.goal}
+                  <Text className="text-white text-center  my-auto justify-center items-center font-bold text-xl ">
+                    :
+                  </Text>
+                  {scoreBoard.point}
                 </Text>
               </View>
               <View className="w-[15%] text-center  h-full ">
@@ -588,11 +592,7 @@ export default function App() {
                 >
                   {!showProfileMiniMenu ? (
                     <View className="w-[50%] flex justify-center items-center">
-                      <FontAwesomeIcon
-                        icon={faUser}
-                        size={20}
-                        color="#00E471"
-                      />
+                      <FontAwesomeIcon icon={faUser} size={20} color="#fff" />
                     </View>
                   ) : (
                     <Text>x</Text>
@@ -627,19 +627,15 @@ export default function App() {
                 onPress={() => setShowHalftimeModal(!showHalftimeModal)}
                 className={`bg-[#242424] w-[50%]  p-2 rounded-md
                 
-                ${
-                  timerLimitReached
-                    ? " shadow-inner shadow-sm shadow-green-500"
-                    : ""
-                }
+              
                 
                 `}
               >
-                <Text className="text-white my-auto mx-auto text-center">
+                <Text className={`text-white my-auto mx-auto text-center  `}>
                   <FontAwesomeIcon
                     icon={faStopwatch}
                     size={23}
-                    color="#FFFFFF"
+                    color={`${timerLimitReached ? "#00E471" : "#FFF"}`}
                   />
                 </Text>
               </TouchableOpacity>
@@ -1567,9 +1563,27 @@ export default function App() {
             onPress={() => setShowHalftimeModal(false)}
             className="h-4/5 flex-1 w-full  absolute bottom-1/5 "
           ></TouchableOpacity>
-          <View className="w-full absolute h-1/5 flex-row rounded-t-3xl bg-gray-400 bottom-0">
-            <TouchableOpacity className="mx-auto my-auto px-3 bg-green-600 py-2 rounded-md">
-              <Text>Start 2nd Half</Text>
+          <View className="w-full absolute h-1/5  rounded-t-3xl bg-gray-400 bottom-0">
+            <Text className="text-center w-[30%]  left-[35%]  top-5 absolute mx-auto my-auto items-center justify-center">
+              {Math.floor(seconds / 60)} Mins{" "}
+              {currentHalf === 1 ? "1st" : "2nd"} half
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                // setCurrentHalf(2);
+                {
+                  currentHalf === 1 ? setCurrentHalf(2) : setCurrentHalf(1);
+                }
+                setSeconds(0);
+                setShowHalftimeModal(false);
+                setIsActive(true);
+                setTimerLimitReached(false);
+              }}
+              className="mx-auto my-auto   px-3 bg-white py-2 rounded-md"
+            >
+              <Text className="text-gray-700 font-semibold">
+                {currentHalf === 1 ? "Start 2nd Half" : "Back to 1st Half"}
+              </Text>
             </TouchableOpacity>
           </View>
         </>
@@ -1588,6 +1602,7 @@ export default function App() {
                     setSeconds(seconds - 60);
                   } else {
                     setSeconds(0);
+                    setIsActive(true);
                   }
                 }}
                 className="bg-white mx-auto my-auto mr-5 justify-center p-2 rounded-full w-10 h-10"
