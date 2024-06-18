@@ -22,6 +22,7 @@ import {
   faStopwatch,
   faChevronLeft,
   faUser,
+  faChartSimple,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 export default function App() {
@@ -411,6 +412,7 @@ export default function App() {
         half: "first",
         score: score,
         half: currentHalf,
+        team: selected,
         player: 0,
         time: actionTimeStamp,
       });
@@ -449,6 +451,9 @@ export default function App() {
         ...prev,
         { ...tempPosition, player: selectedNumber, time: actionTimeStamp },
       ]);
+      console.log("====================================");
+      console.log(positions);
+      console.log("====================================");
       // console.log("=================CHECKING SOMETHING===============");
       // positions.forEach((position) => {
       //   console.log(position);
@@ -504,16 +509,21 @@ export default function App() {
   };
 
   const displayedPositions = positions.filter((position) => {
-    if (showActionsOnPitchFilter === "all") return true;
-    if (showActionsOnPitchFilter === "none") return false;
-    return position.actionCategory === showActionsOnPitchFilter;
+    const matchesActionCategory =
+      showActionsOnPitchFilter === "all" ||
+      (showActionsOnPitchFilter !== "none" &&
+        position.actionCategory === showActionsOnPitchFilter);
+    const matchesTeam = selected === "all" || position.team === selected;
+
+    return matchesActionCategory && matchesTeam;
   });
-  const filteredPositions =
-    ingameStatModalFilter === "All"
-      ? positions
-      : positions.filter(
-          (position) => position.actionCategory === ingameStatModalFilter
-        );
+  const filteredPositions = positions.filter((position) => {
+    const matchesCategory =
+      ingameStatModalFilter === "All" ||
+      position.actionCategory === ingameStatModalFilter;
+    const matchesTeam = selected === "All" || position.team === selected;
+    return matchesCategory && matchesTeam;
+  });
   return (
     <SafeAreaView className="flex-1 bg-[#181818]  overflow-visible">
       <ScrollView>
@@ -660,15 +670,35 @@ export default function App() {
             </View>
 
             {/* Home and Away buttons */}
-            <View className="flex-row w-[40%]  justify-center   ">
+            <View className="flex-row  w-[35%] mx-2 h-full justify-center   ">
               <TouchableOpacity
-                onPress={() => setShowIngameStatModal(!showIngameStatModal)}
-                className={`  ${
-                  showIngameStatModal ? "border-b-2 border-b-green-500" : ""
-                } p-2 w-[90%] h-10 mx-auto bg-[#242424] rounded `}
+                className={`p-2 w-[50%] bg-[#242424] mx-auto my-auto h-full rounded-md ${
+                  selected === "Home" ? "border bg-gray-200" : ""
+                }`}
+                onPress={() => setSelected("Home")}
               >
-                <Text className={`text-white text-cente my-auto mx-auto `}>
-                  Game Stats
+                <Text
+                  className={`text-white text-center my-auto ${
+                    selected === "Home" ? "text-[#242424]" : ""
+                  }`}
+                >
+                  Home
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className={`p-2 bg-[#242424] w-[50%] rounded-md  ${
+                  selected === "Away"
+                    ? "border-b border-b-[#00E471] bg-gray-200"
+                    : "bg-[#242424]"
+                }`}
+                onPress={() => setSelected("Away")}
+              >
+                <Text
+                  className={`text-white my-auto text-center ${
+                    selected === "Away" ? "text-[#242424]" : ""
+                  }`}
+                >
+                  Away
                 </Text>
               </TouchableOpacity>
               {/* <TouchableOpacity
@@ -715,10 +745,19 @@ export default function App() {
                   <FontAwesomeIcon icon={faEye} size={25} color="#FFFFFF" />
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity className="bg-[#242424] w-[50%] p-2 rounded">
-                <Text className="text-white text-center">
-                  {/* <Icon name="pen" width={14} color="#fff" /> */}
-                </Text>
+              <TouchableOpacity
+                onPress={() => setShowIngameStatModal(!showIngameStatModal)}
+                className={`  ${
+                  showIngameStatModal ? "border-b-2 border-b-green-500" : ""
+                } p-2 w-[50%] h-10 mx-auto bg-[#242424] rounded `}
+              >
+                <View className="w-full flex justify-center items-center">
+                  <FontAwesomeIcon
+                    icon={faChartSimple}
+                    size={25}
+                    color="#FFFFFF"
+                  />
+                </View>
               </TouchableOpacity>
             </View>
           </View>
@@ -1594,8 +1633,21 @@ export default function App() {
             onPress={() => setShowEditTimeModal(false)}
             className="h-4/5 w-full  absolute top-0 bg-transparent"
           ></TouchableOpacity>
+
           <View className="w-full absolute h-1/5 flex-row rounded-t-3xl bg-gray-400 bottom-0">
-            <View className="mx-auto flex-row  h-auto">
+            <View className="mx-auto flex-row   h-auto">
+              <View className=" absolute  w-12 right-[35%] bg-red-600 mt-2 rounded-full h-12">
+                <Text className="mx-auto text-center justify-center items-center my-auto">
+                  <TouchableOpacity
+                    onPress={handlePlayPauseClick}
+                    title="Start Timer"
+                    disabled={timerLimitReached}
+                  >
+                    <Icon name={timerIcon} width={16} color="#fff" />
+                    {/* <Text className="text-white"></Text> */}
+                  </TouchableOpacity>
+                </Text>
+              </View>
               <TouchableOpacity
                 onPress={() => {
                   if (seconds > 60) {
