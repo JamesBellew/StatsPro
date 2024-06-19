@@ -1,4 +1,5 @@
 import React, { useState, useEffect, act } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   SafeAreaView,
   View,
@@ -21,6 +22,7 @@ import {
   faEye,
   faStopwatch,
   faChevronLeft,
+  faFloppyDisk,
   faUser,
   faChartSimple,
 } from "@fortawesome/free-solid-svg-icons";
@@ -169,6 +171,7 @@ export default function App() {
   const [showActionShotMenu, setshowActionShotMenu] = useState(false);
   const [showTimerAlert, setShowTimerAlert] = useState(true);
   const [showHalftimeModal, setShowHalftimeModal] = useState(false);
+  const [showSaveGameDataModal, setShowSaveGameDataModal] = useState(false);
   const [showActionMenu, setShowActionMenu] = useState(false);
   const [showActionsOnPitchFilter, setShowActionsOnPitchFilter] =
     useState("all");
@@ -524,184 +527,233 @@ export default function App() {
     const matchesTeam = selected === "All" || position.team === selected;
     return matchesCategory && matchesTeam;
   });
+  const saveGameData = async (gameData) => {
+    try {
+      const id = new Date().getTime().toString();
+      const timestamp = new Date().toISOString();
+      const dataToSave = { id, timestamp, positions: gameData };
+      const jsonValue = JSON.stringify(dataToSave);
+      await AsyncStorage.setItem("@game_data", jsonValue);
+      console.log("Data saved");
+    } catch (e) {
+      console.error("Error saving data", e);
+    }
+  };
   return (
-    <SafeAreaView className="flex-1 bg-[#181818]  overflow-visible">
-      <ScrollView>
-        {showStartGameModal && <StartGameModal />}
-        {timerLimitReached && showTimerAlert && (
-          <>
-            <View className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-              <Text className="font-bold">35 minutes reached!</Text>
-              <Text className="block sm:inline">
-                Click on the highligted whistle Icon to start second half
+    <>
+      {showSaveGameDataModal && (
+        <TouchableOpacity
+          className="w-full h-full bg-[#242424]/50 z-50 absolute justify-center items-center"
+          onPress={() => setShowSaveGameDataModal(false)}
+          activeOpacity={1} // Ensures the click outside the modal triggers the onPress
+        >
+          <View
+            className="w-4/5 h-2/5  rounded-md bg-[#161616] justify-center items-center"
+            onStartShouldSetResponder={() => true} // Prevents the click from propagating to the parent TouchableOpacity
+          >
+            <Text className="text-center text-white text-md font-semibold">
+              Ready to Save Game
+            </Text>
+            <Text className="text-center text-white text-md mt-5">
+              You can re-open the saved game at any time and continue working on
+              it
+            </Text>
+            <View className="bg-[#242424]/20 mt-5 w-3/4 p-2 rounded-md">
+              <Text className="text-center text-white text-md mt-2">
+                Kilkerley vs Roach
               </Text>
-              <TouchableOpacity
-                onPress={() => setShowTimerAlert(false)}
-                className="absolute top-0 bottom-0 right-0 px-4 py-3"
-              >
-                <Svg
-                  className="fill-current h-6 w-6 text-red-500"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <Path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
-                </Svg>
-              </TouchableOpacity>
+              <Text className="text-center text-md mt-2 text-white">
+                15/12/2024
+              </Text>
+              <Text className="text-center text-md my-2 text-white">
+                15 Actions
+              </Text>
             </View>
-          </>
-        )}
-        <View className="flex mx-auto h-auto   rounded-b-3xl w-full relative">
-          <View className="flex  h-auto space-x-1 p-2 flex-row justify-end items-end">
-            <View className="w-[98%]     flex-row h-10 items-center justif-center mx-auto rounded-lg">
-              <View className="w-[15%] space-x-1 bg-[#242424] px-3   py-2 rounded-md ">
-                <View className="w-full flex justify-center items-center">
-                  <FontAwesomeIcon
-                    icon={faChevronLeft}
-                    size={25}
-                    color="#00E471"
-                  />
-                </View>
-              </View>
-              <TouchableOpacity
-                onPress={() => setShowEditTimeModal(true)}
-                className={`${
-                  showEditTimerModal ? "border-b-2 border-b-green-500" : ""
-                } w-[15%]  rounded-md  h-full justify-center text-center `}
-              >
-                <Text className="text-center font-bold text-lg text-white">
-                  {Math.floor(seconds / 60)}:
-                  {seconds % 60 < 10 ? `0${seconds % 60}` : seconds % 60}
+            <TouchableOpacity
+              onPress={() => saveGameData(positions)}
+              className="text-center mt-5 text-md font-semibold bg-[#242424] px-5 py-2 rounded-md text-white border-green-500/20 border"
+            >
+              <Text className="text-green-500 ">Save Game</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      )}
+      <SafeAreaView className="flex-1 bg-[#181818]  overflow-visible">
+        <ScrollView>
+          {showStartGameModal && <StartGameModal />}
+          {timerLimitReached && showTimerAlert && (
+            <>
+              <View className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                <Text className="font-bold">35 minutes reached!</Text>
+                <Text className="block sm:inline">
+                  Click on the highligted whistle Icon to start second half
                 </Text>
-              </TouchableOpacity>
-              <View className="w-[40%] h-full justify-center text-center">
-                <Text className="text-center font-bold text-xl  text-green-500">
-                  {scoreBoard.goal}
-                  <Text className="text-white text-center  my-auto justify-center items-center font-bold text-xl ">
-                    :
-                  </Text>
-                  {scoreBoard.point}
-                </Text>
-              </View>
-              <View className="w-[15%] text-center  h-full ">
-                <Text className="text-center text-black mx-auto my-auto">
-                  {/* <Icon name="pause" width={14} color="#FD5F5F" /> */}
-                  <TouchableOpacity
-                    onPress={handlePlayPauseClick}
-                    title="Start Timer"
-                    disabled={timerLimitReached}
-                  >
-                    <Icon name={timerIcon} width={16} color="#fff" />
-                    {/* <Text className="text-white"></Text> */}
-                  </TouchableOpacity>
-                </Text>
-              </View>
-              <View className="  w-[15%]  font-extrabold text-2xl text-center">
                 <TouchableOpacity
-                  onPress={() => setShowProfileMiniMenu(!showProfileMiniMenu)}
-                  className=" h-10 cursor-pointer w-full rounded-md justify-center mx-auto items-center"
+                  onPress={() => setShowTimerAlert(false)}
+                  className="absolute top-0 bottom-0 right-0 px-4 py-3"
                 >
-                  {!showProfileMiniMenu ? (
-                    <View className="w-[50%] flex justify-center items-center">
-                      <FontAwesomeIcon icon={faUser} size={20} color="#fff" />
-                    </View>
-                  ) : (
-                    <Text>x</Text>
-                  )}
+                  <Svg
+                    className="fill-current h-6 w-6 text-red-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                  >
+                    <Path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+                  </Svg>
                 </TouchableOpacity>
               </View>
-            </View>
-          </View>
-          {showProfileMiniMenu && (
-            <View className="flex z-auto bg-red-600 justify-end items-end absolute right-2  top-16">
-              <TouchableOpacity
-                onPress={handleLogout}
-                className="mr-2 mb-2 h-auto bg-white/80 top-0 z-50 w-auto p-2 rounded-md mr-3"
-              >
-                <Text className="">Edit Profile</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleLogout}
-                className="mr-2 h-auto bg-white/20 top-0 z-50 w-auto p-2 rounded-md mr-3"
-              >
-                <Text className="text-[#00E471]">Logout</Text>
-              </TouchableOpacity>
-            </View>
+            </>
           )}
-        </View>
-        {/* Top Mini Nav Btn groups */}
-        {!tempPosition && shootingDirect ? (
-          <View className="h-10 w-[95%] mx-auto z-[-1] flex-row items-center justify-center ">
-            {/* Left buttons */}
-            <View className="flex-row s w-[30%] space-x-1  justify-center">
-              <TouchableOpacity
-                onPress={() => setShowHalftimeModal(!showHalftimeModal)}
-                className={`bg-[#242424] w-[50%]  p-2 rounded-md
+          <View className="flex mx-auto h-auto   rounded-b-3xl w-full relative">
+            <View className="flex  h-auto space-x-1 p-2 flex-row justify-end items-end">
+              <View className="w-[98%]     flex-row h-10 items-center justif-center mx-auto rounded-lg">
+                <View className="w-[15%] space-x-1 bg-[#242424] px-3   py-2 rounded-md ">
+                  <View className="w-full flex justify-center items-center">
+                    <FontAwesomeIcon
+                      icon={faChevronLeft}
+                      size={25}
+                      color="#00E471"
+                    />
+                  </View>
+                </View>
+                <TouchableOpacity
+                  onPress={() => setShowEditTimeModal(true)}
+                  className={`${
+                    showEditTimerModal ? "border-b-2 border-b-green-500" : ""
+                  } w-[15%]  rounded-md  h-full justify-center text-center `}
+                >
+                  <Text className="text-center font-bold text-lg text-white">
+                    {Math.floor(seconds / 60)}:
+                    {seconds % 60 < 10 ? `0${seconds % 60}` : seconds % 60}
+                  </Text>
+                </TouchableOpacity>
+                <View className="w-[40%] h-full justify-center text-center">
+                  <Text className="text-center font-bold text-xl  text-green-500">
+                    {scoreBoard.goal}
+                    <Text className="text-white text-center  my-auto justify-center items-center font-bold text-xl ">
+                      :
+                    </Text>
+                    {scoreBoard.point}
+                  </Text>
+                </View>
+                <View className="w-[15%] space-x-1 bg-[#242424] px-3   py-2 rounded-md ">
+                  <TouchableOpacity
+                    onPress={() => setShowSaveGameDataModal(true)}
+                    className="w-full flex justify-center items-center"
+                  >
+                    <FontAwesomeIcon
+                      icon={faFloppyDisk}
+                      size={20}
+                      color="#fff"
+                    />
+                  </TouchableOpacity>
+                </View>
+                <View className="  w-[15%]  font-extrabold text-2xl text-center">
+                  <TouchableOpacity
+                    onPress={() => setShowProfileMiniMenu(!showProfileMiniMenu)}
+                    className=" h-10 cursor-pointer w-full rounded-md justify-center mx-auto items-center"
+                  >
+                    {!showProfileMiniMenu ? (
+                      <View className="w-[50%] flex justify-center items-center">
+                        <FontAwesomeIcon icon={faUser} size={20} color="#fff" />
+                      </View>
+                    ) : (
+                      <Text>x</Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+            {showProfileMiniMenu && (
+              <View className="flex z-auto bg-red-600 justify-end items-end absolute right-2  top-16">
+                <TouchableOpacity
+                  onPress={handleLogout}
+                  className="mr-2 mb-2 h-auto bg-white/80 top-0 z-50 w-auto p-2 rounded-md mr-3"
+                >
+                  <Text className="">Edit Profile</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleLogout}
+                  className="mr-2 h-auto bg-white/20 top-0 z-50 w-auto p-2 rounded-md mr-3"
+                >
+                  <Text className="text-[#00E471]">Logout</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+          {/* Top Mini Nav Btn groups */}
+          {!tempPosition && shootingDirect ? (
+            <View className="h-10 w-[95%] mx-auto z-[-1] flex-row items-center justify-center ">
+              {/* Left buttons */}
+              <View className="flex-row s w-[30%] space-x-1  justify-center">
+                <TouchableOpacity
+                  onPress={() => setShowHalftimeModal(!showHalftimeModal)}
+                  className={`bg-[#242424] w-[50%]  p-2 rounded-md
                 
               
                 
                 `}
-              >
-                <Text className={`text-white my-auto mx-auto text-center  `}>
-                  <FontAwesomeIcon
-                    icon={faStopwatch}
-                    size={23}
-                    color={`${timerLimitReached ? "#00E471" : "#FFF"}`}
-                  />
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setShowEditLineupModal(!showEditLineupModal);
-                  //get rid of any other modals here
-                  setShowIngameStatModal(false);
-                }}
-                className={` ${
-                  showEditLineupModal ? "border-b-2 border-b-green-500" : ""
-                } bg-[#242424] w-[50%] p-2 rounded flex justify-center items-center`}
-              >
-                <View className="w-full flex justify-center items-center">
-                  <FontAwesomeIcon
-                    icon={faPeopleGroup}
-                    size={25}
-                    color="#FFFFFF"
-                  />
-                </View>
-              </TouchableOpacity>
-            </View>
+                >
+                  <Text className={`text-white my-auto mx-auto text-center  `}>
+                    <FontAwesomeIcon
+                      icon={faStopwatch}
+                      size={23}
+                      color={`${timerLimitReached ? "#00E471" : "#FFF"}`}
+                    />
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    setShowEditLineupModal(!showEditLineupModal);
+                    //get rid of any other modals here
+                    setShowIngameStatModal(false);
+                  }}
+                  className={` ${
+                    showEditLineupModal ? "border-b-2 border-b-green-500" : ""
+                  } bg-[#242424] w-[50%] p-2 rounded flex justify-center items-center`}
+                >
+                  <View className="w-full flex justify-center items-center">
+                    <FontAwesomeIcon
+                      icon={faPeopleGroup}
+                      size={25}
+                      color="#FFFFFF"
+                    />
+                  </View>
+                </TouchableOpacity>
+              </View>
 
-            {/* Home and Away buttons */}
-            <View className="flex-row  w-[35%] mx-2 h-full justify-center   ">
-              <TouchableOpacity
-                className={`p-2 w-[50%] bg-[#242424] mx-auto my-auto h-full rounded-md ${
-                  selected === "Home" ? "border bg-gray-200" : ""
-                }`}
-                onPress={() => setSelected("Home")}
-              >
-                <Text
-                  className={`text-white text-center my-auto ${
-                    selected === "Home" ? "text-[#242424]" : ""
+              {/* Home and Away buttons */}
+              <View className="flex-row  w-[35%] mx-2 h-full justify-center   ">
+                <TouchableOpacity
+                  className={`p-2 w-[50%] bg-[#242424] mx-auto my-auto h-full rounded-md ${
+                    selected === "Home" ? "border bg-gray-200" : ""
                   }`}
+                  onPress={() => setSelected("Home")}
                 >
-                  Home
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                className={`p-2 bg-[#242424] w-[50%] rounded-md  ${
-                  selected === "Away"
-                    ? "border-b border-b-[#00E471] bg-gray-200"
-                    : "bg-[#242424]"
-                }`}
-                onPress={() => setSelected("Away")}
-              >
-                <Text
-                  className={`text-white my-auto text-center ${
-                    selected === "Away" ? "text-[#242424]" : ""
+                  <Text
+                    className={`text-white text-center my-auto ${
+                      selected === "Home" ? "text-[#242424]" : ""
+                    }`}
+                  >
+                    Home
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className={`p-2 bg-[#242424] w-[50%] rounded-md  ${
+                    selected === "Away"
+                      ? "border-b border-b-[#00E471] bg-gray-200"
+                      : "bg-[#242424]"
                   }`}
+                  onPress={() => setSelected("Away")}
                 >
-                  Away
-                </Text>
-              </TouchableOpacity>
-              {/* <TouchableOpacity
+                  <Text
+                    className={`text-white my-auto text-center ${
+                      selected === "Away" ? "text-[#242424]" : ""
+                    }`}
+                  >
+                    Away
+                  </Text>
+                </TouchableOpacity>
+                {/* <TouchableOpacity
                 className={`p-2 w-[50%] mx-auto rounded ${
                   selected === "Home"
                     ? "border border-[#00E471]"
@@ -731,549 +783,551 @@ export default function App() {
                   Away
                 </Text>
               </TouchableOpacity> */}
-            </View>
+              </View>
 
-            {/* Right buttons */}
-            <View className="flex-row space-x-1  z-[-1]  w-[30%] justify-center  ">
-              <TouchableOpacity
-                onPress={() => setShowActionsOnPitch(!showActionsOnPitch)}
-                className={`${
-                  showActionsOnPitch ? "border-b-2 border-b-[#00E471]" : ""
-                } bg-[#242424] w-[50%] z-[-1]  p-2 rounded`}
-              >
-                <View className="w-full flex justify-center items-center">
-                  <FontAwesomeIcon icon={faEye} size={25} color="#FFFFFF" />
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => setShowIngameStatModal(!showIngameStatModal)}
-                className={`  ${
-                  showIngameStatModal ? "border-b-2 border-b-green-500" : ""
-                } p-2 w-[50%] h-10 mx-auto bg-[#242424] rounded `}
-              >
-                <View className="w-full flex justify-center items-center">
-                  <FontAwesomeIcon
-                    icon={faChartSimple}
-                    size={25}
-                    color="#FFFFFF"
-                  />
-                </View>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ) : (
-          ""
-        )}
-
-        {/* {actionSelected && <Text></Text>} */}
-        {/* Pitch View */}
-        {showActionsOnPitch && !tempPosition && (
-          <View className="  justify-center items-center h-auto py-2 w-[80%] flex-row rounded-md mx-auto">
-            {uniqueCategories.map((category, index) => {
-              const item = actions.find(
-                (action) => action.category === category
-              );
-              return (
+              {/* Right buttons */}
+              <View className="flex-row space-x-1  z-[-1]  w-[30%] justify-center  ">
                 <TouchableOpacity
-                  key={index}
-                  onPress={() => {
-                    setShowActionsOnPitchFilter(item.category);
-                  }}
-                  className={`
+                  onPress={() => setShowActionsOnPitch(!showActionsOnPitch)}
+                  className={`${
+                    showActionsOnPitch ? "border-b-2 border-b-[#00E471]" : ""
+                  } bg-[#242424] w-[50%] z-[-1]  p-2 rounded`}
+                >
+                  <View className="w-full flex justify-center items-center">
+                    <FontAwesomeIcon icon={faEye} size={25} color="#FFFFFF" />
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setShowIngameStatModal(!showIngameStatModal)}
+                  className={`  ${
+                    showIngameStatModal ? "border-b-2 border-b-green-500" : ""
+                  } p-2 w-[50%] h-10 mx-auto bg-[#242424] rounded `}
+                >
+                  <View className="w-full flex justify-center items-center">
+                    <FontAwesomeIcon
+                      icon={faChartSimple}
+                      size={25}
+                      color="#FFFFFF"
+                    />
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ) : (
+            ""
+          )}
+
+          {/* {actionSelected && <Text></Text>} */}
+          {/* Pitch View */}
+          {showActionsOnPitch && !tempPosition && (
+            <View className="  justify-center items-center h-auto py-2 w-[80%] flex-row rounded-md mx-auto">
+              {uniqueCategories.map((category, index) => {
+                const item = actions.find(
+                  (action) => action.category === category
+                );
+                return (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => {
+                      setShowActionsOnPitchFilter(item.category);
+                    }}
+                    className={`
         ${
           showActionsOnPitchFilter === item.category
             ? "border-b-2 border-b-green-500"
             : ""
         }
         w-1/5 rounded-md mx-auto mx-1 py-2  items-center justify-center`}
-                >
-                  <Text className="text-center text-white">
-                    {item.category}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-            <TouchableOpacity
-              onPress={() => {
-                setShowActionsOnPitchFilter("all");
-              }}
-              className={`
+                  >
+                    <Text className="text-center text-white">
+                      {item.category}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+              <TouchableOpacity
+                onPress={() => {
+                  setShowActionsOnPitchFilter("all");
+                }}
+                className={`
               ${
                 showActionsOnPitchFilter === "all"
                   ? "border-b-2 border-b-green-500"
                   : ""
               }
               w-1/5 rounded-md mx-auto mx-1 py-2  items-center justify-center`}
-            >
-              <Text className="text-center text-white">All</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                setShowActionsOnPitchFilter("none");
-              }}
-              className={`
+              >
+                <Text className="text-center text-white">All</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setShowActionsOnPitchFilter("none");
+                }}
+                className={`
               ${
                 showActionsOnPitchFilter === "none"
                   ? "border-b-2 border-b-green-500"
                   : ""
               }
               w-1/5 rounded-md mx-auto mx-1 py-2  items-center justify-center`}
-            >
-              <Text className="text-center text-white">None</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        <View
-          className={`w-[96%] mt-1 border-[.5px] border-gray-700
+              >
+                <Text className="text-center text-white">None</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          <View
+            className={`w-[96%] mt-1 border-[.5px] border-gray-700
         ${
           tempPosition ? "shadow shadow-[#00E471]/20" : ""
         }   mx-auto  rounded-md h-[63vh] bg-[#1b1b1b]  relative`}
-          onStartShouldSetResponder={() => true}
-          onResponderRelease={handlePitchPress}
-          style={{ zIndex: 1 }}
-        >
-          {/* this section of code will be rendered if the user has not selected which side of the pitch the home team is shooting into */}
-          {!shootingDirect && (
-            <>
-              <TouchableOpacity
-                onPress={() => shootingDirectionClickHandler("up")}
-                className="bg-[#00E471]/50 w-full z-50 mx-auto text-center items-center jus h-[10%] absolute"
-              ></TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => shootingDirectionClickHandler("down")}
-                className="bg-[#00E471]/50 w-full z-50  bottom-0  h-[10%] absolute"
-              ></TouchableOpacity>
-            </>
-          )}
+            onStartShouldSetResponder={() => true}
+            onResponderRelease={handlePitchPress}
+            style={{ zIndex: 1 }}
+          >
+            {/* this section of code will be rendered if the user has not selected which side of the pitch the home team is shooting into */}
+            {!shootingDirect && (
+              <>
+                <TouchableOpacity
+                  onPress={() => shootingDirectionClickHandler("up")}
+                  className="bg-[#00E471]/50 w-full z-50 mx-auto text-center items-center jus h-[10%] absolute"
+                ></TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => shootingDirectionClickHandler("down")}
+                  className="bg-[#00E471]/50 w-full z-50  bottom-0  h-[10%] absolute"
+                ></TouchableOpacity>
+              </>
+            )}
 
-          {/* Pitch markings */}
-          <View className="absolute w-full h-full" style={{ zIndex: 0 }}>
-            <View
-              className="h-[1px] w-[20%] left-[40%] bg-gray-700 absolute"
-              style={{ top: "57.5%" }}
-            ></View>
-            <View
-              className="h-[1px] w-full bg-gray-700 absolute"
-              style={{ top: "10%" }}
-            ></View>
-            <View
-              className="absolute border-[1px] border-gray-600 w-28 h-12 rounded-bl-full rounded-br-full"
-              style={{
-                top: "15.4%",
-                left: "50%",
-                zIndex: "0",
-                transform: [{ translateX: -56 }],
-              }}
-            ></View>
-            <View
-              className="absolute border-[1px] border-gray-600 w-28 h-12 rounded-bl-full rounded-br-full"
-              style={{
-                top: "84.6%",
-                zIndex: 0,
-                left: "50%",
-                transform: [
-                  { translateX: -56 },
-                  { scaleY: -1 },
-                  { translateY: 47 },
-                ],
-              }}
-            ></View>
-            <View
-              className="w-28 border-l-[1px] border-r-[1px] border-gray-700 absolute"
-              style={{
-                top: "90%",
-                height: "10%",
-                left: "50%",
-                transform: [{ translateX: -56 }],
-              }}
-            ></View>
-            <View
-              className="w-28 border-l-[1px] border-r-[1px] border-gray-700 absolute"
-              style={{
-                top: "0%",
-                height: "10%",
-                left: "50%",
-                transform: [{ translateX: -56 }],
-              }}
-            ></View>
-            <View
-              className="h-[1px] w-full bg-gray-700 absolute"
-              style={{ top: "15.4%" }}
-            ></View>
-            <View
-              className="h-[1px] w-full bg-gray-700 absolute"
-              style={{ top: "34.6%" }}
-            ></View>
-            <View
-              className="h-[1px] w-full bg-gray-700 absolute"
-              style={{ top: "50%" }}
-            ></View>
-            <View
-              className="h-[1px] w-full bg-gray-700 absolute"
-              style={{ top: "65%" }}
-            ></View>
-            <View
-              className="h-[1px] w-full bg-gray-700 absolute"
-              style={{ top: "90%" }}
-            ></View>
-            <View
-              className="h-[1px] w-full bg-gray-700 absolute"
-              style={{ top: "84.6%" }}
-            ></View>
-          </View>
-          {/* semi circles */}
-
-          {shootingDirect === "up" ? (
-            <>
+            {/* Pitch markings */}
+            <View className="absolute w-full h-full" style={{ zIndex: 0 }}>
               <View
-                style={{ zIndex: 0 }}
-                className="absolute h-2 border-b-[1px] w-[10%] left-[45%] border-l-[1px] border-r-[1px] border-green-50"
+                className="h-[1px] w-[20%] left-[40%] bg-gray-700 absolute"
+                style={{ top: "57.5%" }}
               ></View>
               <View
-                style={{ zIndex: 0 }}
-                className="absolute h-4 top-2 w-[10%] left-[45%] border-l-[1px] border-r-[1px] border-green-50"
-              ></View>
-            </>
-          ) : shootingDirect === "down" ? (
-            <>
-              <View
-                style={{ zIndex: 0 }}
-                className="absolute h-2 border-t-[1px] w-[10%] bottom-0 left-[45%] border-l-[1px] border-r-[1px] border-green-50"
+                className="h-[1px] w-full bg-gray-700 absolute"
+                style={{ top: "10%" }}
               ></View>
               <View
-                style={{ zIndex: 0 }}
-                className="absolute h-4 bottom-2 w-[10%] bottom-2 left-[45%] border-l-[1px] border-r-[1px] border-green-50"
+                className="absolute border-[1px] border-gray-600 w-28 h-12 rounded-bl-full rounded-br-full"
+                style={{
+                  top: "15.4%",
+                  left: "50%",
+                  zIndex: "0",
+                  transform: [{ translateX: -56 }],
+                }}
               ></View>
-            </>
-          ) : (
-            <>
-              {/* This will be printed when shootingDirect is neither "up" nor "down" */}
-              <View className="absolute h-2 border-b-[1px] w-[10%] left-[45%] border-l-[1px] border-r-[1px] border-green-50"></View>
-              <View className="absolute h-4 top-2 w-[10%] left-[45%] border-l-[1px] border-r-[1px] border-green-50"></View>
-              <View className="absolute h-2 border-t-[1px] w-[10%] bottom-0 left-[45%] border-l-[1px] border-r-[1px] border-green-50"></View>
-              <View className="absolute h-4 bottom-2 w-[10%] bottom-2 left-[45%] border-l-[1px] border-r-[1px] border-green-50"></View>
-            </>
-          )}
+              <View
+                className="absolute border-[1px] border-gray-600 w-28 h-12 rounded-bl-full rounded-br-full"
+                style={{
+                  top: "84.6%",
+                  zIndex: 0,
+                  left: "50%",
+                  transform: [
+                    { translateX: -56 },
+                    { scaleY: -1 },
+                    { translateY: 47 },
+                  ],
+                }}
+              ></View>
+              <View
+                className="w-28 border-l-[1px] border-r-[1px] border-gray-700 absolute"
+                style={{
+                  top: "90%",
+                  height: "10%",
+                  left: "50%",
+                  transform: [{ translateX: -56 }],
+                }}
+              ></View>
+              <View
+                className="w-28 border-l-[1px] border-r-[1px] border-gray-700 absolute"
+                style={{
+                  top: "0%",
+                  height: "10%",
+                  left: "50%",
+                  transform: [{ translateX: -56 }],
+                }}
+              ></View>
+              <View
+                className="h-[1px] w-full bg-gray-700 absolute"
+                style={{ top: "15.4%" }}
+              ></View>
+              <View
+                className="h-[1px] w-full bg-gray-700 absolute"
+                style={{ top: "34.6%" }}
+              ></View>
+              <View
+                className="h-[1px] w-full bg-gray-700 absolute"
+                style={{ top: "50%" }}
+              ></View>
+              <View
+                className="h-[1px] w-full bg-gray-700 absolute"
+                style={{ top: "65%" }}
+              ></View>
+              <View
+                className="h-[1px] w-full bg-gray-700 absolute"
+                style={{ top: "90%" }}
+              ></View>
+              <View
+                className="h-[1px] w-full bg-gray-700 absolute"
+                style={{ top: "84.6%" }}
+              ></View>
+            </View>
+            {/* semi circles */}
 
-          {showActionAlertError && <AlertComponent />}
-          <View style={{ flex: 1 }}>
-            {displayedPositions.map((position, index) => {
-              const actionStyle = actionStyles[position.action];
+            {shootingDirect === "up" ? (
+              <>
+                <View
+                  style={{ zIndex: 0 }}
+                  className="absolute h-2 border-b-[1px] w-[10%] left-[45%] border-l-[1px] border-r-[1px] border-green-50"
+                ></View>
+                <View
+                  style={{ zIndex: 0 }}
+                  className="absolute h-4 top-2 w-[10%] left-[45%] border-l-[1px] border-r-[1px] border-green-50"
+                ></View>
+              </>
+            ) : shootingDirect === "down" ? (
+              <>
+                <View
+                  style={{ zIndex: 0 }}
+                  className="absolute h-2 border-t-[1px] w-[10%] bottom-0 left-[45%] border-l-[1px] border-r-[1px] border-green-50"
+                ></View>
+                <View
+                  style={{ zIndex: 0 }}
+                  className="absolute h-4 bottom-2 w-[10%] bottom-2 left-[45%] border-l-[1px] border-r-[1px] border-green-50"
+                ></View>
+              </>
+            ) : (
+              <>
+                {/* This will be printed when shootingDirect is neither "up" nor "down" */}
+                <View className="absolute h-2 border-b-[1px] w-[10%] left-[45%] border-l-[1px] border-r-[1px] border-green-50"></View>
+                <View className="absolute h-4 top-2 w-[10%] left-[45%] border-l-[1px] border-r-[1px] border-green-50"></View>
+                <View className="absolute h-2 border-t-[1px] w-[10%] bottom-0 left-[45%] border-l-[1px] border-r-[1px] border-green-50"></View>
+                <View className="absolute h-4 bottom-2 w-[10%] bottom-2 left-[45%] border-l-[1px] border-r-[1px] border-green-50"></View>
+              </>
+            )}
 
-              if (actionStyle) {
-                if (position.action === "turnOverLoss") {
+            {showActionAlertError && <AlertComponent />}
+            <View style={{ flex: 1 }}>
+              {displayedPositions.map((position, index) => {
+                const actionStyle = actionStyles[position.action];
+
+                if (actionStyle) {
+                  if (position.action === "turnOverLoss") {
+                    return (
+                      <View
+                        key={index}
+                        style={{
+                          position: "absolute",
+                          top: position.y - 10,
+                          left: position.x - 10,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          width: 20,
+                          height: 20,
+                        }}
+                      >
+                        <Text style={styles.xMarkerLoss}>X</Text>
+                      </View>
+                    );
+                  }
+                  if (position.action === "turnOverWon") {
+                    return (
+                      <View
+                        key={index}
+                        style={{
+                          position: "absolute",
+                          top: position.y - 10,
+                          left: position.x - 10,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          width: 20,
+                          height: 20,
+                        }}
+                      >
+                        <Text style={styles.xMarkerWon}>X</Text>
+                      </View>
+                    );
+                  }
+
                   return (
                     <View
                       key={index}
-                      style={{
-                        position: "absolute",
-                        top: position.y - 10,
-                        left: position.x - 10,
-                        justifyContent: "center",
-                        alignItems: "center",
-                        width: 20,
-                        height: 20,
-                      }}
+                      style={[
+                        {
+                          position: "absolute",
+                          top: position.y - 10,
+                          left: position.x - 10,
+                        },
+                        actionStyle.style,
+                      ]}
                     >
-                      <Text style={styles.xMarkerLoss}>X</Text>
-                    </View>
-                  );
-                }
-                if (position.action === "turnOverWon") {
-                  return (
-                    <View
-                      key={index}
-                      style={{
-                        position: "absolute",
-                        top: position.y - 10,
-                        left: position.x - 10,
-                        justifyContent: "center",
-                        alignItems: "center",
-                        width: 20,
-                        height: 20,
-                      }}
-                    >
-                      <Text style={styles.xMarkerWon}>X</Text>
+                      {actionStyle.component || null}
                     </View>
                   );
                 }
 
+                // Default style if action does not match any predefined styles
                 return (
                   <View
                     key={index}
-                    style={[
-                      {
-                        position: "absolute",
-                        top: position.y - 10,
-                        left: position.x - 10,
-                      },
-                      actionStyle.style,
-                    ]}
-                  >
-                    {actionStyle.component || null}
-                  </View>
+                    style={{
+                      position: "absolute",
+                      top: position.y - 10,
+                      left: position.x - 10,
+                      width: 15,
+                      height: 15,
+                      backgroundColor: "#FFF",
+                      borderRadius: 10,
+                    }}
+                  />
                 );
-              }
-
-              // Default style if action does not match any predefined styles
-              return (
-                <View
-                  key={index}
-                  style={{
-                    position: "absolute",
-                    top: position.y - 10,
-                    left: position.x - 10,
-                    width: 15,
-                    height: 15,
-                    backgroundColor: "#FFF",
-                    borderRadius: 10,
-                  }}
-                />
-              );
-            })}
-          </View>
-          {tempPosition && (
-            <View
-              style={{
-                position: "absolute",
-                top: tempPosition.y - 10,
-                left: tempPosition.x - 10,
-                width: 20,
-                height: 20,
-                backgroundColor: "blue",
-                borderRadius: 10,
-              }}
-            />
-          )}
-        </View>
-        {!shootingDirect && (
-          <Text className="text-white text-xl mb-5 text-center mx-auto flex mt-10">
-            Select Shooting Goals
-          </Text>
-        )}
-        {tempPosition && (
-          <>
-            {/* <Text className="text-white text-center">Select Player</Text> */}
-            <View className="h-auto  border-white/10 p-2 rounded-md w-4full mt-2 mx-auto">
-              <FlatList
-                data={lineUp.filter((player) => player.onPitch)}
-                horizontal
-                keyExtractor={(item) => item.playerNumber.toString()}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    className="flex my-auto justify-center  items-center mx-2"
-                    style={{ width: width / 8, height: 50 }}
-                    onPress={() => setSelectedNumber(item.playerNumber)}
-                  >
-                    <ImageBackground
-                      source={require("../assets/jersey.png")}
-                      resizeMode="contain"
-                      className={`flex justify-center items-center ${
-                        item.playerNumber === selectedNumber
-                          ? "border-b border-b-1 border-b-green-500"
-                          : ""
-                      }`}
-                      style={{ width: "100%", height: "100%" }}
-                    >
-                      <Text
-                        className={`text-base font-bold ${
-                          item.playerNumber === substitution.startingPlayer
-                            ? "text-black"
-                            : "text-black"
-                        }`}
-                      >
-                        {item.playerNumber}
-                      </Text>
-                    </ImageBackground>
-                  </TouchableOpacity>
-                )}
-                showsHorizontalScrollIndicator={false}
-              />
-              <View className="flex-row justify-center ">
-                <TouchableOpacity
-                  onPress={() => {
-                    if (actionTimeStamp > 60) {
-                      setActionTimeStamp(actionTimeStamp - 60);
-                    }
-                  }}
-                  className="w-10 h-10 justify-center items-center my-auto mr-2 bg-[#242424] rounded-full p-2"
-                >
-                  <Text className="text-white text-center my-auto font-bold">
-                    -
-                  </Text>
-                </TouchableOpacity>
-                <Text className="text-center font-bold items-center my-auto text-lg  text-white">
-                  {Math.floor(actionTimeStamp / 60)} Min
-                </Text>
-                <TouchableOpacity
-                  className="w-10 h-10 justify-center items-center my-auto ml-2 bg-[#242424] rounded-full p-2"
-                  onPress={() => {
-                    setActionTimeStamp((prevTimeStamp) => {
-                      const newTimeStamp = Number(prevTimeStamp);
-                      if (newTimeStamp < 2100) {
-                        return newTimeStamp + 60;
-                      }
-                      return newTimeStamp;
-                    });
-                  }}
-                >
-                  <Text className="text-white">+</Text>
-                </TouchableOpacity>
-              </View>
+              })}
             </View>
+            {tempPosition && (
+              <View
+                style={{
+                  position: "absolute",
+                  top: tempPosition.y - 10,
+                  left: tempPosition.x - 10,
+                  width: 20,
+                  height: 20,
+                  backgroundColor: "blue",
+                  borderRadius: 10,
+                }}
+              />
+            )}
+          </View>
+          {!shootingDirect && (
+            <Text className="text-white text-xl mb-5 text-center mx-auto flex mt-10">
+              Select Shooting Goals
+            </Text>
+          )}
+          {tempPosition && (
+            <>
+              {/* <Text className="text-white text-center">Select Player</Text> */}
+              <View className="h-auto  border-white/10 p-2 rounded-md w-4full mt-2 mx-auto">
+                <FlatList
+                  data={lineUp.filter((player) => player.onPitch)}
+                  horizontal
+                  keyExtractor={(item) => item.playerNumber.toString()}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      className="flex my-auto justify-center  items-center mx-2"
+                      style={{ width: width / 8, height: 50 }}
+                      onPress={() => setSelectedNumber(item.playerNumber)}
+                    >
+                      <ImageBackground
+                        source={require("../assets/jersey.png")}
+                        resizeMode="contain"
+                        className={`flex justify-center items-center ${
+                          item.playerNumber === selectedNumber
+                            ? "border-b border-b-1 border-b-green-500"
+                            : ""
+                        }`}
+                        style={{ width: "100%", height: "100%" }}
+                      >
+                        <Text
+                          className={`text-base font-bold ${
+                            item.playerNumber === substitution.startingPlayer
+                              ? "text-black"
+                              : "text-black"
+                          }`}
+                        >
+                          {item.playerNumber}
+                        </Text>
+                      </ImageBackground>
+                    </TouchableOpacity>
+                  )}
+                  showsHorizontalScrollIndicator={false}
+                />
+                <View className="flex-row justify-center ">
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (actionTimeStamp > 60) {
+                        setActionTimeStamp(actionTimeStamp - 60);
+                      }
+                    }}
+                    className="w-10 h-10 justify-center items-center my-auto mr-2 bg-[#242424] rounded-full p-2"
+                  >
+                    <Text className="text-white text-center my-auto font-bold">
+                      -
+                    </Text>
+                  </TouchableOpacity>
+                  <Text className="text-center font-bold items-center my-auto text-lg  text-white">
+                    {Math.floor(actionTimeStamp / 60)} Min
+                  </Text>
+                  <TouchableOpacity
+                    className="w-10 h-10 justify-center items-center my-auto ml-2 bg-[#242424] rounded-full p-2"
+                    onPress={() => {
+                      setActionTimeStamp((prevTimeStamp) => {
+                        const newTimeStamp = Number(prevTimeStamp);
+                        if (newTimeStamp < 2100) {
+                          return newTimeStamp + 60;
+                        }
+                        return newTimeStamp;
+                      });
+                    }}
+                  >
+                    <Text className="text-white">+</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
 
-            <View
-              className="flex flex-row  w-2/4 mx-auto    "
-              // style={styles.saveButtonContainer}
-            >
-              <TouchableOpacity
-                onPress={handleCancelPosition}
-                className={`flex
+              <View
+                className="flex flex-row  w-2/4 mx-auto    "
+                // style={styles.saveButtonContainer}
+              >
+                <TouchableOpacity
+                  onPress={handleCancelPosition}
+                  className={`flex
 
                flex-1 mx-auto text-center     rounded-md p-3 border bg-[#FD5F5F]`}
-                // style={styles.saveButton}
-              >
-                <Text className="text-center w-auto h-auto rounded-full">
-                  <Icon name="ban" width={14} color="#242424" />
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handleSavePosition}
-                className={`  flex-1  flex     ${
-                  selectedNumber != null ? "" : "hidden"
-                }  mx-auto justify-center items-center m  rounded-md p-3 border bg-[#00E471]  `}
-                // style={styles.saveButton}
-              >
-                <Text className="text-center w-auto h-auto rounded-full">
-                  <Icon name="check" width={14} color="#242424" />
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </>
-        )}
-        {/* Bottom Mini Nav Btn Groups */}
-
-        {!tempPosition && shootingDirect && (
-          <View
-            className={`  w-[96%] mx-auto rounded-md mt-2 ${
-              showActionAlertError
-                ? "bg-[#00E471]/10 border  rounded-md   shadow-[#00E471]/20"
-                : ""
-            }`}
-          >
-            <View className="h-10 w-[97%] mx-auto  mt-1 flex-row items-center justify-center px-1">
-              {/* Left buttons */}
-              <View className="flex-row space-x-1 mx-auto items-center justify-center w-[40%]">
-                <TouchableOpacity className="bg-[#242424] w-[50%] p-2 rounded">
-                  <Text className="text-white text-center">Save</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() => {
-                    if (
-                      actionMenuActionCategory === "kickout" &&
-                      showActionMenu === true
-                    ) {
-                      setShowActionMenu(false);
-                    } else {
-                      setShowActionMenu(true);
-                    }
-                    setActionMenuActionCategory("kickout");
-                  }}
-                  className={`${
-                    actionMenuActionCategory == "kickout"
-                      ? "border-b border-b-[#fff]"
-                      : ""
-                  } bg-[#242424] w-[50%] p-2 rounded`}
+                  // style={styles.saveButton}
                 >
-                  <Text className="text-white text-center">Kickout</Text>
+                  <Text className="text-center w-auto h-auto rounded-full">
+                    <Icon name="ban" width={14} color="#242424" />
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleSavePosition}
+                  className={`  flex-1  flex     ${
+                    selectedNumber != null ? "" : "hidden"
+                  }  mx-auto justify-center items-center m  rounded-md p-3 border bg-[#00E471]  `}
+                  // style={styles.saveButton}
+                >
+                  <Text className="text-center w-auto h-auto rounded-full">
+                    <Icon name="check" width={14} color="#242424" />
+                  </Text>
                 </TouchableOpacity>
               </View>
+            </>
+          )}
+          {/* Bottom Mini Nav Btn Groups */}
 
-              {/* Home and Away buttons */}
-              <View className="flex-row space-x-1  mx-auto w-[20%] mx-3 justify-center">
-                <TouchableOpacity
-                  className={`${
-                    actionMenuActionCategory == "shot"
-                      ? "border-b border-b-[#fff]"
-                      : ""
-                  } p-2 w-[100%] rounded bg-[#242424]`}
-                  onPress={() => {
-                    if (
-                      actionMenuActionCategory === "shot" &&
-                      showActionMenu === true
-                    ) {
-                      setShowActionMenu(false);
-                    } else {
-                      setShowActionMenu(true);
-                    }
-                    setActionMenuActionCategory("shot");
-                  }}
-                >
-                  <Text className="text-white text-center">Shot</Text>
-                </TouchableOpacity>
+          {!tempPosition && shootingDirect && (
+            <View
+              className={`  w-[96%] mx-auto rounded-md mt-2 ${
+                showActionAlertError
+                  ? "bg-[#00E471]/10 border  rounded-md   shadow-[#00E471]/20"
+                  : ""
+              }`}
+            >
+              <View className="h-10 w-[97%] mx-auto  mt-1 flex-row items-center justify-center px-1">
+                {/* Left buttons */}
+                <View className="flex-row space-x-1 mx-auto items-center justify-center w-[40%]">
+                  <TouchableOpacity className="bg-[#242424] w-[50%] p-2 rounded">
+                    <Text className="text-white text-center">Save</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (
+                        actionMenuActionCategory === "kickout" &&
+                        showActionMenu === true
+                      ) {
+                        setShowActionMenu(false);
+                      } else {
+                        setShowActionMenu(true);
+                      }
+                      setActionMenuActionCategory("kickout");
+                    }}
+                    className={`${
+                      actionMenuActionCategory == "kickout"
+                        ? "border-b border-b-[#fff]"
+                        : ""
+                    } bg-[#242424] w-[50%] p-2 rounded`}
+                  >
+                    <Text className="text-white text-center">Kickout</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* Home and Away buttons */}
+                <View className="flex-row space-x-1  mx-auto w-[20%] mx-3 justify-center">
+                  <TouchableOpacity
+                    className={`${
+                      actionMenuActionCategory == "shot"
+                        ? "border-b border-b-[#fff]"
+                        : ""
+                    } p-2 w-[100%] rounded bg-[#242424]`}
+                    onPress={() => {
+                      if (
+                        actionMenuActionCategory === "shot" &&
+                        showActionMenu === true
+                      ) {
+                        setShowActionMenu(false);
+                      } else {
+                        setShowActionMenu(true);
+                      }
+                      setActionMenuActionCategory("shot");
+                    }}
+                  >
+                    <Text className="text-white text-center">Shot</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* Right buttons */}
+                <View className="flex-row space-x-1 mx-auto items-center justify-center w-[40%]">
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (
+                        actionMenuActionCategory === "T/O" &&
+                        showActionMenu === true
+                      ) {
+                        setShowActionMenu(false);
+                      } else {
+                        setShowActionMenu(true);
+                      }
+
+                      setActionMenuActionCategory("T/O");
+                    }}
+                    className={`${
+                      actionMenuActionCategory == "T/O"
+                        ? "border-b border-b-[#fff]"
+                        : ""
+                    } bg-[#242424] w-[50%] p-2 rounded`}
+                  >
+                    <Text className="text-white text-center">T/O</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity className="bg-[#242424] w-[50%] p-2 rounded">
+                    <Text className="text-white text-center">Tackle</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-
-              {/* Right buttons */}
-              <View className="flex-row space-x-1 mx-auto items-center justify-center w-[40%]">
-                <TouchableOpacity
-                  onPress={() => {
-                    if (
-                      actionMenuActionCategory === "T/O" &&
-                      showActionMenu === true
-                    ) {
-                      setShowActionMenu(false);
-                    } else {
-                      setShowActionMenu(true);
-                    }
-
-                    setActionMenuActionCategory("T/O");
-                  }}
-                  className={`${
-                    actionMenuActionCategory == "T/O"
-                      ? "border-b border-b-[#fff]"
-                      : ""
-                  } bg-[#242424] w-[50%] p-2 rounded`}
-                >
-                  <Text className="text-white text-center">T/O</Text>
-                </TouchableOpacity>
-                <TouchableOpacity className="bg-[#242424] w-[50%] p-2 rounded">
-                  <Text className="text-white text-center">Tackle</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            {showActionMenu && (
-              <View className=" z-50  my-1  justify-center translate-y-[0px] w-[96%] space-x-1   items-center  mx-auto left-0  h-auto flex-row">
-                {actions
-                  .filter((item) => item.category === actionMenuActionCategory)
-                  .map((item, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      onPress={() => {
-                        gameStatClickHandler(item.action, item.category);
-                        setActionSelected(item.action);
-                      }}
-                      className={`
+              {showActionMenu && (
+                <View className=" z-50  my-1  justify-center translate-y-[0px] w-[96%] space-x-1   items-center  mx-auto left-0  h-auto flex-row">
+                  {actions
+                    .filter(
+                      (item) => item.category === actionMenuActionCategory
+                    )
+                    .map((item, index) => (
+                      <TouchableOpacity
+                        key={index}
+                        onPress={() => {
+                          gameStatClickHandler(item.action, item.category);
+                          setActionSelected(item.action);
+                        }}
+                        className={`
                       ${
                         actionSelected === item.action
                           ? "border-b-2 border-b-green-500"
                           : ""
                       }
                       w-1/5 rounded-md py-2    px-1  space-x-1 justify-center `}
-                    >
-                      <Text className="text-center text-white">
-                        {item.label}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-              </View>
-            )}
-          </View>
-        )}
+                      >
+                        <Text className="text-center text-white">
+                          {item.label}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                </View>
+              )}
+            </View>
+          )}
 
-        {/* Bottom Nav  */}
+          {/* Bottom Nav  */}
 
-        {/* <View className="w-20 bg-red-400 my-auto justify-center items-center mt-4 ml-4">
+          {/* <View className="w-20 bg-red-400 my-auto justify-center items-center mt-4 ml-4">
         <Text style={styles.timer}>
           {Math.floor(seconds / 60)}:
           {seconds % 60 < 10 ? `0${seconds % 60}` : seconds % 60}
@@ -1286,7 +1340,7 @@ export default function App() {
           <Text>Startrr</Text>
         </TouchableOpacity>
       </View> */}
-        {/* <View className="flex-row fixed  align-bottom mt-4 bg-red-600 justify-center w-full ">
+          {/* <View className="flex-row fixed  align-bottom mt-4 bg-red-600 justify-center w-full ">
           <View className="w-1/4 " />
           <View className="w-1/4 flex justify-center items-center">
             <TouchableOpacity
@@ -1301,143 +1355,143 @@ export default function App() {
           </View>
           <View className="w-1/4 " />
         </View> */}
-      </ScrollView>
-      {showIngameStatModal && (
-        <View className="w-full h-screen absolute flex flex-col">
-          {/* This view will fill the remaining space above the dynamic view */}
-          <TouchableOpacity
-            onPress={() => setShowIngameStatModal(false)}
-            className="flex-1 pointer-events-none bg-transparent"
-          >
-            {/* Content for the top view */}
-          </TouchableOpacity>
-          <View className="w-full pt-5 bg-gray-400 h-auto  absolute bottom-0 z-[50] rounded-t-3xl pb-5 mx-auto">
-            <View className="w-full absolute right-0 z-50 flex-row  h-auto">
-              <TouchableOpacity
-                onPress={() => setShowIngameStatModal(false)}
-                className=" ml-5 p-2 right-2 top-1 absolute "
-              >
-                <Text className="text-xl text-black rounded-full w-full">
-                  <FontAwesomeIcon
-                    icon={faCircleXmark}
-                    size={35}
-                    color="#000"
-                  />
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View className="w-full  mb-5  p-2 mx-auto text-center justify-center">
-              <View className="h-10  w-full z-[-1]   flex-row items-center justify-between">
-                {/* Left buttons */}
-                <View className="flex-row space-x-1 mx-auto">
-                  <TouchableOpacity
-                    onPress={() => handleStatModalFilter("shot")}
-                    className={`bg-[#242424] ${
-                      ingameStatModalFilter === "shot"
-                        ? "border border-green-500"
-                        : ""
-                    }  w-16 p-2 rounded`}
-                  >
-                    <Text className="text-white text-center">Shots</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => handleStatModalFilter("kickout")}
-                    className={`bg-[#242424] ${
-                      ingameStatModalFilter === "kickout"
-                        ? "border border-green-500"
-                        : ""
-                    }  w-auto p-2 rounded`}
-                  >
-                    <Text className="text-white text-center">Kickouts</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => handleStatModalFilter("T/O")}
-                    className={`bg-[#242424] ${
-                      ingameStatModalFilter === "T/O"
-                        ? "border-2 border-green-500"
-                        : ""
-                    }  w-16 p-2 rounded`}
-                  >
-                    <Text className="text-white text-center">T/O's</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => handleStatModalFilter("All")}
-                    className={`bg-[#242424] ${
-                      ingameStatModalFilter === "All"
-                        ? "border border-green-500"
-                        : ""
-                    }  w-16 p-2 rounded`}
-                  >
-                    <Text className="text-white text-center">All</Text>
-                  </TouchableOpacity>
-                </View>
+        </ScrollView>
+        {showIngameStatModal && (
+          <View className="w-full h-screen absolute flex flex-col">
+            {/* This view will fill the remaining space above the dynamic view */}
+            <TouchableOpacity
+              onPress={() => setShowIngameStatModal(false)}
+              className="flex-1 pointer-events-none bg-transparent"
+            >
+              {/* Content for the top view */}
+            </TouchableOpacity>
+            <View className="w-full pt-5 bg-gray-400 h-auto  absolute bottom-0 z-[50] rounded-t-3xl pb-5 mx-auto">
+              <View className="w-full absolute right-0 z-50 flex-row  h-auto">
+                <TouchableOpacity
+                  onPress={() => setShowIngameStatModal(false)}
+                  className=" ml-5 p-2 right-2 top-1 absolute "
+                >
+                  <Text className="text-xl text-black rounded-full w-full">
+                    <FontAwesomeIcon
+                      icon={faCircleXmark}
+                      size={35}
+                      color="#000"
+                    />
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View className="w-full  mb-5  p-2 mx-auto text-center justify-center">
+                <View className="h-10  w-full z-[-1]   flex-row items-center justify-between">
+                  {/* Left buttons */}
+                  <View className="flex-row space-x-1 mx-auto">
+                    <TouchableOpacity
+                      onPress={() => handleStatModalFilter("shot")}
+                      className={`bg-[#242424] ${
+                        ingameStatModalFilter === "shot"
+                          ? "border border-green-500"
+                          : ""
+                      }  w-16 p-2 rounded`}
+                    >
+                      <Text className="text-white text-center">Shots</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => handleStatModalFilter("kickout")}
+                      className={`bg-[#242424] ${
+                        ingameStatModalFilter === "kickout"
+                          ? "border border-green-500"
+                          : ""
+                      }  w-auto p-2 rounded`}
+                    >
+                      <Text className="text-white text-center">Kickouts</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => handleStatModalFilter("T/O")}
+                      className={`bg-[#242424] ${
+                        ingameStatModalFilter === "T/O"
+                          ? "border-2 border-green-500"
+                          : ""
+                      }  w-16 p-2 rounded`}
+                    >
+                      <Text className="text-white text-center">T/O's</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => handleStatModalFilter("All")}
+                      className={`bg-[#242424] ${
+                        ingameStatModalFilter === "All"
+                          ? "border border-green-500"
+                          : ""
+                      }  w-16 p-2 rounded`}
+                    >
+                      <Text className="text-white text-center">All</Text>
+                    </TouchableOpacity>
+                  </View>
 
-                {/* Home and Away buttons */}
-                <View className="flex-row"></View>
-              </View>
-              <View className="flex-row mt-2">
-                <Text className="w-1/4 p-1  text-center">Min</Text>
-                <Text className="w-1/4 p-1  text-center">Action</Text>
-                <Text className="w-1/4 p-1  text-center">Player</Text>
-                <Text className="w-1/4 p-1  text-center">Score</Text>
-              </View>
-              {filteredPositions.length === 0 ? (
-                <Text className="text-center text-md mt-5 py-2">
-                  No data yet,
-                </Text>
-              ) : (
-                filteredPositions.map((position, index) => (
-                  <TouchableOpacity
-                    onLongPress={() => {
-                      setLongPressedId(position.id);
-                      console.log("longpressed");
-                    }}
-                    onPress={() => {
-                      setLongPressedId(null);
-                      console.log("pressed");
-                    }}
-                    key={index}
-                    className={`flex-row justify-center py-1 rounded-md mx-1 text-white ${
-                      index % 2 === 0 ? "bg-white/50" : ""
-                    } `}
-                  >
-                    {longPressedId === position.id ? (
-                      <>
-                        <TouchableOpacity
-                          onPress={() =>
-                            deletePositionById(position.id, position.action)
-                          }
-                          className=" bg-red-500 w-auto px-5 py-1 rounded-md justify-center items-center"
-                        >
-                          <Text>Delete</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => setLongPressedId(null)}
-                          className="ml-2 bg-green-500 w-auto px-5 py-1 rounded-md justify-center items-center"
-                        >
-                          <Text>Cancel</Text>
-                        </TouchableOpacity>
-                      </>
-                    ) : (
-                      <>
-                        <Text className="w-1/4 p-1 text-gray-700 text-center">
-                          {formatTime(position.time)}
-                        </Text>
-                        <Text className="w-1/4 p-1 text-gray-700 text-center">
-                          {position.action}
-                        </Text>
-                        <Text className="w-1/4 p-1 text-gray-700 text-center">
-                          {position.player}
-                        </Text>
-                        <Text className="w-1/4 p-1 text-gray-700 text-center">
-                          0:{position.score}
-                        </Text>
-                      </>
-                    )}
-                  </TouchableOpacity>
-                ))
-              )}
-              {/* <View className="w-auto justify-end flex flex-row  bg-blue-600 items-end">
+                  {/* Home and Away buttons */}
+                  <View className="flex-row"></View>
+                </View>
+                <View className="flex-row mt-2">
+                  <Text className="w-1/4 p-1  text-center">Min</Text>
+                  <Text className="w-1/4 p-1  text-center">Action</Text>
+                  <Text className="w-1/4 p-1  text-center">Player</Text>
+                  <Text className="w-1/4 p-1  text-center">Score</Text>
+                </View>
+                {filteredPositions.length === 0 ? (
+                  <Text className="text-center text-md mt-5 py-2">
+                    No data yet,
+                  </Text>
+                ) : (
+                  filteredPositions.map((position, index) => (
+                    <TouchableOpacity
+                      onLongPress={() => {
+                        setLongPressedId(position.id);
+                        console.log("longpressed");
+                      }}
+                      onPress={() => {
+                        setLongPressedId(null);
+                        console.log("pressed");
+                      }}
+                      key={index}
+                      className={`flex-row justify-center py-1 rounded-md mx-1 text-white ${
+                        index % 2 === 0 ? "bg-white/50" : ""
+                      } `}
+                    >
+                      {longPressedId === position.id ? (
+                        <>
+                          <TouchableOpacity
+                            onPress={() =>
+                              deletePositionById(position.id, position.action)
+                            }
+                            className=" bg-red-500 w-auto px-5 py-1 rounded-md justify-center items-center"
+                          >
+                            <Text>Delete</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={() => setLongPressedId(null)}
+                            className="ml-2 bg-green-500 w-auto px-5 py-1 rounded-md justify-center items-center"
+                          >
+                            <Text>Cancel</Text>
+                          </TouchableOpacity>
+                        </>
+                      ) : (
+                        <>
+                          <Text className="w-1/4 p-1 text-gray-700 text-center">
+                            {formatTime(position.time)}
+                          </Text>
+                          <Text className="w-1/4 p-1 text-gray-700 text-center">
+                            {position.action}
+                          </Text>
+                          <Text className="w-1/4 p-1 text-gray-700 text-center">
+                            {position.player}
+                          </Text>
+                          <Text className="w-1/4 p-1 text-gray-700 text-center">
+                            0:{position.score}
+                          </Text>
+                        </>
+                      )}
+                    </TouchableOpacity>
+                  ))
+                )}
+                {/* <View className="w-auto justify-end flex flex-row  bg-blue-600 items-end">
                 <View className="bg-red-600 h-5 w-auto right-5 mx-2">
                   <Text>Edit</Text>
                 </View>
@@ -1445,23 +1499,12 @@ export default function App() {
                   <Text>Edit</Text>
                 </View>
               </View> */}
+              </View>
             </View>
           </View>
-        </View>
-      )}
-      {showEditLineupModal && (
-        <>
-          <TouchableOpacity
-            onPress={() => {
-              setShowEditLineupModal(false);
-              setSubstitution({
-                startingPlayer: null,
-                subPlayer: null,
-              });
-            }}
-            className="h-1/2 w-full  absolute top-0"
-          ></TouchableOpacity>
-          <View className="w-full absolute h-1/2 rounded-t-3xl bg-gray-400 bottom-0">
+        )}
+        {showEditLineupModal && (
+          <>
             <TouchableOpacity
               onPress={() => {
                 setShowEditLineupModal(false);
@@ -1470,116 +1513,127 @@ export default function App() {
                   subPlayer: null,
                 });
               }}
-              className="absolute w-10 h-10 right-5 top-5 "
-            >
-              <Text className="text-center my-auto">
-                <FontAwesomeIcon
-                  icon={faCircleXmark}
-                  size={35}
-                  color="#030303"
-                />
-              </Text>
-            </TouchableOpacity>
-            <View className=" py-10 w-full ">
-              <Text className="text-center my-auto text-lg font-semibold">
-                Make a Substitution
-              </Text>
-            </View>
-            <View className="flex-1 ">
-              <Text className="ml-2 mx-auto">On Field</Text>
-              <FlatList
-                data={lineUp.filter((player) => player.onPitch)}
-                horizontal
-                keyExtractor={(item) => item.playerNumber.toString()}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    className="flex my-auto justify-center  items-center mx-2"
-                    style={{ width: width / 8, height: 50 }}
-                    onPress={() =>
-                      setSubstitution((prevState) => ({
-                        ...prevState,
-                        startingPlayer: item.playerNumber,
-                      }))
-                    }
-                  >
-                    <ImageBackground
-                      source={require("../assets/jersey.png")}
-                      resizeMode="contain"
-                      className={`flex justify-center items-center ${
-                        item.playerNumber === substitution.startingPlayer
-                          ? "border-b border-b-1 border-b-green-500"
-                          : ""
-                      }`}
-                      style={{ width: "100%", height: "100%" }}
-                    >
-                      <Text
-                        className={`text-base font-bold ${
-                          item.playerNumber === substitution.startingPlayer
-                            ? "text-black"
-                            : "text-black"
-                        }`}
-                      >
-                        {item.playerNumber}
-                      </Text>
-                    </ImageBackground>
-                  </TouchableOpacity>
-                )}
-                showsHorizontalScrollIndicator={false}
-              />
-            </View>
-            <View className="flex-1 ">
-              <Text className="mx-auto">Bench</Text>
-              <FlatList
-                data={lineUp.filter((player) => !player.onPitch)}
-                horizontal
-                keyExtractor={(item) => item.playerNumber.toString()}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    className="flex my-auto justify-center  items-center mx-2"
-                    style={{ width: width / 8, height: 50 }}
-                    onPress={() =>
-                      setSubstitution((prevState) => ({
-                        ...prevState,
-                        subPlayer: item.playerNumber,
-                      }))
-                    }
-                  >
-                    <ImageBackground
-                      source={require("../assets/jersey.png")}
-                      resizeMode="contain"
-                      className={`flex justify-center items-center ${
-                        item.playerNumber === substitution.subPlayer
-                          ? "border-b border-b-1 border-b-green-500"
-                          : ""
-                      }`}
-                      style={{ width: "100%", height: "100%" }}
-                    >
-                      <Text
-                        className={`text-base font-bold ${
-                          item.playerNumber === substitution.subPlayer
-                            ? "text-black"
-                            : "text-black"
-                        }`}
-                      >
-                        {item.playerNumber}
-                      </Text>
-                    </ImageBackground>
-                  </TouchableOpacity>
-                )}
-                showsHorizontalScrollIndicator={false}
-              />
-            </View>
-            <View className="flex-1 ">
+              className="h-1/2 w-full  absolute top-0"
+            ></TouchableOpacity>
+            <View className="w-full absolute h-1/2 rounded-t-3xl bg-gray-400 bottom-0">
               <TouchableOpacity
-                disabled={!substitution.playerName && !substitution.subPlayer}
                 onPress={() => {
-                  makeSubstitute(
-                    substitution.startingPlayer,
-                    substitution.subPlayer
-                  );
+                  setShowEditLineupModal(false);
+                  setSubstitution({
+                    startingPlayer: null,
+                    subPlayer: null,
+                  });
                 }}
-                // if there is a starting/sub player selected make the button clickable
-                className={`rounded-md mx-auto my-auto p-2 w-1/4
+                className="absolute w-10 h-10 right-5 top-5 "
+              >
+                <Text className="text-center my-auto">
+                  <FontAwesomeIcon
+                    icon={faCircleXmark}
+                    size={35}
+                    color="#030303"
+                  />
+                </Text>
+              </TouchableOpacity>
+              <View className=" py-10 w-full ">
+                <Text className="text-center my-auto text-lg font-semibold">
+                  Make a Substitution
+                </Text>
+              </View>
+              <View className="flex-1 ">
+                <Text className="ml-2 mx-auto">On Field</Text>
+                <FlatList
+                  data={lineUp.filter((player) => player.onPitch)}
+                  horizontal
+                  keyExtractor={(item) => item.playerNumber.toString()}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      className="flex my-auto justify-center  items-center mx-2"
+                      style={{ width: width / 8, height: 50 }}
+                      onPress={() =>
+                        setSubstitution((prevState) => ({
+                          ...prevState,
+                          startingPlayer: item.playerNumber,
+                        }))
+                      }
+                    >
+                      <ImageBackground
+                        source={require("../assets/jersey.png")}
+                        resizeMode="contain"
+                        className={`flex justify-center items-center ${
+                          item.playerNumber === substitution.startingPlayer
+                            ? "border-b border-b-1 border-b-green-500"
+                            : ""
+                        }`}
+                        style={{ width: "100%", height: "100%" }}
+                      >
+                        <Text
+                          className={`text-base font-bold ${
+                            item.playerNumber === substitution.startingPlayer
+                              ? "text-black"
+                              : "text-black"
+                          }`}
+                        >
+                          {item.playerNumber}
+                        </Text>
+                      </ImageBackground>
+                    </TouchableOpacity>
+                  )}
+                  showsHorizontalScrollIndicator={false}
+                />
+              </View>
+              <View className="flex-1 ">
+                <Text className="mx-auto">Bench</Text>
+                <FlatList
+                  data={lineUp.filter((player) => !player.onPitch)}
+                  horizontal
+                  keyExtractor={(item) => item.playerNumber.toString()}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      className="flex my-auto justify-center  items-center mx-2"
+                      style={{ width: width / 8, height: 50 }}
+                      onPress={() =>
+                        setSubstitution((prevState) => ({
+                          ...prevState,
+                          subPlayer: item.playerNumber,
+                        }))
+                      }
+                    >
+                      <ImageBackground
+                        source={require("../assets/jersey.png")}
+                        resizeMode="contain"
+                        className={`flex justify-center items-center ${
+                          item.playerNumber === substitution.subPlayer
+                            ? "border-b border-b-1 border-b-green-500"
+                            : ""
+                        }`}
+                        style={{ width: "100%", height: "100%" }}
+                      >
+                        <Text
+                          className={`text-base font-bold ${
+                            item.playerNumber === substitution.subPlayer
+                              ? "text-black"
+                              : "text-black"
+                          }`}
+                        >
+                          {item.playerNumber}
+                        </Text>
+                      </ImageBackground>
+                    </TouchableOpacity>
+                  )}
+                  showsHorizontalScrollIndicator={false}
+                />
+              </View>
+              <View className="flex-1 ">
+                <TouchableOpacity
+                  disabled={!substitution.playerName && !substitution.subPlayer}
+                  onPress={() => {
+                    makeSubstitute(
+                      substitution.startingPlayer,
+                      substitution.subPlayer
+                    );
+                  }}
+                  // if there is a starting/sub player selected make the button clickable
+                  className={`rounded-md mx-auto my-auto p-2 w-1/4
 
                 ${
                   substitution.startingPlayer && substitution.subPlayer
@@ -1587,99 +1641,98 @@ export default function App() {
                     : "bg-gray-100"
                 }
                 `}
+                >
+                  <Text className="text-center font-semibold textlg">
+                    Make Sub
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </>
+        )}
+        {showHalftimeModal && (
+          <>
+            <TouchableOpacity
+              onPress={() => setShowHalftimeModal(false)}
+              className="h-4/5 flex-1 w-full  absolute bottom-1/5 "
+            ></TouchableOpacity>
+            <View className="w-full absolute h-1/5  rounded-t-3xl bg-gray-400 bottom-0">
+              <Text className="text-center w-[30%]  left-[35%]  top-5 absolute mx-auto my-auto items-center justify-center">
+                {Math.floor(seconds / 60)} Mins{" "}
+                {currentHalf === 1 ? "1st" : "2nd"} half
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  // setCurrentHalf(2);
+                  {
+                    currentHalf === 1 ? setCurrentHalf(2) : setCurrentHalf(1);
+                  }
+                  setSeconds(0);
+                  setShowHalftimeModal(false);
+                  setIsActive(true);
+                  setTimerLimitReached(false);
+                }}
+                className="mx-auto my-auto   px-3 bg-white py-2 rounded-md"
               >
-                <Text className="text-center font-semibold textlg">
-                  Make Sub
+                <Text className="text-gray-700 font-semibold">
+                  {currentHalf === 1 ? "Start 2nd Half" : "Back to 1st Half"}
                 </Text>
               </TouchableOpacity>
             </View>
-          </View>
-        </>
-      )}
-      {showHalftimeModal && (
-        <>
-          <TouchableOpacity
-            onPress={() => setShowHalftimeModal(false)}
-            className="h-4/5 flex-1 w-full  absolute bottom-1/5 "
-          ></TouchableOpacity>
-          <View className="w-full absolute h-1/5  rounded-t-3xl bg-gray-400 bottom-0">
-            <Text className="text-center w-[30%]  left-[35%]  top-5 absolute mx-auto my-auto items-center justify-center">
-              {Math.floor(seconds / 60)} Mins{" "}
-              {currentHalf === 1 ? "1st" : "2nd"} half
-            </Text>
+          </>
+        )}
+        {showEditTimerModal && (
+          <>
             <TouchableOpacity
-              onPress={() => {
-                // setCurrentHalf(2);
-                {
-                  currentHalf === 1 ? setCurrentHalf(2) : setCurrentHalf(1);
-                }
-                setSeconds(0);
-                setShowHalftimeModal(false);
-                setIsActive(true);
-                setTimerLimitReached(false);
-              }}
-              className="mx-auto my-auto   px-3 bg-white py-2 rounded-md"
-            >
-              <Text className="text-gray-700 font-semibold">
-                {currentHalf === 1 ? "Start 2nd Half" : "Back to 1st Half"}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </>
-      )}
-      {showEditTimerModal && (
-        <>
-          <TouchableOpacity
-            onPress={() => setShowEditTimeModal(false)}
-            className="h-4/5 w-full  absolute top-0 bg-transparent"
-          ></TouchableOpacity>
+              onPress={() => setShowEditTimeModal(false)}
+              className="h-4/5 w-full  absolute top-0 bg-transparent"
+            ></TouchableOpacity>
 
-          <View className="w-full absolute h-1/5 flex-row rounded-t-3xl bg-gray-400 bottom-0">
-            <View className="mx-auto flex-row   h-auto">
-              <View className=" absolute  w-12 right-[35%] bg-red-600 mt-2 rounded-full h-12">
-                <Text className="mx-auto text-center justify-center items-center my-auto">
+            <View className="w-full absolute h-1/5 flex-row rounded-t-3xl bg-gray-400 bottom-0">
+              <View className="mx-auto flex-row h-auto">
+                <View className="absolute w-12 right-[35%] bg-gray-600 mt-2 rounded-full  h-12 flex justify-center items-center">
                   <TouchableOpacity
                     onPress={handlePlayPauseClick}
                     title="Start Timer"
                     disabled={timerLimitReached}
+                    className="flex justify-center items-center z-50 w-full h-full"
                   >
-                    <Icon name={timerIcon} width={16} color="#fff" />
-                    {/* <Text className="text-white"></Text> */}
+                    <Icon name={timerIcon} width={12} color="#fff" />
                   </TouchableOpacity>
+                </View>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (seconds > 60) {
+                      setSeconds(seconds - 60);
+                    } else {
+                      setSeconds(0);
+                      setIsActive(true);
+                    }
+                  }}
+                  className="bg-white mx-auto my-auto mr-5 justify-center p-2 rounded-full w-10 h-10"
+                >
+                  <Text className="text-center">-</Text>
+                </TouchableOpacity>
+                <Text className="text-center font-bold text-2xl my-auto">
+                  {Math.floor(seconds / 60)}:
+                  {seconds % 60 < 10 ? `0${seconds % 60}` : seconds % 60}
                 </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (seconds < 2100) {
+                      setSeconds(seconds + 60);
+                    }
+                  }}
+                  className="bg-white mx-auto my-auto ml-5 justify-center p-2 rounded-full w-10 h-10"
+                >
+                  <Text className="text-center">+</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                onPress={() => {
-                  if (seconds > 60) {
-                    setSeconds(seconds - 60);
-                  } else {
-                    setSeconds(0);
-                    setIsActive(true);
-                  }
-                }}
-                className="bg-white mx-auto my-auto mr-5 justify-center p-2 rounded-full w-10 h-10"
-              >
-                <Text className="text-center">-</Text>
-              </TouchableOpacity>
-              <Text className="text-center font-bold text-2xl my-auto">
-                {Math.floor(seconds / 60)}:
-                {seconds % 60 < 10 ? `0${seconds % 60}` : seconds % 60}
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  if (seconds < 2100) {
-                    setSeconds(seconds + 60);
-                  }
-                }}
-                className="bg-white mx-auto my-auto ml-5 justify-center p-2 rounded-full w-10 h-10"
-              >
-                <Text className="text-center">+</Text>
-              </TouchableOpacity>
             </View>
-          </View>
-        </>
-      )}
-    </SafeAreaView>
+          </>
+        )}
+      </SafeAreaView>
+    </>
   );
 }
 

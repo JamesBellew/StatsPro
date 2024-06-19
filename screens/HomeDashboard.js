@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   SafeAreaView,
   View,
@@ -7,6 +8,7 @@ import {
   ImageBackground,
   Image,
 } from "react-native";
+
 import { useNavigation } from "@react-navigation/native";
 import { CommonActions } from "@react-navigation/native";
 
@@ -24,7 +26,24 @@ export default function App() {
       })
     );
   };
+  const [positions, setPositions] = useState([]);
+  // Load data function
+  const loadGameData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem("@game_data");
+      if (jsonValue != null) {
+        const data = JSON.parse(jsonValue);
+        setPositions(data.positions);
+        console.log("Data loaded", data);
+      }
+    } catch (e) {
+      console.error("Error loading data", e);
+    }
+  };
 
+  useEffect(() => {
+    loadGameData();
+  }, []);
   return (
     <SafeAreaView className="flex-1 bg-[#181818]">
       <View className="flex flex-row justify-end items-end">
@@ -86,6 +105,13 @@ export default function App() {
             <Text className="text-center">Report Issue</Text>
           </TouchableOpacity>
         </View>
+      </View>
+      <View>
+        {positions.map((pos, index) => (
+          <Text
+            key={index}
+          >{`Action: ${pos.action}, X: ${pos.x}, Y: ${pos.y}`}</Text>
+        ))}
       </View>
     </SafeAreaView>
   );
