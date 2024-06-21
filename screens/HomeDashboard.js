@@ -5,7 +5,7 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ImageBackground,
+  TouchableWithoutFeedback,
   Image,
 } from "react-native";
 
@@ -15,6 +15,7 @@ import { CommonActions } from "@react-navigation/native";
 export default function App() {
   const navigation = useNavigation();
   const [showProfileMiniMenu, setShowProfileMiniMenu] = useState(false);
+  const [showSavedGamesComp, setShowSavedGamesComp] = useState(false);
   const handleStartGame = () => {
     console.log("clicked");
   };
@@ -26,15 +27,16 @@ export default function App() {
       })
     );
   };
-  const [positions, setPositions] = useState([]);
-  // Load data function
+  const [savedGames, setSavedGames] = useState([]);
   const loadGameData = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem("@game_data");
       if (jsonValue != null) {
         const data = JSON.parse(jsonValue);
-        setPositions(data.positions);
-        console.log("Data loaded", data);
+        if (Array.isArray(data)) {
+          setSavedGames(data); // Set the array of saved games
+          console.log("Data loaded", data);
+        }
       }
     } catch (e) {
       console.error("Error loading data", e);
@@ -44,8 +46,35 @@ export default function App() {
   useEffect(() => {
     loadGameData();
   }, []);
+
+  function SavedGamesComponent() {
+    return (
+      <TouchableWithoutFeedback onPress={() => setShowSavedGamesComp(false)}>
+        <View className="bg-black/50 z-50 w-full justify-center rounded-md items-center h-full absolute">
+          <TouchableWithoutFeedback>
+            <View className="w-[90%] h-3/4 bg-[#242424] items-center justify-center rounded-md">
+              <View className="rounded-md w-full">
+                {savedGames.map((game, index) => (
+                  <View key={index} className="rounded-md">
+                    <Text className="bg-gray-200  text-center p-4 my-2    cursor-pointer roudned-md">
+                      {game.gameName}
+                    </Text>
+                    {game.positions.map((pos, posIndex) => (
+                      <Text key={posIndex}>{pos.datatosave}</Text>
+                    ))}
+                  </View>
+                ))}
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-[#181818]">
+      {showSavedGamesComp && <SavedGamesComponent />}
       <View className="flex flex-row justify-end items-end">
         <View className="w-auto m-2 flex-row h-10 items-center">
           <Text className="text-white mr-2">James</Text>
@@ -88,8 +117,11 @@ export default function App() {
         >
           <Text className="text-center">Start new Game</Text>
         </TouchableOpacity>
-        <TouchableOpacity className="bg-white w-4/5 h-24 justify-center items-center my-2 rounded-md">
-          <Text className="text-center">Statistics</Text>
+        <TouchableOpacity
+          onPress={() => setShowSavedGamesComp(true)}
+          className="bg-white w-4/5 h-24 justify-center items-center my-2 rounded-md"
+        >
+          <Text className="text-center">Saved Games</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => navigation.navigate("EditLineup")}
@@ -105,13 +137,6 @@ export default function App() {
             <Text className="text-center">Report Issue</Text>
           </TouchableOpacity>
         </View>
-      </View>
-      <View>
-        {positions.map((pos, index) => (
-          <Text
-            key={index}
-          >{`Action: ${pos.action}, X: ${pos.x}, Y: ${pos.y}`}</Text>
-        ))}
       </View>
     </SafeAreaView>
   );

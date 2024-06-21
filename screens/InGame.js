@@ -531,9 +531,25 @@ export default function App() {
     try {
       const id = new Date().getTime().toString();
       const timestamp = new Date().toISOString();
-      const dataToSave = { id, timestamp, positions: gameData };
-      const jsonValue = JSON.stringify(dataToSave);
-      await AsyncStorage.setItem("@game_data", jsonValue);
+      const gameName = `Home Game ${timestamp}`;
+      const newGameData = { id, timestamp, gameName, positions: gameData };
+
+      // Load existing data
+      const jsonValue = await AsyncStorage.getItem("@game_data");
+      let existingData = [];
+      if (jsonValue != null) {
+        existingData = JSON.parse(jsonValue);
+        if (!Array.isArray(existingData)) {
+          existingData = [];
+        }
+      }
+
+      // Append new game data to existing data
+      existingData.push(newGameData);
+
+      // Save updated data back to AsyncStorage
+      const updatedJsonValue = JSON.stringify(existingData);
+      await AsyncStorage.setItem("@game_data", updatedJsonValue);
       console.log("Data saved");
     } catch (e) {
       console.error("Error saving data", e);
