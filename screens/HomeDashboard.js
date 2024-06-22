@@ -53,18 +53,27 @@ export default function App() {
         <View className="bg-black/50 z-50 w-full justify-center rounded-md items-center h-full absolute">
           <TouchableWithoutFeedback>
             <View className="w-[90%] h-3/4 bg-[#242424] items-center justify-center rounded-md">
-              <View className="rounded-md w-full">
+              <TouchableOpacity className="rounded-md w-full">
                 {savedGames.map((game, index) => (
-                  <View key={index} className="rounded-md">
+                  <TouchableOpacity
+                    onPress={() => {
+                      console.log("====================================");
+                      console.log(game);
+                      console.log("====================================");
+                      navigation.navigate("InGame", { gameData: game });
+                    }}
+                    key={index}
+                    className="rounded-md"
+                  >
                     <Text className="bg-gray-200  text-center p-4 my-2    cursor-pointer roudned-md">
                       {game.gameName}
                     </Text>
                     {game.positions.map((pos, posIndex) => (
                       <Text key={posIndex}>{pos.datatosave}</Text>
                     ))}
-                  </View>
+                  </TouchableOpacity>
                 ))}
-              </View>
+              </TouchableOpacity>
             </View>
           </TouchableWithoutFeedback>
         </View>

@@ -13,6 +13,7 @@ import {
   Dimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
 import { CommonActions } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome5"; // FontAwesome5 for newer icons
 import { Svg, Path } from "react-native-svg";
@@ -29,6 +30,9 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 export default function App() {
   const navigation = useNavigation();
+  const route = useRoute();
+  const { opponent } = route.params; // Access the passed parameter
+
   const [showProfileMiniMenu, setShowProfileMiniMenu] = useState(false);
 
   const AlertComponent = () => {
@@ -57,6 +61,7 @@ export default function App() {
         backgroundColor: "#242424",
         justifyContent: "center",
         alignItems: "center",
+        zIndex: 1,
       },
       component: <Text style={styles.xMarkerLoss}>X</Text>,
     },
@@ -527,12 +532,24 @@ export default function App() {
     const matchesTeam = selected === "All" || position.team === selected;
     return matchesCategory && matchesTeam;
   });
+  const date = new Date();
+  const day = String(date.getDate()).padStart(2, "0"); // Get the day and pad it with leading zero if needed
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Get the month and pad it with leading zero if needed
+  const year = String(date.getFullYear()).slice(-2); // Get the last two digits of the year
+
+  const formattedDate = `${day}/${month}/${year}`; // Format the date as DD/MM/YY
   const saveGameData = async (gameData) => {
     try {
       const id = new Date().getTime().toString();
-      const timestamp = new Date().toISOString();
-      const gameName = `Home Game ${timestamp}`;
-      const newGameData = { id, timestamp, gameName, positions: gameData };
+      const timestamp = formattedDate;
+      const gameName = `Home Game vs ${opponent} / ${timestamp}`;
+      const newGameData = {
+        id,
+        timestamp,
+        gameName,
+        positions: gameData,
+        direction: shootingDirect,
+      };
 
       // Load existing data
       const jsonValue = await AsyncStorage.getItem("@game_data");
@@ -551,6 +568,7 @@ export default function App() {
       const updatedJsonValue = JSON.stringify(existingData);
       await AsyncStorage.setItem("@game_data", updatedJsonValue);
       console.log("Data saved");
+      navigation.navigate("HomeDashboard");
     } catch (e) {
       console.error("Error saving data", e);
     }
@@ -576,10 +594,10 @@ export default function App() {
             </Text>
             <View className="bg-[#242424]/20 mt-5 w-3/4 p-2 rounded-md">
               <Text className="text-center text-white text-md mt-2">
-                Kilkerley vs Roach
+                Kilkerley vs {opponent}
               </Text>
               <Text className="text-center text-md mt-2 text-white">
-                15/12/2024
+                {formattedDate}
               </Text>
               <Text className="text-center text-md my-2 text-white">
                 15 Actions
@@ -929,7 +947,7 @@ export default function App() {
                 style={{
                   top: "15.4%",
                   left: "50%",
-                  zIndex: "0",
+                  zIndex: 0,
                   transform: [{ translateX: -56 }],
                 }}
               ></View>

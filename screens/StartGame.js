@@ -16,7 +16,10 @@ export default function App() {
   const [showProfileMiniMenu, setShowProfileMiniMenu] = useState(false);
   const handleStartGame = () => {
     console.log("clicked");
-    navigation.navigate("InGame");
+    console.log("====================================");
+    console.log(opponentText);
+    console.log("====================================");
+    navigation.navigate("InGame", { opponent: opponentText });
   };
   const handleLogout = () => {
     navigation.dispatch(
