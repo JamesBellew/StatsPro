@@ -16,6 +16,8 @@ export default function App() {
   const navigation = useNavigation();
   const [showProfileMiniMenu, setShowProfileMiniMenu] = useState(false);
   const [showSavedGamesComp, setShowSavedGamesComp] = useState(false);
+  const [longPressedGame, setLongPressedGame] = useState(null);
+
   const handleStartGame = () => {
     console.log("clicked");
   };
@@ -43,16 +45,38 @@ export default function App() {
     }
   };
 
+  const deleteGame = async (gameName) => {
+    try {
+      const updatedGames = savedGames.filter(
+        (game) => game.gameName !== gameName
+      );
+      setSavedGames(updatedGames);
+      await AsyncStorage.setItem("@game_data", JSON.stringify(updatedGames));
+      console.log("Game deleted", gameName);
+      setLongPressedGame(null);
+    } catch (e) {
+      console.error("Error deleting game", e);
+    }
+  };
+
   useEffect(() => {
     loadGameData();
   }, []);
 
   function SavedGamesComponent() {
     return (
-      <TouchableWithoutFeedback onPress={() => setShowSavedGamesComp(false)}>
+      <TouchableWithoutFeedback
+        onPress={() => {
+          if (longPressedGame) {
+            setLongPressedGame(null);
+          } else {
+            setShowSavedGamesComp(false);
+          }
+        }}
+      >
         <View className="bg-black/50 z-50 w-full justify-center rounded-md items-center h-full absolute">
           <TouchableWithoutFeedback>
-            <View className="w-[90%] h-3/4 bg-[#242424] items-center justify-center rounded-md">
+            <View className="w-[90%] h-auto bg-[#242424] p-4 items-center justify-center rounded-md">
               <TouchableOpacity className="rounded-md w-full">
                 {savedGames.map((game, index) => (
                   <TouchableOpacity
@@ -62,15 +86,30 @@ export default function App() {
                       console.log("====================================");
                       navigation.navigate("InGame", { gameData: game });
                     }}
+                    onLongPress={() => setLongPressedGame(game.gameName)}
                     key={index}
                     className="rounded-md"
                   >
-                    <Text className="bg-gray-200  text-center p-4 my-2    cursor-pointer roudned-md">
+                    <Text className="bg-gray-200 text-center p-4 cursor-pointer rounded-md">
                       {game.gameName}
                     </Text>
                     {game.positions.map((pos, posIndex) => (
                       <Text key={posIndex}>{pos.datatosave}</Text>
                     ))}
+                    {longPressedGame === game.gameName && (
+                      <TouchableWithoutFeedback>
+                        <View className="absolute w-full inset-0">
+                          <TouchableOpacity
+                            onPress={() => deleteGame(game.gameName)}
+                            className="bg-red-500 w-full p-2 rounded-md mt-2"
+                          >
+                            <Text className="text-white text-center">
+                              Delete
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      </TouchableWithoutFeedback>
+                    )}
                   </TouchableOpacity>
                 ))}
               </TouchableOpacity>
