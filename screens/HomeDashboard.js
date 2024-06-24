@@ -74,7 +74,7 @@ export default function App() {
           }
         }}
       >
-        <View className="bg-black/50 z-50 w-full justify-center rounded-md items-center h-full absolute">
+        <View className="bg-black/90 z-50 w-full justify-center rounded-md items-center h-full absolute">
           <TouchableWithoutFeedback>
             <View className="w-[90%] h-auto bg-[#242424] p-4 items-center justify-center rounded-md">
               <TouchableOpacity className="rounded-md w-full">
@@ -88,20 +88,34 @@ export default function App() {
                     }}
                     onLongPress={() => setLongPressedGame(game.gameName)}
                     key={index}
-                    className="rounded-md"
+                    className="rounded-md my-auto"
                   >
-                    <Text className="bg-gray-200 text-center p-4 cursor-pointer rounded-md">
+                    <Text className="bg-gray-200 capitalize my-2 text-center p-4 cursor-pointer rounded-md">
                       {game.gameName}
                     </Text>
-                    {game.positions.map((pos, posIndex) => (
-                      <Text key={posIndex}>{pos.datatosave}</Text>
-                    ))}
+
                     {longPressedGame === game.gameName && (
                       <TouchableWithoutFeedback>
-                        <View className="absolute w-full inset-0">
+                        <View className="absolute bg-gray-200 w-full my-auto h-1/2 top-[25%] flex-row justify-center items-center inset-0">
                           <TouchableOpacity
                             onPress={() => deleteGame(game.gameName)}
-                            className="bg-red-500 w-full p-2 rounded-md mt-2"
+                            className="bg-gray-500 w-auto my-auto mx-3 justify-center items-center p-2 rounded-md  h-full"
+                          >
+                            <Text className="text-white text-center">
+                              Cancel
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={() => deleteGame(game.gameName)}
+                            className="bg-gray-500 w-auto my-auto mx-3 justify-center items-center p-2 rounded-md  h-full"
+                          >
+                            <Text className="text-white px-2 text-center">
+                              Edit
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={() => deleteGame(game.gameName)}
+                            className="bg-red-500 w-auto mx-3 my-auto justify-center items-center p-2 rounded-md  h-full"
                           >
                             <Text className="text-white text-center">
                               Delete

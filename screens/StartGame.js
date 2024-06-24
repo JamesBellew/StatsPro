@@ -19,7 +19,7 @@ export default function App() {
     console.log("====================================");
     console.log(opponentText);
     console.log("====================================");
-    navigation.navigate("InGame", { opponent: opponentText });
+    navigation.navigate("InGame", { opponent: opponentText, venue: venue });
   };
   const handleLogout = () => {
     navigation.dispatch(

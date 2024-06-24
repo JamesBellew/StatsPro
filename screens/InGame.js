@@ -31,7 +31,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 export default function App() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { opponent } = route.params; // Access the passed parameter
+  const { opponent, venue, gameData } = route.params; // Access the passed parameters
 
   const [showProfileMiniMenu, setShowProfileMiniMenu] = useState(false);
 
@@ -253,6 +253,25 @@ export default function App() {
       label: "T/O Loss",
     },
   ]);
+  //this below section of code is for when the user is opening a saved game and wants to continue editing the game
+
+  if (gameData) {
+    if (!shootingDirect && gameData.direction) {
+      setShootingDirection(gameData.direction);
+    }
+    if (positions.length === 0 && gameData.positions) {
+      console.log("====================================");
+      console.log("ya deee");
+      console.log("====================================");
+      setPositions(gameData.positions);
+    }
+    if (positions) {
+      console.log("==============posits=================");
+      console.log(positions);
+      console.log("====================================");
+    }
+  }
+
   const initialLineUp = [];
   for (let i = 1; i <= 32; i++) {
     initialLineUp.push({
@@ -542,7 +561,7 @@ export default function App() {
     try {
       const id = new Date().getTime().toString();
       const timestamp = formattedDate;
-      const gameName = `Home Game vs ${opponent} / ${timestamp}`;
+      const gameName = `${opponent} Game ${venue} on ${timestamp}`;
       const newGameData = {
         id,
         timestamp,
@@ -641,13 +660,16 @@ export default function App() {
             <View className="flex  h-auto space-x-1 p-2 flex-row justify-end items-end">
               <View className="w-[98%]     flex-row h-10 items-center justif-center mx-auto rounded-lg">
                 <View className="w-[15%] space-x-1 bg-[#242424] px-3   py-2 rounded-md ">
-                  <View className="w-full flex justify-center items-center">
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate("HomeDashboard")}
+                    className="w-full flex justify-center items-center"
+                  >
                     <FontAwesomeIcon
                       icon={faChevronLeft}
                       size={25}
                       color="#00E471"
                     />
-                  </View>
+                  </TouchableOpacity>
                 </View>
                 <TouchableOpacity
                   onPress={() => setShowEditTimeModal(true)}
