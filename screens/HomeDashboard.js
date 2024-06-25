@@ -78,6 +78,9 @@ export default function App() {
           <TouchableWithoutFeedback>
             <View className="w-[90%] h-auto bg-[#242424] p-4 items-center justify-center rounded-md">
               <TouchableOpacity className="rounded-md w-full">
+                <Text className="text-white mx-auto mb-2 text-md font-semibold">
+                  Saved Games
+                </Text>
                 {savedGames.map((game, index) => (
                   <TouchableOpacity
                     onPress={() => {

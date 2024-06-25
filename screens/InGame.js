@@ -253,24 +253,6 @@ export default function App() {
       label: "T/O Loss",
     },
   ]);
-  //this below section of code is for when the user is opening a saved game and wants to continue editing the game
-
-  if (gameData) {
-    if (!shootingDirect && gameData.direction) {
-      setShootingDirection(gameData.direction);
-    }
-    if (positions.length === 0 && gameData.positions) {
-      console.log("====================================");
-      console.log("ya deee");
-      console.log("====================================");
-      setPositions(gameData.positions);
-    }
-    if (positions) {
-      console.log("==============posits=================");
-      console.log(positions);
-      console.log("====================================");
-    }
-  }
 
   const initialLineUp = [];
   for (let i = 1; i <= 32; i++) {
@@ -344,11 +326,11 @@ export default function App() {
   useEffect(() => {
     let interval = null;
     // 2100 is 35 mins
-    if (isActive && seconds < 60) {
+    if (isActive && seconds < 2100) {
       interval = setInterval(() => {
         setSeconds((seconds) => seconds + 1);
       }, 1000);
-    } else if (seconds >= 60) {
+    } else if (seconds >= 2100) {
       setTimerLimitReached(true);
       setIsActive(false);
       clearInterval(interval);
@@ -371,6 +353,31 @@ export default function App() {
       setTimerIcon("play");
     }
   };
+  //this below section of code is for when the user is opening a saved game and wants to continue editing the game
+  const [isGameAlreadySaved, setIsGameAlreadySaved] = useState(false);
+  if (gameData) {
+    if (!shootingDirect && gameData.direction) {
+      console.log("=======id BAIIIIII==============");
+      console.log(gameData.id);
+      console.log("====================================");
+      setIsGameAlreadySaved(true);
+      setShootingDirection(gameData.direction);
+    }
+    if (positions.length === 0 && gameData.positions) {
+      setPositions(gameData.positions);
+    }
+    if (seconds < 1) {
+      setScoreBaord({ point: gameData.scoreBoard });
+      setSeconds(gameData.timer);
+      setIsActive(true);
+      if (timerIcon == "play") {
+        setTimerIcon("pause");
+      } else {
+        setTimerIcon("play");
+      }
+    }
+  }
+
   const handlePlayPauseClick = () => {
     if (timerIcon == "play") {
       setTimerIcon("pause");
@@ -559,15 +566,23 @@ export default function App() {
   const formattedDate = `${day}/${month}/${year}`; // Format the date as DD/MM/YY
   const saveGameData = async (gameData) => {
     try {
-      const id = new Date().getTime().toString();
+      let id;
+      if (isGameAlreadySaved) {
+        id = gameData.id;
+      } else {
+        id = new Date().getTime().toString();
+      }
+
       const timestamp = formattedDate;
       const gameName = `${opponent} Game ${venue} on ${timestamp}`;
       const newGameData = {
         id,
         timestamp,
         gameName,
-        positions: gameData,
+        positions: gameData.positions, // Assuming positions array is part of gameData
         direction: shootingDirect,
+        score: scoreBoard,
+        timer: seconds,
       };
 
       // Load existing data
@@ -580,8 +595,33 @@ export default function App() {
         }
       }
 
-      // Append new game data to existing data
-      existingData.push(newGameData);
+      // Debugging logs to understand the structure of existingData
+      console.log("Existing data:");
+      console.log(existingData);
+      console.log("Searching for game with ID:");
+      console.log(id);
+
+      if (isGameAlreadySaved) {
+        // Find the game index and update positions
+        const gameIndex = existingData.findIndex((game) => {
+          console.log("Comparing with game ID:");
+          console.log(game.id);
+          return game.id === id;
+        });
+
+        console.log("Game index:");
+        console.log(gameIndex);
+
+        if (gameIndex !== -1) {
+          existingData[gameIndex].positions = gameData.positions; // Update positions array only
+          console.log("we found the game happyface emoji");
+        } else {
+          console.log("we did not find the game sadface emoji");
+          existingData.push(newGameData); // If game is not found, add it as a new entry
+        }
+      } else {
+        existingData.push(newGameData); // Add new game data
+      }
 
       // Save updated data back to AsyncStorage
       const updatedJsonValue = JSON.stringify(existingData);
