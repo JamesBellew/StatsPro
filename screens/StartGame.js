@@ -111,15 +111,15 @@ export default function App() {
             <Text style={styles.checkboxText}>Away</Text>
           </TouchableOpacity>
         </View>
-        <Text className="px-5 text-white">Lineup</Text>
-        <TextInput
+        {/* <Text className="px-5 text-white">Lineup</Text> */}
+        {/* <TextInput
           style={styles.input}
           className="w-72 shadow appearance-none rounded-lg mx-auto bg-[#383838] text-white px-3 leading-tight focus:outline-none focus:shadow-outline"
           placeholder="Username"
           placeholderTextColor={"white"}
           onChangeText={onChangeText}
           value={text}
-        />
+        /> */}
         <TouchableOpacity
           onPress={handleStartGame}
           className="mx-auto bg-[#00E471] px-10 py-2 rounded-md mt-5"

@@ -179,6 +179,7 @@ export default function App() {
   const [showHalftimeModal, setShowHalftimeModal] = useState(false);
   const [showSaveGameDataModal, setShowSaveGameDataModal] = useState(false);
   const [showActionMenu, setShowActionMenu] = useState(false);
+  const [showUnsavedGameModal, setShowUnsavedGameModal] = useState(false);
   const [showActionsOnPitchFilter, setShowActionsOnPitchFilter] =
     useState("all");
   const [showActionsOnPitch, setShowActionsOnPitch] = useState(false);
@@ -427,6 +428,35 @@ export default function App() {
       </View>
     );
   };
+  function UnsavedChangesModal() {
+    return (
+      <>
+        <View className="w-full z-50 h-1/3 rounded-t-md justify-center items-center bottom-0 absolute bg-gray-200">
+          <Text>You have unsaved changes in this game</Text>
+          <Text className="mt-2">This game data will be lost if not saved</Text>
+          <View className="flex-row mt-5 ">
+            <TouchableOpacity
+              onPress={() => {
+                setShowUnsavedGameModal(false);
+                setShowSaveGameDataModal(true);
+              }}
+              className="bg-green-400 mr-2  p-4 w-1/4 rounded-md"
+            >
+              <Text className="text-center">Save Game</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate("HomeDashboard");
+              }}
+              className="bg-gray-400 ml-2 w-1/4 p-4 rounded-md"
+            >
+              <Text className="text-center">Continue</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </>
+    );
+  }
   const shootingDirectionClickHandler = (direction) => {
     setShootingDirection(direction);
     //set the start game modal to show
@@ -620,6 +650,8 @@ export default function App() {
         if (gameIndex !== -1) {
           // existingData[gameIndex].positions = gameData.positions; // Update positions array only
           existingData[gameIndex].positions = positions; // Update positions array only
+          existingData[gameIndex].timer = seconds;
+          existingData[gameIndex].half = currentHalf;
           console.log("we found the game happyface emoji");
         } else {
           console.log("we did not find the game sadface emoji");
@@ -678,6 +710,7 @@ export default function App() {
         </TouchableOpacity>
       )}
       <SafeAreaView className="flex-1 bg-[#181818]  overflow-visible">
+        {showUnsavedGameModal && <UnsavedChangesModal />}
         <ScrollView>
           {showStartGameModal && <StartGameModal />}
           {timerLimitReached && showTimerAlert && (
@@ -707,7 +740,14 @@ export default function App() {
               <View className="w-[98%]     flex-row h-10 items-center justif-center mx-auto rounded-lg">
                 <View className="w-[15%] space-x-1 bg-[#242424] px-3   py-2 rounded-md ">
                   <TouchableOpacity
-                    onPress={() => navigation.navigate("HomeDashboard")}
+                    // onPress={() => navigation.navigate("HomeDashboard")}
+                    onPress={() => {
+                      if (positions.length > 0) {
+                        setShowUnsavedGameModal(true);
+                      } else {
+                        navigation.navigate("HomeDashboard");
+                      }
+                    }}
                     className="w-full flex justify-center items-center"
                   >
                     <FontAwesomeIcon
