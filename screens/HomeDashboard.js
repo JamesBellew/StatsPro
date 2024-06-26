@@ -84,7 +84,7 @@ export default function App() {
                 {savedGames.map((game, index) => (
                   <TouchableOpacity
                     onPress={() => {
-                      console.log("====================================");
+                      console.log("==========buko======================");
                       console.log(game);
                       console.log("====================================");
                       navigation.navigate("InGame", { gameData: game });

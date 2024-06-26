@@ -175,6 +175,7 @@ export default function App() {
   const [currentHalf, setCurrentHalf] = useState(1);
   const [showActionShotMenu, setshowActionShotMenu] = useState(false);
   const [showTimerAlert, setShowTimerAlert] = useState(true);
+  const [savedGameViewingId, setSavedGameViewingId] = useState(null);
   const [showHalftimeModal, setShowHalftimeModal] = useState(false);
   const [showSaveGameDataModal, setShowSaveGameDataModal] = useState(false);
   const [showActionMenu, setShowActionMenu] = useState(false);
@@ -356,14 +357,17 @@ export default function App() {
   //this below section of code is for when the user is opening a saved game and wants to continue editing the game
   const [isGameAlreadySaved, setIsGameAlreadySaved] = useState(false);
   if (gameData) {
+    // console.log(gameData);
     if (!shootingDirect && gameData.direction) {
       console.log("=======id BAIIIIII==============");
       console.log(gameData.id);
+      setSavedGameViewingId(gameData.id);
       console.log("====================================");
       setIsGameAlreadySaved(true);
       setShootingDirection(gameData.direction);
     }
     if (positions.length === 0 && gameData.positions) {
+      console.log("whatbthey gone say now");
       setPositions(gameData.positions);
     }
     if (seconds < 1) {
@@ -568,7 +572,7 @@ export default function App() {
     try {
       let id;
       if (isGameAlreadySaved) {
-        id = gameData.id;
+        id = savedGameViewingId; // Use the new savedGameViewingId
       } else {
         id = new Date().getTime().toString();
       }
@@ -579,7 +583,8 @@ export default function App() {
         id,
         timestamp,
         gameName,
-        positions: gameData.positions, // Assuming positions array is part of gameData
+        // positions: gameData.positions, // Assuming positions array is part of gameData
+        positions: positions, // Assuming positions array is part of gameData
         direction: shootingDirect,
         score: scoreBoard,
         timer: seconds,
@@ -595,25 +600,26 @@ export default function App() {
         }
       }
 
-      // Debugging logs to understand the structure of existingData
-      console.log("Existing data:");
-      console.log(existingData);
-      console.log("Searching for game with ID:");
-      console.log(id);
-
       if (isGameAlreadySaved) {
         // Find the game index and update positions
+        const targetId = savedGameViewingId; // Use the new savedGameViewingId
+
+        if (Array.isArray(existingData)) {
+          existingData.forEach((item) => {
+            if (item.id === targetId) {
+            }
+          });
+        } else {
+          console.error("existingData is not an array");
+        }
+
         const gameIndex = existingData.findIndex((game) => {
-          console.log("Comparing with game ID:");
-          console.log(game.id);
           return game.id === id;
         });
 
-        console.log("Game index:");
-        console.log(gameIndex);
-
         if (gameIndex !== -1) {
-          existingData[gameIndex].positions = gameData.positions; // Update positions array only
+          // existingData[gameIndex].positions = gameData.positions; // Update positions array only
+          existingData[gameIndex].positions = positions; // Update positions array only
           console.log("we found the game happyface emoji");
         } else {
           console.log("we did not find the game sadface emoji");
