@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Image,
+  ScrollView,
+  StyleSheet,
   ImageBackground,
 } from "react-native";
 
@@ -76,80 +78,82 @@ export default function App() {
         }}
       >
         <View className="z-50 px-5 w-full rounded-md items-center h-full absolute">
-          <TouchableWithoutFeedback>
-            <View className="w-full flex-row h-auto items-center justify-center rounded-md">
-              <TouchableOpacity className="rounded-md w-full">
-                {savedGames.map((game, index) => (
-                  <TouchableOpacity
-                    onPress={() => {
-                      console.log("==========buko======================");
-                      console.log(game);
-                      console.log("====================================");
-                      navigation.navigate("InGame", { gameData: game });
-                    }}
-                    onLongPress={() => setLongPressedGame(game.gameName)}
-                    key={index}
-                    className="rounded-2xl bg-[#1E2226] my-auto mb-2 px-3 py-4"
-                  >
-                    <View className="flex-row w-full">
-                      <View className=" w-[40%] px-2 py-1">
-                        <Text className="text-lg text-white font-semibold">
-                          {game.gameName}
-                        </Text>
-                        <Text className="text-xs font-semibold capitalize text-[#444A4F]">
-                          {game.venue} {game.timestamp}
-                        </Text>
-                      </View>
-                      <View className=" w-auto px-2 py-1  justify-center">
-                        <Text className="text-gray-500 text-right">
-                          Kilkerley : 2:12
-                        </Text>
-                        <Text className="text-gray-500 text-right">
-                          {game.opponent} : 2:08
-                        </Text>
-                      </View>
-                      <View className=" w-[15%] right-0 flex-1 justify-center items-end px-2 py-1 ">
-                        <Text className="text-gray-500 text-center">
-                          {Math.floor(game.timer / 60)}
-                        </Text>
-                        <Text className="text-gray-500 text-center">Min</Text>
-                      </View>
-                    </View>
-                    {longPressedGame === game.gameName && (
-                      <TouchableWithoutFeedback>
-                        <View className="absolute bg-[#1E2226] w-full my-auto h-full top-[25%] left-3 mx-auto items flex-row justify-center items-center inset-0">
-                          <TouchableOpacity
-                            onPress={() => deleteGame(game.gameName)}
-                            className="bg-gray-500 w-auto my-auto mx-3 justify-center items-center p-2 rounded-md h-auto py-2 px-4"
-                          >
-                            <Text className="text-white text-center">
-                              Cancel
-                            </Text>
-                          </TouchableOpacity>
-                          <TouchableOpacity
-                            onPress={() => deleteGame(game.gameName)}
-                            className="bg-gray-500 w-auto my-auto mx-3 justify-center items-center px-2 rounded-md h-auto py-2 px-4 "
-                          >
-                            <Text className="text-white px-2 text-center">
-                              Edit
-                            </Text>
-                          </TouchableOpacity>
-                          <TouchableOpacity
-                            onPress={() => deleteGame(game.gameName)}
-                            className="bg-red-500 w-auto mx-3 my-auto justify-center items-center px-2 rounded-md h-auto py-2 px-4"
-                          >
-                            <Text className="text-white text-center">
-                              Delete
-                            </Text>
-                          </TouchableOpacity>
+          <ScrollView>
+            <TouchableWithoutFeedback>
+              <View className="w-full flex-row h-auto items-center justify-center rounded-md">
+                <TouchableOpacity className="rounded-md w-full">
+                  {savedGames.map((game, index) => (
+                    <TouchableOpacity
+                      onPress={() => {
+                        console.log("==========buko======================");
+                        console.log(game);
+                        console.log("====================================");
+                        navigation.navigate("InGame", { gameData: game });
+                      }}
+                      onLongPress={() => setLongPressedGame(game.gameName)}
+                      key={index}
+                      className="rounded-2xl bg-[#1E2226] my-auto mb-2 px-3 py-3"
+                    >
+                      <View className="flex-row w-full">
+                        <View className=" w-[40%] px-2 py-1">
+                          <Text className="text-lg text-white font-semibold">
+                            {game.gameName}
+                          </Text>
+                          <Text className="text-xs font-semibold capitalize text-[#444A4F]">
+                            {game.venue} {game.timestamp}
+                          </Text>
                         </View>
-                      </TouchableWithoutFeedback>
-                    )}
-                  </TouchableOpacity>
-                ))}
-              </TouchableOpacity>
-            </View>
-          </TouchableWithoutFeedback>
+                        <View className=" w-auto px-2 py-1  justify-center">
+                          <Text className="text-gray-500 text-right">
+                            Kilkerley : 2:12
+                          </Text>
+                          <Text className="text-gray-500 text-right">
+                            {game.opponent} : 2:08
+                          </Text>
+                        </View>
+                        <View className=" w-[15%] right-0 flex-1 justify-center items-end px-2 py-1 ">
+                          <Text className="text-gray-500 text-center">
+                            {Math.floor(game.timer / 60)}
+                          </Text>
+                          <Text className="text-gray-500 text-center">Min</Text>
+                        </View>
+                      </View>
+                      {longPressedGame === game.gameName && (
+                        <TouchableWithoutFeedback>
+                          <View className="absolute bg-[#1E2226] w-full my-auto h-full top-[25%] left-3 mx-auto items flex-row justify-center items-center inset-0">
+                            <TouchableOpacity
+                              onPress={() => deleteGame(game.gameName)}
+                              className="bg-gray-500 w-auto my-auto mx-3 justify-center items-center p-2 rounded-md h-auto py-2 px-4"
+                            >
+                              <Text className="text-white text-center">
+                                Cancel
+                              </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              onPress={() => deleteGame(game.gameName)}
+                              className="bg-gray-500 w-auto my-auto mx-3 justify-center items-center px-2 rounded-md h-auto py-2 px-4 "
+                            >
+                              <Text className="text-white px-2 text-center">
+                                Edit
+                              </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              onPress={() => deleteGame(game.gameName)}
+                              className="bg-red-500 w-auto mx-3 my-auto justify-center items-center px-2 rounded-md h-auto py-2 px-4"
+                            >
+                              <Text className="text-white text-center">
+                                Delete
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
+                        </TouchableWithoutFeedback>
+                      )}
+                    </TouchableOpacity>
+                  ))}
+                </TouchableOpacity>
+              </View>
+            </TouchableWithoutFeedback>
+          </ScrollView>
         </View>
       </TouchableWithoutFeedback>
     );
@@ -194,13 +198,13 @@ export default function App() {
         </View>
       )}
 
-      <Text className="text-[#444A4F] ml-5 text-2xl mb-5 capitalize font-semibold">
+      <Text className="text-[#444A4F] ml-5 text-2xl mb-3 capitalize font-semibold">
         Actions
       </Text>
       <View className=" z-0 px-5  items-center">
         <ImageBackground
           source={require("../assets/croke.jpg")}
-          style={{ width: "100%", height: 128, borderRadius: 8 }}
+          style={{ width: "100%", height: 108, borderRadius: 8 }}
           imageStyle={{ borderRadius: 8 }}
         >
           <View className="bg-black/60">
@@ -211,7 +215,7 @@ export default function App() {
               <Text className="text-center text-white font-semibold text-xl capitalize">
                 Start new Game
               </Text>
-              <Text className="text-[#444A4F] text-white text-md capitalize font-semibold">
+              <Text className="text-[#444A4F] text-gray-400 text-md capitalize font-semibold">
                 5 remaining
               </Text>
             </TouchableOpacity>
@@ -219,8 +223,25 @@ export default function App() {
         </ImageBackground>
         <Text></Text>
         <ImageBackground
+          source={require("../assets/stats.jpeg")}
+          style={{ width: "100%", height: 108, borderRadius: 8 }}
+          imageStyle={{ borderRadius: 8 }}
+        >
+          <View className="bg-black/60">
+            <TouchableOpacity
+              onPress={() => navigation.navigate("StartGame")}
+              className="w-full h-full justify-end items-start pl-5 pb-5 rounded-md"
+            >
+              <Text className="text-center text-white font-semibold text-xl capitalize">
+                Statistics
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ImageBackground>
+        <Text></Text>
+        <ImageBackground
           source={require("../assets/kerry.webp")}
-          style={{ width: "100%", height: 128, borderRadius: 8 }}
+          style={{ width: "100%", height: 108, borderRadius: 8 }}
           imageStyle={{ borderRadius: 8 }}
         >
           <View className="bg-black/60">
@@ -231,54 +252,21 @@ export default function App() {
               <Text className="text-center text-white font-semibold text-xl capitalize">
                 Edit Lineup
               </Text>
-              <Text className="text-[#444A4F] text-white text-md capitalize font-semibold">
-                5 remaining
-              </Text>
             </TouchableOpacity>
           </View>
         </ImageBackground>
-        {/* <TouchableOpacity
-          onPress={() => navigation.navigate("StartGame")}
-          className="bg-[#1E2226] mt-5 w-full h-32 justify-end items-start pl-5 pb-5  rounded-md"
-        >
-          <Text className="text-center text-white font-semibold text-lg capitalize">
-            Edit Lineup
-          </Text>
-          <Text className="text-[#444A4F] text-md capitalize font-semibold">
-            Last Edited 15th June
-          </Text>
-        </TouchableOpacity> */}
-
-        {/* <TouchableOpacity
-          onPress={() => setShowSavedGamesComp(true)}
-          className="bg-white w-4/5 h-24 justify-center items-center my-2 rounded-md"
-        >
-          <Text className="text-center">Saved Games</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("EditLineup")}
-          className="bg-white w-4/5 h-24 justify-center items-center my-2 rounded-md"
-        >
-          <Text className="text-center">Edit Lineup</Text>
-        </TouchableOpacity>
-        <View className="flex-row justify-center items-center mt-2">
-          <TouchableOpacity className="bg-white w-2/5 h-24 justify-center items-center mx-1 rounded-md">
-            <Text className="text-center">Settings</Text>
-          </TouchableOpacity>
-          <TouchableOpacity className="bg-white w-2/5 h-24 justify-center items-center mx-1 rounded-md">
-            <Text className="text-center">Report Issue</Text>
-          </TouchableOpacity>
-        </View> */}
       </View>
-      <Text className="text-[#444A4F] ml-5 text-2xl mt-10 capitalize font-semibold">
+      <Text className="text-[#444A4F] ml-5 text-2xl mt-5 capitalize font-semibold">
         Saved Games
       </Text>
-      {/* <Text className="text-[#444A4F] ml-5 text-md capitalize font-semibold">
-        5
-      </Text> */}
-      <View className=" w-full h-1/2  rounded-2xl mt-1">
+      <View className="w-full h-[30vh]   rounded-2xl mt-1">
         <SavedGamesComponent />
       </View>
     </SafeAreaView>
   );
 }
+const styles = StyleSheet.create({
+  scrollViewContent: {
+    padding: 1, // Adjust padding as needed
+  },
+});
