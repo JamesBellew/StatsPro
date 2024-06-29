@@ -107,7 +107,7 @@ export default function App({ route }) {
     setSavedGameCount(savedGames.length);
   }, [savedGames]);
   return (
-    <SafeAreaView className="flex-1 bg-[#16171A]">
+    <SafeAreaView className="flex-1 bg-[#07090E]">
       <ScrollView>
         {showSavedGamesComp && <SavedGamesComponent />}
         <View className="flex flex-row justify-end  h-10  items-center">
@@ -203,22 +203,26 @@ export default function App({ route }) {
             </View>
           </ImageBackground>
         </View>
-        <View className=" flex-row mx-5 mb-5">
-          <View className=" flex-1">
-            <Text className="text-[#444A4F] text-gray-400 text-2xl mt-5 capitalize font-semibold">
+        <View className=" flex-row mx-5  mt-5 mb-5">
+          <View className=" flex-1  flex-row  mt-5 ">
+            <Text className="text-[#444A4F] text-gray-400 text-2xl  capitalize font-semibold">
               Games{" "}
-              <View className="text-xs justify-center rounded-full h-6 w-6 border bg-purple-400 bg-[#">
-                <Text className="text-center font-bold text-gray-800">
-                  {savedGameCount}
-                </Text>
-              </View>
             </Text>
-          </View>
-          <View className="items-end justify-end">
-            <TouchableOpacity className=" bg-[#1E2226] rounded-md">
-              <Text className="px-2 py-1 font-semibold text-gray-500">
-                Filters
+            <View className="text-xs justify-center rounded-full h-6 w-6 border bg-[#E66C00] ">
+              <Text className="text-center font-bold text-gray-800">
+                {savedGameCount}
               </Text>
+            </View>
+          </View>
+          <View className="items-end flex-row space-x-2 justify-end">
+            <TouchableOpacity className=" bg-[#10151C] rounded-md">
+              <Text className="px-2 py-2 text-[#e66c00]  ">Recent</Text>
+            </TouchableOpacity>
+            <TouchableOpacity className=" bg-[#10151C] rounded-md">
+              <Text className="px-2 py-2  text-gray-500">Away</Text>
+            </TouchableOpacity>
+            <TouchableOpacity className=" bg-[#10151C] rounded-md">
+              <Text className="px-2 py-2  text-gray-500">Home</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -244,11 +248,13 @@ export default function App({ route }) {
                       // navigation.navigate("InGame", { gameData: game });
                     }}
                     onLongPress={() => setLongPressedGame(game.gameName)}
-                    className="rounded-2xl mx-5 bg-[#1E2226]  my-auto mb-2 px-3 py-3"
+                    className={`rounded-2xl mx-5 bg-[#10151C] 
+                   
+                       my-auto mb-2 px-3 py-3`}
                   >
                     <View className="flex-row w-full ">
                       <View className="w-[40%] px-2 py-1">
-                        <Text className="text-lg text-white font-semibold">
+                        <Text className="text-lg text-gray-200 font-semibold">
                           {game.gameName}
                         </Text>
                         <Text className="text-xs font-semibold capitalize text-gray-500">
@@ -264,13 +270,13 @@ export default function App({ route }) {
                         </Text>
                       </View>
                       <View className="w-[15%] right-0 flex-1 justify-center items-end px-2 py-1">
-                        <Text className="text-gray-500 text-center">
+                        <Text className="text-gray-200 text-center">
                           {game.timer >= 2100 && game.timer <= 2160
                             ? "HT"
                             : Math.floor(game.timer / 60)}
                         </Text>
                         {game.timer < 2100 ? (
-                          <Text className="text-gray-500 text-center">Min</Text>
+                          <Text className="text-gray-200 text-center">Min</Text>
                         ) : (
                           ""
                         )}
@@ -278,19 +284,33 @@ export default function App({ route }) {
                     </View>
                     {index === gameIndexClicked && (
                       // index === 1 &&
-                      <View className="w-full h-12  flex-row items-center justify-center">
-                        <TouchableOpacity className="bg-purple-500 mr-1 rounded-md px-4 py-2 w-1/3">
-                          <Text className="text-center">Statistics</Text>
+                      <View className="w-full h-12  mt-5 flex-row items-center justify-center">
+                        <TouchableOpacity className="bg-[#e66c00] mr-1 rounded-md px-4 py-2 w-1/3">
+                          <Text className="text-center  font-semibold">
+                            Statistics
+                          </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          onPress={() =>
+                            // navigation.navigate("InGame", { gameData: game })
+                            handleOpenGame(game)
+                          }
+                          className="border ml-1 border-gray-400 w-1/3 rounded-md px-4 py-2"
+                        >
+                          <Text className="text-center text-gray-400">
+                            Open Game
+                          </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                           onPress={() =>
                             // navigation.navigate("InGame", { gameData: game })
                             handleOpenGame(game)
                           }
-                          className="border ml-1 border-purple-500 w-1/3 rounded-md px-4 py-2"
+                          className="border ml-1 border-gray-400 w-1/4 rounded-md px-4 py-2"
                         >
                           <Text className="text-center text-gray-400">
-                            Open Game
+                            Edit
                           </Text>
                         </TouchableOpacity>
                       </View>
