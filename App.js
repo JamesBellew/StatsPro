@@ -177,7 +177,11 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Home">
           <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="HomeDashboard" component={HomeDashboard} />
+          <Stack.Screen
+            name="HomeDashboard"
+            component={HomeDashboard}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen name="StartGame" component={StartGame} />
           <Stack.Screen name="EditLineup" component={EditLineup} />
           <Stack.Screen

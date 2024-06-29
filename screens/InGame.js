@@ -673,7 +673,7 @@ export default function App() {
       const updatedJsonValue = JSON.stringify(existingData);
       await AsyncStorage.setItem("@game_data", updatedJsonValue);
       console.log("Data saved");
-      navigation.navigate("HomeDashboard");
+      navigation.navigate("HomeDashboard"), { newGameAdded: true };
     } catch (e) {
       console.error("Error saving data", e);
     }
