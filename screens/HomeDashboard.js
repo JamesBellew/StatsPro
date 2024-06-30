@@ -115,7 +115,7 @@ export default function App({ route }) {
             <Text className="text-gray-200 mr-2">James</Text>
             <TouchableOpacity
               onPress={() => setShowProfileMiniMenu(!showProfileMiniMenu)}
-              className=" h-10 cursor-pointer w-10 rounded-full justify-center items-center"
+              className=" h-10 cursor-pointer wz-10 rounded-full justify-center items-center"
             >
               {!showProfileMiniMenu ? (
                 <Image
