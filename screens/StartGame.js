@@ -7,8 +7,10 @@ import {
   Image,
   TextInput,
   StyleSheet,
+  ImageBackground,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
 import { CommonActions } from "@react-navigation/native";
 
 export default function App() {
@@ -34,57 +36,73 @@ export default function App() {
   const [text, onChangeText] = useState("");
 
   return (
-    <SafeAreaView className="flex-1 bg-[#181818]">
-      <View className="flex mx-auto h-52 bg-[#212121] rounded-b-3xl w-full relative">
-        <View className="flex flex-row justify-end items-end">
-          <View className="w-auto m-2 flex-row h-10 items-center">
-            <Text className="text-white mr-2">James</Text>
-            <TouchableOpacity
-              onPress={() => setShowProfileMiniMenu(!showProfileMiniMenu)}
-              className="bg-white h-10 cursor-pointer w-10 rounded-full justify-center items-center"
-            >
-              {!showProfileMiniMenu ? (
-                <Image
-                  source={require("../assets/pp.jpeg")}
-                  className="h-7 w-7 rounded-full"
-                />
-              ) : (
-                <Text>x</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-        </View>
-        {showProfileMiniMenu && (
-          <View className="flex justify-end items-end absolute right-0 top-16">
-            <TouchableOpacity
-              onPress={handleLogout}
-              className="mr-2 mb-2 h-auto bg-white/80 top-0 z-50 w-auto p-2 rounded-md mr-3"
-            >
-              <Text className="">Edit Profile</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleLogout}
-              className="mr-2 h-auto bg-white/20 top-0 z-50 w-auto p-2 rounded-md mr-3"
-            >
-              <Text className="text-[#00E471]">Logout</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        <View className="bottom-0 mx-auto transform -translate-x-1/2 bg-white w-20 h-20 rounded-full">
-          <Image
-            source={require("../../StatsPro/assets/lu.jpeg")}
-            className="h-full w-full mx-auto justify-center flex my-auto rounded-full"
-          />
-        </View>
-        <Text className="text-center text-white mt-5 text-lg font-semibold">
-          Details for New Game
-        </Text>
+    <SafeAreaView className="flex-1 bg-[#000000]">
+      <View className="flex mx-auto h-52 bg-[#101010] rounded-b-3xl w-full relative">
+        <ImageBackground
+          source={require("../assets/oneil.jpeg")}
+          style={{ width: "100%", height: "100%", borderRadius: 9 }}
+          imageStyle={{ borderRadius: 8 }}
+        >
+          <LinearGradient
+            colors={["#000", "rgba(16,16,16,0.4)"]}
+            start={{ x: 0, y: 0.85 }}
+            end={{ x: 0, y: 0 }}
+            style={{ flex: 1, borderRadius: 8 }}
+          >
+            <View className="flex flex-row justify-end items-end">
+              <View className="w-auto m-2 flex-row h-10 items-center">
+                <Text className="text-white mr-2">James</Text>
+                <TouchableOpacity
+                  onPress={() => setShowProfileMiniMenu(!showProfileMiniMenu)}
+                  className="bg-white h-10 cursor-pointer w-10 rounded-full justify-center items-center"
+                >
+                  {!showProfileMiniMenu ? (
+                    <Image
+                      source={require("../assets/pp.jpeg")}
+                      className="h-7 w-7 rounded-full"
+                    />
+                  ) : (
+                    <Text>x</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+            {showProfileMiniMenu && (
+              <View className="flex justify-end items-end absolute right-0 top-16">
+                <TouchableOpacity
+                  onPress={handleLogout}
+                  className="mr-2 mb-2 h-auto bg-white/80 top-0 z-50 w-auto p-2 rounded-md mr-3"
+                >
+                  <Text className="">Edit Profile</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleLogout}
+                  className="mr-2 h-auto bg-white/20 top-0 z-50 w-auto p-2 rounded-md mr-3"
+                >
+                  <Text className="text-[#00E471]">Logout</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            {/* <View className="bottom-0 mx-auto transform -translate-x-1/2 bg-white w-20 h-20 rounded-full">
+    <Image
+      source={require("../../StatsPro/assets/lu.jpeg")}
+      className="h-full w-full mx-auto justify-center flex my-auto rounded-full"
+    />
+  </View> */}
+            <View className="absolute bottom-0 left-0 right-0  mb-12 justify-end">
+              <Text className="text-center text-white mt-3 text-lg font-semibold">
+                Details For New Game
+              </Text>
+            </View>
+          </LinearGradient>
+        </ImageBackground>
       </View>
+
       <View className="w-3/4 flex-1 align-middle justify-center mx-auto text-center">
         <Text className="px-5 text-white">Opponent</Text>
         <TextInput
           style={styles.input}
-          className="w-72 shadow appearance-none rounded-lg mx-auto bg-[#383838] text-white px-3 leading-tight focus:outline-none focus:shadow-outline mb-5"
+          className="w-72 shadow appearance-none rounded-lg mx-auto bg-[#101010] text-white px-3 leading-tight focus:outline-none focus:shadow-outline mb-5"
           placeholder="Opponent"
           placeholderTextColor={"white"}
           onChangeText={onChangeOpponentText}
@@ -96,8 +114,11 @@ export default function App() {
             onPress={() => setVenue("home")}
             style={[
               styles.checkbox,
-              venue === "home" && styles.checkboxSelected,
+              // venue === "home" && styles.checkboxSelected,
             ]}
+            className={`${
+              venue === "home" ? "border-b border-b-[#FE4F3F] bg-white" : ""
+            }`}
           >
             <Text style={styles.checkboxText}>Home</Text>
           </TouchableOpacity>
@@ -105,8 +126,11 @@ export default function App() {
             onPress={() => setVenue("away")}
             style={[
               styles.checkbox,
-              venue === "away" && styles.checkboxSelected,
+              // venue === "away" && styles.checkboxSelected,
             ]}
+            className={`${
+              venue === "away" ? "border-b border-b-[#FE4F3F] bg-white" : ""
+            }`}
           >
             <Text style={styles.checkboxText}>Away</Text>
           </TouchableOpacity>
@@ -122,12 +146,14 @@ export default function App() {
         /> */}
         <TouchableOpacity
           onPress={handleStartGame}
-          className="mx-auto bg-[#00E471] px-10 py-2 rounded-md mt-5"
+          className="mx-auto bg-[#FE4F3F] px-10 py-2 rounded-md mt-5"
         >
-          <Text className="text-lg">Start</Text>
+          <Text className="text-lg font-semibold text-gray-300 tracking-widest  ">
+            Start
+          </Text>
         </TouchableOpacity>
       </View>
-      <View className="bottom-nav  w-full h-auto">
+      {/* <View className="bottom-nav  w-full h-auto">
         <TouchableOpacity
           onPress={() => navigation.navigate("HomeDashboard")}
           className="h-14 w-14 bg-white rounded-full mx-auto text-center"
@@ -137,7 +163,7 @@ export default function App() {
             className="h-1/2 p-4 w-1/2 mx-auto justify-center flex my-auto rounded-full"
           />
         </TouchableOpacity>
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 }
@@ -181,15 +207,16 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#383838",
+    backgroundColor: "#101010",
     borderRadius: 5,
     marginHorizontal: 10,
   },
   checkboxSelected: {
-    backgroundColor: "white",
+    borderWidth: 2,
+    borderColor: "#101010",
     color: "black",
   },
   checkboxText: {
-    color: "black",
+    color: "white",
   },
 });

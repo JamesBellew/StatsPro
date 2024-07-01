@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LinearGradient } from "expo-linear-gradient";
 import {
   SafeAreaView,
   View,
@@ -11,7 +12,8 @@ import {
   StyleSheet,
   ImageBackground,
 } from "react-native";
-
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faHeart, faEye, faCloud } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { CommonActions } from "@react-navigation/native";
 
@@ -107,7 +109,7 @@ export default function App({ route }) {
     setSavedGameCount(savedGames.length);
   }, [savedGames]);
   return (
-    <SafeAreaView className="flex-1 bg-[#07090E]">
+    <SafeAreaView className="flex-1 bg-[#000000]">
       <ScrollView>
         {showSavedGamesComp && <SavedGamesComponent />}
         <View className="flex flex-row justify-end  h-10  items-center">
@@ -145,7 +147,7 @@ export default function App({ route }) {
           </View>
         )}
 
-        <Text className="text-[#444A4F] text-gray-400 ml-5 text-2xl mb-3 capitalize font-semibold">
+        <Text className="text-[#444A4F] text-gray-200 ml-5 text-2xl mb-3 capitalize font-semibold">
           Actions
         </Text>
         <View className=" z-0 px-5 items-center">
@@ -154,19 +156,40 @@ export default function App({ route }) {
             style={{ width: "100%", height: 108, borderRadius: 8 }}
             imageStyle={{ borderRadius: 8 }}
           >
-            <View className="bg-black/40">
+            <LinearGradient
+              colors={["#000", "rgba(16,16,16,0.1)"]}
+              start={{ x: 0, y: 1 }}
+              end={{ x: 2, y: 0 }}
+              style={{ flex: 1, borderRadius: 8 }}
+            >
               <TouchableOpacity
                 onPress={() => navigation.navigate("StartGame")}
-                className="w-full h-full justify-end items-start pl-5 pb-5 rounded-md"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  justifyContent: "flex-end",
+                  alignItems: "flex-start",
+                  paddingLeft: 20,
+                  paddingBottom: 20,
+                  borderRadius: 8,
+                }}
               >
-                <Text className="text-center text-white font-semibold text-xl capitalize">
-                  Start new Game
+                <Text
+                  style={{
+                    textAlign: "center",
+                    color: "white",
+                    fontWeight: "600",
+                    fontSize: 20,
+                    textTransform: "capitalize",
+                  }}
+                >
+                  Start Game
                 </Text>
-                <Text className="text-[#444A4F] text-gray-400 text-md capitalize font-semibold">
-                  {10 - savedGameCount} remaining
+                <Text className="text-[#FE4F3F]">
+                  {10 - savedGameCount} Remaining
                 </Text>
               </TouchableOpacity>
-            </View>
+            </LinearGradient>
           </ImageBackground>
           <Text></Text>
           <ImageBackground
@@ -174,16 +197,37 @@ export default function App({ route }) {
             style={{ width: "100%", height: 108, borderRadius: 8 }}
             imageStyle={{ borderRadius: 8 }}
           >
-            <View className="bg-black/40">
+            <LinearGradient
+              colors={["#000", "rgba(16,16,16,0.1)"]}
+              start={{ x: 0, y: 1 }}
+              end={{ x: 2, y: 0 }}
+              style={{ flex: 1, borderRadius: 8 }}
+            >
               <TouchableOpacity
                 onPress={() => navigation.navigate("StartGame")}
-                className="w-full h-full justify-end items-start pl-5 pb-5 rounded-md"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  justifyContent: "flex-end",
+                  alignItems: "flex-start",
+                  paddingLeft: 20,
+                  paddingBottom: 20,
+                  borderRadius: 8,
+                }}
               >
-                <Text className="text-center text-white font-semibold text-xl capitalize">
+                <Text
+                  style={{
+                    textAlign: "center",
+                    color: "white",
+                    fontWeight: "600",
+                    fontSize: 20,
+                    textTransform: "capitalize",
+                  }}
+                >
                   Statistics
                 </Text>
               </TouchableOpacity>
-            </View>
+            </LinearGradient>
           </ImageBackground>
           <Text></Text>
           <ImageBackground
@@ -191,37 +235,58 @@ export default function App({ route }) {
             style={{ width: "100%", height: 108, borderRadius: 8 }}
             imageStyle={{ borderRadius: 8 }}
           >
-            <View className="bg-black/40">
+            <LinearGradient
+              colors={["#000", "rgba(16,16,16,0.1)"]}
+              start={{ x: 0, y: 1 }}
+              end={{ x: 2, y: 0 }}
+              style={{ flex: 1, borderRadius: 8 }}
+            >
               <TouchableOpacity
                 onPress={() => navigation.navigate("StartGame")}
-                className="w-full h-full justify-end items-start pl-5 pb-5 rounded-md"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  justifyContent: "flex-end",
+                  alignItems: "flex-start",
+                  paddingLeft: 20,
+                  paddingBottom: 20,
+                  borderRadius: 8,
+                }}
               >
-                <Text className="text-center text-white font-semibold text-xl capitalize">
+                <Text
+                  style={{
+                    textAlign: "center",
+                    color: "white",
+                    fontWeight: "600",
+                    fontSize: 20,
+                    textTransform: "capitalize",
+                  }}
+                >
                   Edit Lineup
                 </Text>
               </TouchableOpacity>
-            </View>
+            </LinearGradient>
           </ImageBackground>
         </View>
         <View className=" flex-row mx-5  mt-5 mb-5">
           <View className=" flex-1  flex-row  mt-5 ">
-            <Text className="text-[#444A4F] text-gray-400 text-2xl  capitalize font-semibold">
+            <Text className="text-[#444A4F] text-gray-200 text-2xl  capitalize font-semibold">
               Games{" "}
             </Text>
-            <View className="text-xs justify-center rounded-full h-6 w-6 border bg-[#E66C00] ">
+            <View className="text-xs justify-center rounded-full h-6 w-6 border bg-[#FE4F3F] ">
               <Text className="text-center font-bold text-gray-800">
                 {savedGameCount}
               </Text>
             </View>
           </View>
           <View className="items-end flex-row space-x-2 justify-end">
-            <TouchableOpacity className=" bg-[#10151C] rounded-md">
-              <Text className="px-2 py-2 text-[#e66c00]  ">Recent</Text>
+            <TouchableOpacity className=" bg-[#101010] rounded-md">
+              <Text className="px-2 py-2 text-[#FE4F3F]  ">Recent</Text>
             </TouchableOpacity>
-            <TouchableOpacity className=" bg-[#10151C] rounded-md">
+            <TouchableOpacity className=" bg-[#101010] rounded-md">
               <Text className="px-2 py-2  text-gray-500">Away</Text>
             </TouchableOpacity>
-            <TouchableOpacity className=" bg-[#10151C] rounded-md">
+            <TouchableOpacity className=" bg-[#101010] rounded-md">
               <Text className="px-2 py-2  text-gray-500">Home</Text>
             </TouchableOpacity>
           </View>
@@ -248,24 +313,29 @@ export default function App({ route }) {
                       // navigation.navigate("InGame", { gameData: game });
                     }}
                     onLongPress={() => setLongPressedGame(game.gameName)}
-                    className={`rounded-2xl mx-5 bg-[#10151C] 
+                    className={`rounded-2xl mx-5 bg-[#101010] 
                    
                        my-auto mb-2 px-3 py-3`}
                   >
                     <View className="flex-row w-full ">
                       <View className="w-[40%] px-2 py-1">
-                        <Text className="text-lg text-gray-200 font-semibold">
+                        <Text
+                          className={`text-lg text-gray-200  
+                        
+                     ${index === gameIndexClicked ? "text-[#FE4F3F]  " : ""}   
+                        font-semibold`}
+                        >
                           {game.gameName}
                         </Text>
-                        <Text className="text-xs font-semibold capitalize text-gray-500">
+                        <Text className="text-xs font-semibold capitalize text-zinc-400">
                           {game.venue} {game.timestamp}
                         </Text>
                       </View>
                       <View className="w-auto px-2 py-1 justify-center">
-                        <Text className="text-gray-500 text-right">
+                        <Text className="text-zinc-400 text-right">
                           Kilkerley : 2:12
                         </Text>
-                        <Text className="text-gray-500 text-right">
+                        <Text className="text-zinc-400 mt-2 text-right">
                           {game.opponent} : 2:08
                         </Text>
                       </View>
@@ -283,37 +353,89 @@ export default function App({ route }) {
                       </View>
                     </View>
                     {index === gameIndexClicked && (
-                      // index === 1 &&
-                      <View className="w-full h-12  mt-5 flex-row items-center justify-center">
-                        <TouchableOpacity className="bg-[#e66c00] mr-1 rounded-md px-4 py-2 w-1/3">
-                          <Text className="text-center  font-semibold">
-                            Statistics
-                          </Text>
-                        </TouchableOpacity>
+                      // index === 1 &&\
+                      <>
+                        <View className="w-full h-12  mt-2 flex-row items-center justify-center">
+                          <TouchableOpacity className="bg-[#FE4F3F] mr-1 rounded-md px-4 py-2 w-1/3">
+                            <Text className="text-center  font-semibold">
+                              Statistics
+                            </Text>
+                          </TouchableOpacity>
 
-                        <TouchableOpacity
-                          onPress={() =>
-                            // navigation.navigate("InGame", { gameData: game })
-                            handleOpenGame(game)
-                          }
-                          className="border ml-1 border-gray-400 w-1/3 rounded-md px-4 py-2"
-                        >
-                          <Text className="text-center text-gray-400">
-                            Open Game
-                          </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() =>
-                            // navigation.navigate("InGame", { gameData: game })
-                            handleOpenGame(game)
-                          }
-                          className="border ml-1 border-gray-400 w-1/4 rounded-md px-4 py-2"
-                        >
-                          <Text className="text-center text-gray-400">
-                            Edit
-                          </Text>
-                        </TouchableOpacity>
-                      </View>
+                          <TouchableOpacity
+                            onPress={() =>
+                              // navigation.navigate("InGame", { gameData: game })
+                              handleOpenGame(game)
+                            }
+                            className="border ml-1 bg-zinc-800 w-1/3 rounded-md px-4 py-2"
+                          >
+                            <Text className="text-center text-gray-200">
+                              Open Game
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={() =>
+                              // navigation.navigate("InGame", { gameData: game })
+                              handleOpenGame(game)
+                            }
+                            className="border ml-1 bg-zinc-800 w-1/4 rounded-md px-4 py-2"
+                          >
+                            <Text className="text-center text-gray-200">
+                              Edit
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                        <View className="flex-row w-full  px-2 mt-2 items-center mx-auto just">
+                          <View className="w-2/4 h-12    flex-row items-center ">
+                            <TouchableOpacity className="bg-[#FE4F3F] bg-zinc-800  mr-1 rounded-full px-4 py-2 h-10 w-10">
+                              <View className="w-full flex my-auto justify-center items-center">
+                                <FontAwesomeIcon
+                                  icon={faCloud}
+                                  size={20}
+                                  color="#787878"
+                                />
+                              </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                              onPress={() =>
+                                // navigation.navigate("InGame", { gameData: game })
+                                handleOpenGame(game)
+                              }
+                              className="border ml-1 bg-zinc-800 w-10 h-10 rounded-full px-4 py-2"
+                            >
+                              <View className="w-full my-auto flex justify-center items-center">
+                                <FontAwesomeIcon
+                                  icon={faEye}
+                                  size={22}
+                                  color="#787878"
+                                />
+                              </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              onPress={() =>
+                                // navigation.navigate("InGame", { gameData: game })
+                                handleOpenGame(game)
+                              }
+                              className="border ml-1 bg-zinc-800 w-10 h-10 rounded-full px-4 py-2"
+                            >
+                              <View className="w-full my-auto flex justify-center items-center">
+                                <FontAwesomeIcon
+                                  icon={faHeart}
+                                  size={22}
+                                  color="#787878"
+                                />
+                              </View>
+                            </TouchableOpacity>
+                          </View>
+                          <View className="w-2/4 h-12 t justify-center items-end ">
+                            <Text className="text-zinc-400">Last Modified</Text>
+                            <Text className="text-zinc-400">
+                              {game.timestamp}
+                            </Text>
+                          </View>
+                        </View>
+                      </>
                     )}
                     {longPressedGame === game.gameName && (
                       <TouchableWithoutFeedback>

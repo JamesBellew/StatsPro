@@ -717,7 +717,7 @@ export default function App() {
           </View>
         </TouchableOpacity>
       )}
-      <SafeAreaView className="flex-1 bg-[#181818]  overflow-visible">
+      <SafeAreaView className="flex-1 bg-[#000]  overflow-visible">
         {showUnsavedGameModal && <UnsavedChangesModal />}
         <ScrollView>
           {showStartGameModal && <StartGameModal />}
