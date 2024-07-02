@@ -37,7 +37,7 @@ export default function App() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#000000]">
-      <View className="flex mx-auto h-52 bg-[#101010] rounded-b-3xl w-full relative">
+      <View className="flex mx-auto h-56 bg-[#101010] rounded-b-3xl w-full relative">
         <ImageBackground
           source={require("../assets/oneil.jpeg")}
           style={{ width: "100%", height: "100%", borderRadius: 9 }}
@@ -90,7 +90,7 @@ export default function App() {
     />
   </View> */}
             <View className="absolute bottom-0 left-0 right-0  mb-12 justify-end">
-              <Text className="text-center text-white mt-3 text-lg font-semibold">
+              <Text className="text-center text-white mt-3 text-xl font-semibold">
                 Details For New Game
               </Text>
             </View>

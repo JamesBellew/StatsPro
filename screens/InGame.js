@@ -37,12 +37,12 @@ export default function App() {
 
   const AlertComponent = () => {
     return (
-      <View className=" absolute w-full  -z-50 text-center py-4 lg:px-4">
+      <View className=" absolute w-full  top-48 z-50 text-center py-4 lg:px-4">
         <View
           className="p-2 rounded-md w-3/4 mx-auto  items-center text-indigo-100 leading-none lg:rounded-full flex lg:inline-flex"
           role="alert"
         >
-          <View className="flex rounded-md bg-white uppercase px-4 py-2 text-xs font-bold mr-3">
+          <View className="flex rounded-md bg-white uppercase  px-4 py-2 text-xs font-bold mr-3">
             <Text className="text-gray-700 font-bold">
               Please Select Action
             </Text>
@@ -58,7 +58,7 @@ export default function App() {
         height: 8,
         borderWidth: 2,
         // borderColor: "#fff",
-        backgroundColor: "#242424",
+        backgroundColor: "#101010",
         justifyContent: "center",
         alignItems: "center",
         zIndex: 1,
@@ -70,19 +70,19 @@ export default function App() {
         width: 8,
         height: 8,
         borderWidth: 2,
-        borderColor: "#FD5F5F",
-        backgroundColor: "#242424",
+        borderColor: "#80ed99",
+        backgroundColor: "#101010",
         justifyContent: "center",
         alignItems: "center",
       },
-      component: <Text style={styles.xMarkerLoss}>X</Text>,
+      component: <Text style={styles.xMarkerWon}>X</Text>,
     },
     Wide: {
       style: {
         width: 10,
         height: 10,
-        borderRadius: 10,
-        backgroundColor: "#FD5F5F",
+        borderRadius: 0,
+        backgroundColor: "#FE4F3F",
       },
     },
     free: {
@@ -90,7 +90,7 @@ export default function App() {
         width: 10,
         height: 10,
         borderRadius: 10,
-        backgroundColor: "#FE4F3F",
+        backgroundColor: "#003459",
       },
     },
     kickoutLoss: {
@@ -99,7 +99,7 @@ export default function App() {
         height: 8,
         borderWidth: 2,
         borderColor: "#FD5F5F",
-        backgroundColor: "#242424",
+        backgroundColor: "#101010",
       },
     },
     point: {
@@ -107,7 +107,7 @@ export default function App() {
         width: 8,
         height: 8,
         borderRadius: 10,
-        backgroundColor: "#FE4F3F",
+        backgroundColor: "#fff",
       },
     },
     short: {
@@ -117,7 +117,7 @@ export default function App() {
 
         borderRadius: 10,
 
-        backgroundColor: "#f21b3f",
+        backgroundColor: "#ffcb77",
       },
     },
     miss: {
@@ -130,6 +130,58 @@ export default function App() {
         backgroundColor: "#f21b3f",
       },
     },
+    kickoutCatch: {
+      style: {
+        width: 8,
+        height: 8,
+
+        // borderRadius: 10,
+
+        backgroundColor: "#80ed99",
+      },
+    },
+    kickoutBreakWon: {
+      style: {
+        width: 8,
+        height: 8,
+
+        // borderRadius: 10,
+
+        backgroundColor: "#4ecdc4",
+      },
+    },
+    kickoutOppBreak: {
+      style: {
+        width: 8,
+        height: 8,
+
+        // borderRadius: 10,
+
+        backgroundColor: "#ffcb77",
+      },
+    },
+    kickOppCatch: {
+      style: {
+        width: 8,
+        height: 8,
+
+        // borderRadius: 10,
+
+        backgroundColor: "#FE4F3F",
+      },
+    },
+    kickoutOut: {
+      style: {
+        width: 8,
+        height: 8,
+
+        // borderRadius: 10,
+
+        backgroundColor: "#fff",
+      },
+    },
+    //kickoutOppBreak
+    //4ecdc4
     goal: {
       style: {
         width: 8,
@@ -137,7 +189,7 @@ export default function App() {
 
         borderRadius: 10,
 
-        backgroundColor: "#FE4F3F",
+        backgroundColor: "#00a8e8",
       },
     },
     kickoutWon: {
@@ -146,7 +198,7 @@ export default function App() {
         height: 8,
         borderWidth: 2,
         borderColor: "#FE4F3F",
-        backgroundColor: "#242424",
+        backgroundColor: "#101010",
       },
     },
   };
@@ -431,7 +483,7 @@ export default function App() {
   function UnsavedChangesModal() {
     return (
       <>
-        <View className="w-full z-50 h-1/3 rounded-t-md justify-center items-center bottom-0 absolute bg-[#242424]">
+        <View className="w-full z-50 h-1/3 rounded-t-md justify-center items-center bottom-0 absolute bg-[#101010]">
           <Text className="text-white">
             You have unsaved changes in this game
           </Text>
@@ -444,7 +496,7 @@ export default function App() {
                 setShowUnsavedGameModal(false);
                 setShowSaveGameDataModal(true);
               }}
-              className="bg-green-400 mr-2  p-4 w-1/4 rounded-md"
+              className="bg-[#FE4F3F] mr-2  p-4 w-1/4 rounded-md"
             >
               <Text className="text-center">Save Game</Text>
             </TouchableOpacity>
@@ -682,7 +734,7 @@ export default function App() {
     <>
       {showSaveGameDataModal && (
         <TouchableOpacity
-          className="w-full h-full bg-[#242424]/50 z-50 absolute justify-center items-center"
+          className="w-full h-full bg-[#101010]/50 z-50 absolute justify-center items-center"
           onPress={() => setShowSaveGameDataModal(false)}
           activeOpacity={1} // Ensures the click outside the modal triggers the onPress
         >
@@ -697,7 +749,7 @@ export default function App() {
               You can re-open the saved game at any time and continue working on
               it
             </Text>
-            <View className="bg-[#242424]/20 mt-5 w-3/4 p-2 rounded-md">
+            <View className="bg-[#101010]/20 mt-5 w-3/4 p-2 rounded-md">
               <Text className="text-center text-white text-md mt-2">
                 Kilkerley vs {opponent}
               </Text>
@@ -710,7 +762,7 @@ export default function App() {
             </View>
             <TouchableOpacity
               onPress={() => saveGameData(positions)}
-              className="text-center mt-5 text-md font-semibold bg-[#242424] px-5 py-2 rounded-md text-white border-[#FE4F3F]/20 border"
+              className="text-center mt-5 text-md font-semibold bg-[#101010] px-5 py-2 rounded-md text-white border-[#FE4F3F]/20 border"
             >
               <Text className="text-[#FE4F3F] ">Save Game</Text>
             </TouchableOpacity>
@@ -746,7 +798,7 @@ export default function App() {
           <View className="flex mx-auto h-auto   rounded-b-3xl w-full relative">
             <View className="flex  h-auto space-x-1 p-2 flex-row justify-end items-end">
               <View className="w-[98%]     flex-row h-10 items-center justif-center mx-auto rounded-lg">
-                <View className="w-[15%] space-x-1 bg-[#242424] px-3   py-2 rounded-md ">
+                <View className="w-[15%] space-x-1 bg-[#101010] px-3   py-2 rounded-md ">
                   <TouchableOpacity
                     // onPress={() => navigation.navigate("HomeDashboard")}
                     onPress={() => {
@@ -785,7 +837,7 @@ export default function App() {
                     {scoreBoard.point}
                   </Text>
                 </View>
-                <View className="w-[15%] space-x-1 bg-[#242424] px-3   py-2 rounded-md ">
+                <View className="w-[15%] space-x-1 bg-[#101010] px-3   py-2 rounded-md ">
                   <TouchableOpacity
                     onPress={() => setShowSaveGameDataModal(true)}
                     className="w-full flex justify-center items-center"
@@ -837,7 +889,7 @@ export default function App() {
               <View className="flex-row s w-[30%] space-x-1  justify-center">
                 <TouchableOpacity
                   onPress={() => setShowHalftimeModal(!showHalftimeModal)}
-                  className={`bg-[#242424] w-[50%]  p-2 rounded-md
+                  className={`bg-[#101010] w-[50%]  p-2 rounded-md
                 
               
                 
@@ -859,7 +911,7 @@ export default function App() {
                   }}
                   className={` ${
                     showEditLineupModal ? "border-b-2 border-b-[#FE4F3F]" : ""
-                  } bg-[#242424] w-[50%] p-2 rounded flex justify-center items-center`}
+                  } bg-[#101010] w-[50%] p-2 rounded flex justify-center items-center`}
                 >
                   <View className="w-full flex justify-center items-center">
                     <FontAwesomeIcon
@@ -874,30 +926,30 @@ export default function App() {
               {/* Home and Away buttons */}
               <View className="flex-row  w-[35%] mx-2 h-full justify-center   ">
                 <TouchableOpacity
-                  className={`p-2 w-[50%] bg-[#242424] mx-auto my-auto h-full rounded-md ${
+                  className={`p-2 w-[50%] bg-[#101010] mx-auto my-auto h-full rounded-md ${
                     selected === "Home" ? "border bg-gray-200" : ""
                   }`}
                   onPress={() => setSelected("Home")}
                 >
                   <Text
                     className={`text-white text-center my-auto ${
-                      selected === "Home" ? "text-[#242424]" : ""
+                      selected === "Home" ? "text-[#101010]" : ""
                     }`}
                   >
                     Home
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  className={`p-2 bg-[#242424] w-[50%] rounded-md  ${
+                  className={`p-2 bg-[#101010] w-[50%] rounded-md  ${
                     selected === "Away"
                       ? "border-b border-b-[#FE4F3F] bg-gray-200"
-                      : "bg-[#242424]"
+                      : "bg-[#101010]"
                   }`}
                   onPress={() => setSelected("Away")}
                 >
                   <Text
                     className={`text-white my-auto text-center ${
-                      selected === "Away" ? "text-[#242424]" : ""
+                      selected === "Away" ? "text-[#101010]" : ""
                     }`}
                   >
                     Away
@@ -907,7 +959,7 @@ export default function App() {
                 className={`p-2 w-[50%] mx-auto rounded ${
                   selected === "Home"
                     ? "border border-[#FE4F3F]"
-                    : "bg-[#242424]"
+                    : "bg-[#101010]"
                 }`}
                 onPress={() => setSelected("Home")}
               >
@@ -921,7 +973,7 @@ export default function App() {
               </TouchableOpacity>
               <TouchableOpacity
                 className={`p-2 w-[50%] rounded ${
-                  selected === "Away" ? "bg-[#FE4F3F]" : "bg-[#242424]"
+                  selected === "Away" ? "bg-[#FE4F3F]" : "bg-[#101010]"
                 }`}
                 onPress={() => setSelected("Away")}
               >
@@ -941,7 +993,7 @@ export default function App() {
                   onPress={() => setShowActionsOnPitch(!showActionsOnPitch)}
                   className={`${
                     showActionsOnPitch ? "border-b-2 border-b-[#FE4F3F]" : ""
-                  } bg-[#242424] w-[50%] z-[-1]  p-2 rounded`}
+                  } bg-[#101010] w-[50%] z-[-1]  p-2 rounded`}
                 >
                   <View className="w-full flex justify-center items-center">
                     <FontAwesomeIcon icon={faEye} size={25} color="#FFFFFF" />
@@ -951,7 +1003,7 @@ export default function App() {
                   onPress={() => setShowIngameStatModal(!showIngameStatModal)}
                   className={`  ${
                     showIngameStatModal ? "border-b-2 border-b-[#FE4F3F]" : ""
-                  } p-2 w-[50%] h-10 mx-auto bg-[#242424] rounded `}
+                  } p-2 w-[50%] h-10 mx-auto bg-[#101010] rounded `}
                 >
                   <View className="w-full flex justify-center items-center">
                     <FontAwesomeIcon
@@ -1026,7 +1078,7 @@ export default function App() {
             </View>
           )}
           <View
-            className={`w-[96%] mt-1 border-[.5px] border-gray-700
+            className={`w-[96%] mt-5 border-[.5px] border-gray-700
         ${
           tempPosition ? "shadow shadow-[#FE4F3F]/20" : ""
         }   mx-auto  rounded-md h-[63vh] bg-[#101010]  relative`}
@@ -1298,7 +1350,7 @@ export default function App() {
                         setActionTimeStamp(actionTimeStamp - 60);
                       }
                     }}
-                    className="w-10 h-10 justify-center items-center my-auto mr-2 bg-[#242424] rounded-full p-2"
+                    className="w-10 h-10 justify-center items-center my-auto mr-2 bg-[#101010] rounded-full p-2"
                   >
                     <Text className="text-white text-center my-auto font-bold">
                       -
@@ -1308,7 +1360,7 @@ export default function App() {
                     {Math.floor(actionTimeStamp / 60)} Min
                   </Text>
                   <TouchableOpacity
-                    className="w-10 h-10 justify-center items-center my-auto ml-2 bg-[#242424] rounded-full p-2"
+                    className="w-10 h-10 justify-center items-center my-auto ml-2 bg-[#101010] rounded-full p-2"
                     onPress={() => {
                       setActionTimeStamp((prevTimeStamp) => {
                         const newTimeStamp = Number(prevTimeStamp);
@@ -1336,7 +1388,7 @@ export default function App() {
                   // style={styles.saveButton}
                 >
                   <Text className="text-center w-auto h-auto rounded-full">
-                    <Icon name="ban" width={14} color="#242424" />
+                    <Icon name="ban" width={14} color="#101010" />
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -1347,7 +1399,7 @@ export default function App() {
                   // style={styles.saveButton}
                 >
                   <Text className="text-center w-auto h-auto rounded-full">
-                    <Icon name="check" width={14} color="#242424" />
+                    <Icon name="check" width={14} color="#101010" />
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -1366,7 +1418,7 @@ export default function App() {
               <View className="h-10 w-[97%] mx-auto  mt-1 flex-row items-center justify-center px-1">
                 {/* Left buttons */}
                 <View className="flex-row space-x-1 mx-auto items-center justify-center w-[40%]">
-                  <TouchableOpacity className="bg-[#242424] w-[50%] p-2 rounded">
+                  <TouchableOpacity className="bg-[#101010] w-[50%] p-2 rounded">
                     <Text className="text-white text-center">Save</Text>
                   </TouchableOpacity>
 
@@ -1386,7 +1438,7 @@ export default function App() {
                       actionMenuActionCategory == "kickout"
                         ? "border-b border-b-[#fff]"
                         : ""
-                    } bg-[#242424] w-[50%] p-2 rounded`}
+                    } bg-[#101010] w-[50%] p-2 rounded`}
                   >
                     <Text className="text-white text-center">Kickout</Text>
                   </TouchableOpacity>
@@ -1399,7 +1451,7 @@ export default function App() {
                       actionMenuActionCategory == "shot"
                         ? "border-b border-b-[#fff]"
                         : ""
-                    } p-2 w-[100%] rounded bg-[#242424]`}
+                    } p-2 w-[100%] rounded bg-[#101010]`}
                     onPress={() => {
                       if (
                         actionMenuActionCategory === "shot" &&
@@ -1435,11 +1487,11 @@ export default function App() {
                       actionMenuActionCategory == "T/O"
                         ? "border-b border-b-[#fff]"
                         : ""
-                    } bg-[#242424] w-[50%] p-2 rounded`}
+                    } bg-[#101010] w-[50%] p-2 rounded`}
                   >
                     <Text className="text-white text-center">T/O</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity className="bg-[#242424] w-[50%] p-2 rounded">
+                  <TouchableOpacity className="bg-[#101010] w-[50%] p-2 rounded">
                     <Text className="text-white text-center">Tackle</Text>
                   </TouchableOpacity>
                 </View>
@@ -1536,7 +1588,7 @@ export default function App() {
                   <View className="flex-row space-x-1 mx-auto">
                     <TouchableOpacity
                       onPress={() => handleStatModalFilter("shot")}
-                      className={`bg-[#242424] ${
+                      className={`bg-[#101010] ${
                         ingameStatModalFilter === "shot"
                           ? "border border-[#FE4F3F]"
                           : ""
@@ -1546,7 +1598,7 @@ export default function App() {
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => handleStatModalFilter("kickout")}
-                      className={`bg-[#242424] ${
+                      className={`bg-[#101010] ${
                         ingameStatModalFilter === "kickout"
                           ? "border border-[#FE4F3F]"
                           : ""
@@ -1556,7 +1608,7 @@ export default function App() {
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => handleStatModalFilter("T/O")}
-                      className={`bg-[#242424] ${
+                      className={`bg-[#101010] ${
                         ingameStatModalFilter === "T/O"
                           ? "border-2 border-[#FE4F3F]"
                           : ""
@@ -1566,7 +1618,7 @@ export default function App() {
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => handleStatModalFilter("All")}
-                      className={`bg-[#242424] ${
+                      className={`bg-[#101010] ${
                         ingameStatModalFilter === "All"
                           ? "border border-[#FE4F3F]"
                           : ""
@@ -1950,7 +2002,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   xMarkerWon: {
-    color: "#FE4F3F",
+    color: "#80ed99",
     fontSize: 12,
     fontWeight: "bold",
   },

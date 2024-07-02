@@ -108,6 +108,8 @@ export default function App({ route }) {
   useEffect(() => {
     setSavedGameCount(savedGames.length);
   }, [savedGames]);
+
+  const recentSavedGamesArray = savedGames.slice().reverse();
   return (
     <SafeAreaView className="flex-1 bg-[#000000]">
       <ScrollView>
@@ -294,7 +296,7 @@ export default function App({ route }) {
 
         <View className="w-full rounded-2xl mt-1">
           <TouchableOpacity className="rounded-md w-full">
-            {savedGames.map((game, index) => (
+            {recentSavedGamesArray.map((game, index) => (
               <TouchableWithoutFeedback
                 key={index}
                 onPress={() => {

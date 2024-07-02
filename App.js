@@ -25,7 +25,7 @@ const Stack = createNativeStackNavigator();
 function HomeScreen({ navigation }) {
   return (
     <ImageBackground
-      source={require("./assets/login.png")}
+      source={require("./assets/login1.png")}
       style={styles.backgroundImage}
     >
       <SafeAreaView style={styles.container}>
@@ -33,7 +33,7 @@ function HomeScreen({ navigation }) {
           <Text className="text-3xl text-[#D9D9D9] font-semibold tracking-wider">
             StatsPro
           </Text>
-          <Text className="text-base text-[#D9D9D9] font-medium tracking-wider">
+          <Text className="text-base text-gray-200 font-medium tracking-wider">
             Welcome.
           </Text>
         </View>
@@ -58,7 +58,7 @@ function HomeScreen({ navigation }) {
         </View>
         <View className="flex justify-center items-center h-10 w-full">
           <Text className="text-[#D9D9D9]">
-            Having issues? <Text className="text-[#00E471]">Report here</Text>
+            Having issues? <Text className="text-[#FE4F3F]">Report here</Text>
           </Text>
         </View>
         <StatusBar style="auto" />
@@ -91,7 +91,7 @@ function LoginScreen({ navigation }) {
   }, [{ password, text }]);
   return (
     <ImageBackground
-      source={require("./assets/login.png")}
+      source={require("./assets/login1.png")}
       style={styles.backgroundImage}
     >
       <SafeAreaView style={styles.container}>
@@ -105,7 +105,7 @@ function LoginScreen({ navigation }) {
         </View>
         <TextInput
           style={styles.input}
-          className="w-72 shadow appearance-none rounded-lg   bg-[#383838] text-white px-3  leading-tight focus:outline-none focus:shadow-outline"
+          className="w-72 shadow appearance-none rounded-lg   bg-[#101010] text-white px-3  leading-tight focus:outline-none focus:shadow-outline"
           placeholder="Username"
           placeholderTextColor={"white"}
           onChangeText={onChangeText}
@@ -113,7 +113,7 @@ function LoginScreen({ navigation }) {
         />
         <TextInput
           style={styles.input}
-          className="w-72 shadow appearance-none rounded-lg   bg-[#383838] text-white px-3  leading-tight focus:outline-none focus:shadow-outline"
+          className="w-72 shadow appearance-none rounded-lg   bg-[#101010] text-white px-3  leading-tight focus:outline-none focus:shadow-outline"
           placeholder="Password"
           placeholderTextColor={"white"}
           onChangeText={onChangePassword}
@@ -129,7 +129,7 @@ function LoginScreen({ navigation }) {
             style={
               isLoginFormValid ? styles.buttonEnabled : styles.buttonDisabled
             }
-            className="bg-[#00E471] rounded-md py-1 px-10"
+            className="bg-[#FE4F3F] rounded-md py-1 px-10"
           >
             <Text className="text-[#181818] text-md w-52 py-1 font-bold text-lg text-center">
               Login
@@ -153,7 +153,7 @@ function LoginScreen({ navigation }) {
               onPress={() => navigation.navigate("SignUp")}
               className="justify-center align-middle my-auto translate-y-[4px]"
             >
-              <Text className="text-[#00E471]"> Register here</Text>
+              <Text className="text-[#FE4F3F]"> Register here</Text>
             </TouchableOpacity>
           </Text>
         </View>
@@ -199,7 +199,7 @@ export default function App() {
 
 const styles = StyleSheet.create({
   buttonEnabled: {
-    backgroundColor: "#00E471",
+    backgroundColor: "#FE4F3F",
   },
   buttonDisabled: {
     backgroundColor: "grey",
