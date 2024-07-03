@@ -5,6 +5,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { useState, useEffect } from "react";
 import HomeDashboard from "./screens/HomeDashboard";
 import StartGame from "./screens/StartGame";
+import Statistics from "./screens/Statistics";
 import EditLineup from "./screens/EditLineup";
 import InGame from "./screens/InGame";
 import { CommonActions } from "@react-navigation/native";
@@ -183,6 +184,11 @@ export default function App() {
             options={{ headerShown: false }}
           />
           <Stack.Screen name="StartGame" component={StartGame} />
+          <Stack.Screen
+            name="Statistics"
+            component={Statistics}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen name="EditLineup" component={EditLineup} />
           <Stack.Screen
             name="InGame"

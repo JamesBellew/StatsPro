@@ -358,7 +358,14 @@ export default function App({ route }) {
                       // index === 1 &&\
                       <>
                         <View className="w-full h-12  mt-2 flex-row items-center justify-center">
-                          <TouchableOpacity className="bg-[#FE4F3F] mr-1 rounded-md px-4 py-2 w-1/3">
+                          <TouchableOpacity
+                            onPress={() =>
+                              navigation.navigate("Statistics", {
+                                gameData: game,
+                              })
+                            }
+                            className="bg-[#FE4F3F] mr-1 rounded-md px-4 py-2 w-1/3"
+                          >
                             <Text className="text-center  font-semibold">
                               Statistics
                             </Text>

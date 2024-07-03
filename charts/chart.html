@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tiny Bar Chart</title>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"
+      integrity="sha512-5/UoqRtK5F2u4uqk+qNH2D8QPluGvGkWjVHi0oUJdvjDlG9vlW2PGG/P/HEzF3ICB6sogjknTEAQxus01tW1w=="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"
+      integrity="sha512-79f+Xwkw0uDAga0KNhRW3kC/BRZmaHkrPp4YsM7ymFbK0vD6cYY1sJwz5ycitKwpSxMSFGv49xrC+7shaJsI/Q=="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.1.11/umd/Recharts.min.js"
+      integrity="sha512-G2T4OFiTB0fjD/FgfQlYFEO/2zrhLtFuMwBPLkxgQFxnBhV1TjUt1HICRuQBRs/8ERK98Y7+dNLmGA6MTvvU8g=="
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div id="container" style="width: 100%; height: 100%"></div>
+    <script>
+      const { BarChart, Bar, ResponsiveContainer } = Recharts;
+
+      const data = [
+        { name: "Page A", uv: 4000, pv: 2400, amt: 2400 },
+        { name: "Page B", uv: 3000, pv: 1398, amt: 2210 },
+        { name: "Page C", uv: 2000, pv: 9800, amt: 2290 },
+        { name: "Page D", uv: 2780, pv: 3908, amt: 2000 },
+        { name: "Page E", uv: 1890, pv: 4800, amt: 2181 },
+        { name: "Page F", uv: 2390, pv: 3800, amt: 2500 },
+        { name: "Page G", uv: 3490, pv: 4300, amt: 2100 },
+      ];
+
+      ReactDOM.render(
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart width={150} height={40} data={data}>
+            <Bar dataKey="uv" fill="#8884d8" />
+          </BarChart>
+        </ResponsiveContainer>,
+        document.getElementById("container")
+      );
+    </script>
+  </body>
+</html>
