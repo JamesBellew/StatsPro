@@ -385,7 +385,7 @@ export default function App({ route }) {
                           <TouchableOpacity
                             onPress={() =>
                               // navigation.navigate("InGame", { gameData: game })
-                              handleOpenGame(game)
+                              navigation.navigate("InGame")
                             }
                             className="border ml-1 bg-zinc-800 w-1/4 rounded-md px-4 py-2"
                           >
