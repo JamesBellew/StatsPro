@@ -7,7 +7,12 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
-import { BarChart, LineChart, StackedBarChart } from "react-native-chart-kit";
+import {
+  BarChart,
+  LineChart,
+  StackedBarChart,
+  ProgressChart,
+} from "react-native-chart-kit";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/native";
 import { useRoute } from "@react-navigation/native";
@@ -28,27 +33,70 @@ export default function App() {
   const route = useRoute();
   const { gameData } = route.params; // Access the passed parameters
 
+  console.log("===========Boyaka==============");
+
+  const filteredPositions = gameData.positions.filter(
+    (position) => position.actionCategory === "shot"
+  );
+  const actionCounts = filteredPositions.reduce((acc, position) => {
+    acc[position.action] = (acc[position.action] || 0) + 1;
+    return acc;
+  }, {});
+  console.log(filteredPositions);
   console.log("====================================");
-  console.log(gameData.positions[0].action);
-  console.log(gameData.filter((data) => data.positions.action === "point"));
-  console.log("====================================");
-  console.log("====================================");
-  const data = {
-    labels: ["Scores", "Misses", "Short"],
-    datasets: [
-      {
-        data: [8, 6, 3],
-      },
-    ],
+  // Print out the totals of each action
+  console.log(actionCounts);
+  const shotPercentage =
+    (((actionCounts.free || 0) +
+      (actionCounts.goal || 0) +
+      (actionCounts.point || 0)) /
+      ((actionCounts.free || 0) +
+        (actionCounts.goal || 0) +
+        (actionCounts.point || 0) +
+        (actionCounts.miss || 0) +
+        (actionCounts.short || 0))) *
+    100;
+
+  // Define the labels in the order you want them to appear
+  const labels = ["Points", "Wides", "Goals", "Short", "Free"];
+  // Create a mapping from action types to these labels
+  const actionMap = {
+    point: "Points",
+    miss: "Wides",
+    goal: "Goals",
+    short: "Short",
+    free: "Free",
   };
+  // Populate the data array in the order of labels
+  const data = labels.map((label) => {
+    // Find the action key that maps to the current label
+    const actionKey = Object.keys(actionMap).find(
+      (key) => actionMap[key] === label
+    );
+    return actionCounts[actionKey] || 0;
+  });
   const shotsData = {
-    labels: ["Points", "Wides", "Goals", "Short"],
+    labels: labels,
     datasets: [
       {
-        data: [8, 6, 2, 3],
+        data: data,
       },
     ],
   };
+  // const shotsData = {
+  //   labels: labels,
+  //   datasets: [
+  //     {
+  //       data: [
+  //         actionCounts.point || 0, // Points
+  //         actionCounts.miss || 0, // Wides
+  //         actionCounts.goal || 0, // Goals
+  //         actionCounts.short || 0, // Short
+  //         actionCounts.free || 0, // Short
+  //       ],
+  //     },
+  //   ],
+  // };
   const setplayData = {
     labels: ["Free", "45", "Mark"],
     legend: ["Score", "Miss"],
@@ -59,7 +107,20 @@ export default function App() {
     ],
     barColors: ["#FE4F3F", "#242424"],
   };
-
+  const barData = {
+    labels: ["Blues", "Cooley", "Joes"], // optional
+    data: [0.4, 0.6, 0.3],
+  };
+  const barChartConfig = {
+    backgroundGradientFrom: "#000",
+    backgroundGradientFromOpacity: 1,
+    backgroundGradientTo: "#000",
+    backgroundGradientToOpacity: 0.5,
+    color: (opacity = 1) => `rgba(255, 99, 71, ${opacity})`,
+    strokeWidth: 2, // optional, default 3
+    barPercentage: 0.5,
+    useShadowColorFromDataset: false, // optional
+  };
   const setplayChartConfig = {
     backgroundColor: "#000",
     backgroundGradientFrom: "#000",
@@ -78,24 +139,25 @@ export default function App() {
     decimalPlaces: 0,
   };
   const chartConfig = {
-    backgroundColor: "#101010",
+    backgroundColor: "#000000",
     backgroundGradientFrom: "#000",
     backgroundGradientTo: "#000",
-    decimalPlaces: 0, // optional, defaults to 2dp
-    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`, // color of axis and labels
-    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`, // color of bar labels
+
+    decimalPlaces: 2, // optional, defaults to 2dp
+    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     style: {
       borderRadius: 16,
     },
-    propsForBackgroundLines: {
-      strokeDasharray: "", // solid lines instead of dashed
-      stroke: "transparent", // effectively remove the lines
+    propsForDots: {
+      r: "0",
+      strokeWidth: "0",
+      stroke: "#000",
     },
     fillShadowGradient: "#ff6347", // Bar color
     fillShadowGradientOpacity: 1, // Ensure the gradient is solid
     fillShadowGradientTo: "#ff6347", // Make sure the gradient goes to the same color
-    barRadius: 8, // This property makes the bars rounded
-    yLabelsOffset: 200, // Adjust to reduce space without hiding labels
+    barRadius: 8,
   };
   function PitchComponent() {
     return (
@@ -123,7 +185,7 @@ export default function App() {
     const transformedShotsData = transformShotsData(shotsData);
 
     return (
-      <View className="bg-[#000] rounded-md p-4 w-[90%] items-center mt-5">
+      <View className="bg-[#000] rounded-md p-4 w-[90%] items-center ">
         <TouchableOpacity
           onPress={() => setShowShotData(!showShotData)}
           className="w-64 bg-[#101010] items-center p-2 rounded-lg flex-row"
@@ -216,48 +278,79 @@ export default function App() {
       </View>
     );
   };
-  function ShotChartComponent() {
+  const ShotChartComponent = () => {
     return (
-      <View className="w-[90%] bg-[#000000] py-4 items-center justify-center mx-auto mt-5  h-[auto]  rounded-xl ">
-        <Text className="text-white text-center text-lg font-semibold">
+      <View
+        style={{
+          width: "90%",
+          backgroundColor: "#000000",
+          paddingVertical: 16,
+          alignItems: "center",
+          justifyContent: "center",
+
+          marginHorizontal: "auto",
+          marginTop: 20,
+          height: "auto",
+          borderRadius: 16,
+        }}
+      >
+        <Text
+          style={{
+            color: "white",
+            textAlign: "center",
+            fontSize: 18,
+            fontWeight: "bold",
+          }}
+        >
           Shots
         </Text>
         <BarChart
-          className="mx-auto items-center"
+          style={{ marginVertical: 0, borderRadius: 16, marginRight: 20 }}
           data={shotsData}
-          height={200}
+          withInnerLines={false} // Add this line
+          width={Dimensions.get("window").width * 0.8}
+          height={220}
           yAxisLabel=""
+          verticalLabelRotation={0}
           chartConfig={chartConfig}
-          style={{
-            borderRadius: 16,
-            width: "100%",
-            marginRight: 20,
-            paddingLeft: -30,
-            // marginLeft: -50,
-          }}
           fromZero
-          width={Dimensions.get("window").width * 0.8} // Ensure it takes 100% of the parent View's width
         />
         <ChartDataDropdown2 shotsData={shotsData} title="Shot Data" />
       </View>
     );
-  }
+  };
   function ShotPercentageComponent() {
     return (
       <View className="w-[90%]  mx-auto h-auto ">
         <View className=" ">
           <View className="h-auto my-5 justify-center">
             <Text className="text-white text-lg font-semibold text-center mb-2">
-              Shot %
+              Shot Percentage
             </Text>
             <View className="h-6 w-[70%] flex-row  mx-auto rounded-lg">
-              <View className="w-2/3 h-full bg-[#fe4f3f86] rounded-l-lg"></View>
-              <View className="w-1/3 h-full  bg-[#242424] rounded-r-lg"></View>
+              <View
+                style={{
+                  width: `${Math.round(shotPercentage)}%`,
+                  height: "100%",
+                  backgroundColor: "#fe4f3f86",
+                  borderTopLeftRadius: 8,
+                  borderBottomLeftRadius: 8,
+                }}
+              ></View>
+              <View
+                style={{
+                  width: `${100 - Math.round(shotPercentage)}%`,
+                  height: "100%",
+                  backgroundColor: "#242424",
+                  borderTopRightRadius: 8,
+                  borderBottomRightRadius: 8,
+                }}
+              ></View>
             </View>
             <View className="w-[70%] mx-auto mt-2  justify-between flex-row">
               <Text className="text-zinc-400">Scores</Text>
               <Text className="mx-auto text-white text-lg font-semibold">
-                55%
+                {Math.round(shotPercentage)}%
               </Text>
               <Text className="text-zinc-400 items-end justify-end end-0 right-0">
                 Misses
@@ -421,6 +514,21 @@ export default function App() {
         <SetPlayChartComponent />
         <ScoresTimingsComponent />
         <ShotPercentageComponent />
+        <View className=" items-center">
+          <Text className="text-white text-lg font-semibold text-center my-2 mt-5">
+            Last 3 games %
+          </Text>
+          <ProgressChart
+            className="mx-auto"
+            data={barData}
+            width={Dimensions.get("window").width - 50}
+            height={220}
+            strokeWidth={16}
+            radius={32}
+            chartConfig={barChartConfig}
+            hideLegend={false}
+          />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
