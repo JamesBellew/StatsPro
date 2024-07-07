@@ -254,11 +254,7 @@ export default function App() {
       action: "goal",
       label: "goal",
     },
-    {
-      category: "shot",
-      action: "free",
-      label: "free",
-    },
+
     {
       category: "shot",
       action: "miss",
@@ -268,6 +264,36 @@ export default function App() {
       category: "shot",
       action: "short",
       label: "short",
+    },
+    {
+      category: "shot",
+      action: "45Score",
+      label: "45 Score",
+    },
+    {
+      category: "shot",
+      action: "45Miss",
+      label: "45 Miss",
+    },
+    {
+      category: "shot",
+      action: "freeScore",
+      label: "Free Score",
+    },
+    {
+      category: "shot",
+      action: "freeMiss",
+      label: "Free Miss",
+    },
+    {
+      category: "shot",
+      action: "markScore",
+      label: "Mark point",
+    },
+    {
+      category: "shot",
+      action: "markMiss",
+      label: "Mark Miss",
     },
     {
       category: "kickout",
@@ -571,9 +597,11 @@ export default function App() {
       }));
       console.log("im here boiiiiii");
       console.log(actionTimeStamp);
+      const adjustedTimeStamp =
+        currentHalf === 2 ? actionTimeStamp + 2100 : actionTimeStamp;
       setPositions((prev) => [
         ...prev,
-        { ...tempPosition, player: selectedNumber, time: actionTimeStamp },
+        { ...tempPosition, player: selectedNumber, time: adjustedTimeStamp },
       ]);
       console.log("====================================");
       console.log(positions);
@@ -1409,13 +1437,13 @@ export default function App() {
 
           {!tempPosition && shootingDirect && (
             <View
-              className={`  w-[96%] mx-auto rounded-md mt-2 ${
+              className={`  w-[96%] mx-auto rounded-md  ${
                 showActionAlertError
                   ? "bg-[#FE4F3F]/10 border  rounded-md   shadow-[#FE4F3F]/20"
                   : ""
               }`}
             >
-              <View className="h-10 w-[97%] mx-auto  mt-1 flex-row items-center justify-center px-1">
+              <View className="h-10 w-[97%] mx-auto   flex-row items-center justify-center px-1">
                 {/* Left buttons */}
                 <View className="flex-row space-x-1 mx-auto items-center justify-center w-[40%]">
                   <TouchableOpacity className="bg-[#101010] w-[50%] p-2 rounded">
@@ -1497,7 +1525,7 @@ export default function App() {
                 </View>
               </View>
               {showActionMenu && (
-                <View className=" z-50  my-1  justify-center translate-y-[0px] w-[96%] space-x-1   items-center  mx-auto left-0  h-auto flex-row">
+                <View className="z-50  justify-center translate-y-[0px] w-[99%]  items-center mx-auto left-0 h-auto flex-row flex-wrap ">
                   {actions
                     .filter(
                       (item) => item.category === actionMenuActionCategory
@@ -1510,12 +1538,13 @@ export default function App() {
                           setActionSelected(item.action);
                         }}
                         className={`
-                      ${
-                        actionSelected === item.action
-                          ? "border-b-2 border-b-[#FE4F3F]"
-                          : ""
-                      }
-                      w-1/5 rounded-md py-2    px-1  space-x-1 justify-center `}
+                   ${
+                     actionSelected === item.action
+                       ? "border-b-2 border-b-[#FE4F3F]"
+                       : ""
+                   }
+                   w-1/5 rounded-md py-2   justify-center
+                 `}
                       >
                         <Text className="text-center text-white">
                           {item.label}

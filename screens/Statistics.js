@@ -42,10 +42,43 @@ export default function App() {
     acc[position.action] = (acc[position.action] || 0) + 1;
     return acc;
   }, {});
+  const shotTimes = filteredPositions.reduce((acc, position) => {
+    if (["point", "goal", "free"].includes(position.action)) {
+      acc.push({ action: position.action, time: position.time });
+    }
+    return acc;
+  }, []);
   console.log(filteredPositions);
   console.log("====================================");
   // Print out the totals of each action
   console.log(actionCounts);
+  console.log("====================================");
+  console.log(shotTimes);
+  console.log("====================================");
+  const quarters = [
+    { label: "Q1", start: 0, end: 1050 },
+    { label: "Q2", start: 1050, end: 2100 },
+    { label: "Q3", start: 2100, end: 3150 },
+    { label: "Q4", start: 3150, end: 4200 },
+  ];
+
+  const scoreTimingsData = {
+    labels: ["Q1", "Q2", "Q3", "Q4"],
+    datasets: [
+      {
+        data: quarters.map(
+          (quarter) =>
+            shotTimes.filter(
+              (shot) => shot.time >= quarter.start && shot.time < quarter.end
+            ).length
+        ),
+      },
+    ],
+  };
+
+  console.log(JSON.stringify(scoreTimingsData, null, 2));
+  const actions = ["Free", "45", "Mark"];
+
   const shotPercentage =
     (((actionCounts.free || 0) +
       (actionCounts.goal || 0) +
@@ -83,20 +116,26 @@ export default function App() {
       },
     ],
   };
-  // const shotsData = {
-  //   labels: labels,
-  //   datasets: [
-  //     {
-  //       data: [
-  //         actionCounts.point || 0, // Points
-  //         actionCounts.miss || 0, // Wides
-  //         actionCounts.goal || 0, // Goals
-  //         actionCounts.short || 0, // Short
-  //         actionCounts.free || 0, // Short
-  //       ],
-  //     },
-  //   ],
-  // };
+  const setPlayData1 = {
+    labels: ["Free", "45", "Mark"],
+    legend: ["Score", "Miss"],
+    data: ["free", "45", "mark"].map((action) => {
+      const scores = filteredPositions.filter(
+        (position) =>
+          position.action.toLowerCase() === `${action.toLowerCase()}score`
+      ).length;
+      const misses = filteredPositions.filter(
+        (position) =>
+          position.action.toLowerCase() === `${action.toLowerCase()}miss`
+      ).length;
+      return [scores, misses];
+    }),
+    barColors: ["#FE4F3F", "#242424"],
+  };
+
+  // Log the setPlayData1 object for debugging
+  console.log(JSON.stringify(setPlayData1, null, 2));
+
   const setplayData = {
     labels: ["Free", "45", "Mark"],
     legend: ["Score", "Miss"],
@@ -363,14 +402,14 @@ export default function App() {
   }
 
   const ScoresTimingsComponent = () => {
-    const scoreTimingsData = {
-      labels: ["Q1", "Q2", "Q3", "Q4"],
-      datasets: [
-        {
-          data: [3, 4, 2, 6], // dataset
-        },
-      ],
-    };
+    // const scoreTimingsData = {
+    //   labels: ["Q1", "Q2", "Q3", "Q4"],
+    //   datasets: [
+    //     {
+    //       data: [3, 4, 2, 6], // dataset
+    //     },
+    //   ],
+    // };
 
     return (
       <>
@@ -460,7 +499,7 @@ export default function App() {
         </Text>
         <StackedBarChart
           className="mx-auto ml-12"
-          data={setplayData}
+          data={setPlayData1}
           width={Dimensions.get("window").width * 0.9}
           height={220}
           chartConfig={setplayChartConfig}
@@ -469,7 +508,7 @@ export default function App() {
             borderRadius: 20,
           }}
         />
-        <ChartDropdown2 dropDownData={setplayData} title="Set Play Data" />
+        <ChartDropdown2 dropDownData={setPlayData1} title="Set Play Data" />
       </View>
     );
   }
