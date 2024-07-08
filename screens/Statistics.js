@@ -18,11 +18,11 @@ import { useNavigation } from "@react-navigation/native";
 import { useRoute } from "@react-navigation/native";
 import {
   faPeopleGroup,
-  faEye,
-  faStopwatch,
+  faInfo,
+  faShare,
   faChevronLeft,
-  faFloppyDisk,
-  faUser,
+  faSliders,
+  faDownload,
   faChartSimple,
 } from "@fortawesome/free-solid-svg-icons";
 export default function App() {
@@ -43,11 +43,12 @@ export default function App() {
     return acc;
   }, {});
   const shotTimes = filteredPositions.reduce((acc, position) => {
-    if (["point", "goal", "free"].includes(position.action)) {
+    if (["point", "goal", "freeScore"].includes(position.action)) {
       acc.push({ action: position.action, time: position.time });
     }
     return acc;
   }, []);
+  console.log(gameData.gameName);
   console.log(filteredPositions);
   console.log("====================================");
   // Print out the totals of each action
@@ -79,16 +80,22 @@ export default function App() {
   console.log(JSON.stringify(scoreTimingsData, null, 2));
   const actions = ["Free", "45", "Mark"];
 
-  const shotPercentage =
-    (((actionCounts.free || 0) +
-      (actionCounts.goal || 0) +
-      (actionCounts.point || 0)) /
-      ((actionCounts.free || 0) +
-        (actionCounts.goal || 0) +
-        (actionCounts.point || 0) +
-        (actionCounts.miss || 0) +
-        (actionCounts.short || 0))) *
-    100;
+  const totalAttempts =
+    (actionCounts.freeScore || 0) +
+    (actionCounts.goal || 0) +
+    (actionCounts.point || 0) +
+    (actionCounts.miss || 0) +
+    (actionCounts.short || 0);
+
+  const successfulAttempts =
+    (actionCounts.freeScore || 0) +
+    (actionCounts.goal || 0) +
+    (actionCounts.point || 0);
+  console.log("========total attempts=================");
+  console.log(totalAttempts);
+  console.log("========successfull====================");
+  console.log(successfulAttempts);
+  const shotPercentage = (successfulAttempts / totalAttempts) * 100;
 
   // Define the labels in the order you want them to appear
   const labels = ["Points", "Wides", "Goals", "Short", "Free"];
@@ -98,7 +105,7 @@ export default function App() {
     miss: "Wides",
     goal: "Goals",
     short: "Short",
-    free: "Free",
+    freeScore: "Free",
   };
   // Populate the data array in the order of labels
   const data = labels.map((label) => {
@@ -130,7 +137,7 @@ export default function App() {
       ).length;
       return [scores, misses];
     }),
-    barColors: ["#FE4F3F", "#242424"],
+    barColors: ["#FE4F3F80", "#242424"],
   };
 
   // Log the setPlayData1 object for debugging
@@ -162,6 +169,7 @@ export default function App() {
   };
   const setplayChartConfig = {
     backgroundColor: "#000",
+
     backgroundGradientFrom: "#000",
     backgroundGradientTo: "#000",
 
@@ -174,8 +182,9 @@ export default function App() {
       strokeDasharray: "", // solid lines instead of dashed
       stroke: "transparent", // effectively remove the lines
     },
+
     decimalPlaces: 0,
-    decimalPlaces: 0,
+    barRadius: 10,
   };
   const chartConfig = {
     backgroundColor: "#000000",
@@ -200,7 +209,7 @@ export default function App() {
   };
   function PitchComponent() {
     return (
-      <View className="w-[90%] mx-auto mt-5 bg-[#101010] h-[50vh] rounded-xl "></View>
+      <View className="w-[90%] mx-auto mt-2 bg-[#101010] h-[50vh] rounded-xl "></View>
     );
   }
   const ChartDataDropdown2 = ({ shotsData, title }) => {
@@ -362,7 +371,7 @@ export default function App() {
     return (
       <View className="w-[90%]  mx-auto h-auto ">
         <View className=" ">
-          <View className="h-auto my-5 justify-center">
+          <View className="h-auto my-10 justify-center">
             <Text className="text-white text-lg font-semibold text-center mb-2">
               Shot Percentage
             </Text>
@@ -410,7 +419,9 @@ export default function App() {
     //     },
     //   ],
     // };
-
+    const maxValue = Math.max(
+      ...scoreTimingsData.datasets.map((dataset) => Math.max(...dataset.data))
+    );
     return (
       <>
         <View className="w-[90%] mx-auto h-auto mt-5 rounded-xl">
@@ -423,7 +434,7 @@ export default function App() {
             labels: scoreTimingsData.labels,
             datasets: scoreTimingsData.datasets.concat([
               { data: [1] }, // min
-              { data: [10] }, // max
+              { data: [maxValue] }, // max
             ]),
           }}
           width={Dimensions.get("window").width * 1.1} // from react-native
@@ -542,12 +553,54 @@ export default function App() {
         </View>
       </View>
       <ScrollView style={{ marginTop: 50 }}>
-        <Text className="text-white text-xl font-semibold mx-auto">
-          Clans Away
-        </Text>
-        <Text className="text-zinc-400 text-md font-normal mx-auto">
-          12/06/24
-        </Text>
+        <View className="flex-row space-x-7 mx-auto items-center w-[90%]">
+          <View className="flex-1 h-full flex-row space-x-2  items-center ">
+            <TouchableOpacity className="bg-[#101010] h-auto text-center items-center p-3 rounded-xl w-2/5 mx-auto ">
+              <FontAwesomeIcon
+                icon={faShare}
+                size={15}
+                color="#fff"
+                className="my-auto justify-center"
+              />
+            </TouchableOpacity>
+            <TouchableOpacity className="bg-[#101010] h-auto text-center items-center p-3 rounded-xl w-2/5 mx-auto ">
+              <FontAwesomeIcon
+                icon={faSliders}
+                size={15}
+                color="#fff"
+                className="my-auto justify-center"
+              />
+            </TouchableOpacity>
+          </View>
+          <View className="flex-row items-center">
+            <View className="text-center">
+              <Text className="text-white text-center text-xl font-semibold">
+                {gameData.gameName}
+              </Text>
+              <Text className="text-zinc-400 text-md font-normal">
+                {gameData.venue} 12/06/24
+              </Text>
+            </View>
+          </View>
+          <View className="flex-1 h-full flex-row space-x-2  items-center ">
+            <TouchableOpacity className="bg-[#101010] h-auto text-center items-center p-3 rounded-xl w-2/5 mx-auto ">
+              <FontAwesomeIcon
+                icon={faDownload}
+                size={15}
+                color="#fff"
+                className="my-auto justify-center"
+              />
+            </TouchableOpacity>
+            <TouchableOpacity className="bg-[#101010] h-auto text-center items-center p-3 rounded-xl w-2/5 mx-auto ">
+              <FontAwesomeIcon
+                icon={faInfo}
+                size={15}
+                color="#fff"
+                className="my-auto justify-center"
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
         <PitchComponent />
         <ShotChartComponent />
         <SetPlayChartComponent />
