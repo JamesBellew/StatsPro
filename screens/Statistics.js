@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import {
   SafeAreaView,
   View,
   Text,
   TouchableOpacity,
   ScrollView,
+  StyleSheet,
   Dimensions,
 } from "react-native";
 import {
@@ -35,10 +36,161 @@ export default function App() {
   function Hr() {
     return (
       <>
-        <View className="w-[90%] mx-auto h-[1px] my-10 bg-zinc-800"></View>
+        <View className="w-[90%] mx-auto h-[1px]  bg-zinc-800"></View>
       </>
     );
   }
+  const actionStyles = {
+    turnOverLoss: {
+      style: {
+        width: 8,
+        height: 8,
+        borderWidth: 2,
+        backgroundColor: "#101010",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 1,
+      },
+      component: <Text style={styles.xMarkerLoss}>X</Text>,
+    },
+    turnOverWon: {
+      style: {
+        width: 8,
+        height: 8,
+        borderWidth: 2,
+        borderColor: "#80ed99",
+        backgroundColor: "#101010",
+        justifyContent: "center",
+        alignItems: "center",
+      },
+      component: <Text style={styles.xMarkerWon}>X</Text>,
+    },
+    Wide: {
+      style: {
+        width: 10,
+        height: 10,
+        borderRadius: 0,
+        backgroundColor: "#FE4F3F",
+      },
+    },
+    freeMiss: {
+      style: {
+        width: 10,
+        height: 10,
+        borderRadius: 10,
+        backgroundColor: "#003459",
+      },
+    },
+    freeScore: {
+      style: {
+        width: 10,
+        height: 10,
+        borderRadius: 10,
+        backgroundColor: "#fff",
+      },
+    },
+    markScore: {
+      style: {
+        width: 10,
+        height: 10,
+        borderRadius: 10,
+        backgroundColor: "green",
+      },
+    },
+    markMiss: {
+      style: {
+        width: 10,
+        height: 10,
+        borderRadius: 10,
+        backgroundColor: "red",
+      },
+    },
+    kickoutLoss: {
+      style: {
+        width: 8,
+        height: 8,
+        borderWidth: 2,
+        borderColor: "#FD5F5F",
+        backgroundColor: "#101010",
+      },
+    },
+    point: {
+      style: {
+        width: 8,
+        height: 8,
+        borderRadius: 10,
+        backgroundColor: "#fff",
+      },
+    },
+    short: {
+      style: {
+        width: 8,
+        height: 8,
+        borderRadius: 10,
+        backgroundColor: "#ffcb77",
+      },
+    },
+    miss: {
+      style: {
+        width: 8,
+        height: 8,
+        borderRadius: 10,
+        backgroundColor: "#f21b3f",
+      },
+    },
+    kickoutCatch: {
+      style: {
+        width: 8,
+        height: 8,
+        backgroundColor: "#80ed99",
+      },
+    },
+    kickoutBreakWon: {
+      style: {
+        width: 8,
+        height: 8,
+        backgroundColor: "#4ecdc4",
+      },
+    },
+    kickoutOppBreak: {
+      style: {
+        width: 8,
+        height: 8,
+        backgroundColor: "#ffcb77",
+      },
+    },
+    kickOppCatch: {
+      style: {
+        width: 8,
+        height: 8,
+        backgroundColor: "#FE4F3F",
+      },
+    },
+    kickoutOut: {
+      style: {
+        width: 8,
+        height: 8,
+        backgroundColor: "#fff",
+      },
+    },
+    goal: {
+      style: {
+        width: 8,
+        height: 8,
+        borderRadius: 10,
+        backgroundColor: "#00a8e8",
+      },
+    },
+    kickoutWon: {
+      style: {
+        width: 8,
+        height: 8,
+        borderWidth: 2,
+        borderColor: "#FE4F3F",
+        backgroundColor: "#101010",
+      },
+    },
+  };
   //!this is for handling scroll to page events
   const scrollViewRef = useRef(null);
   const screenHeight = Dimensions.get("window").height;
@@ -144,6 +296,7 @@ export default function App() {
       },
     ],
   };
+
   const setPlayData1 = {
     labels: ["Free", "45", "Mark"],
     legend: ["Score", "Miss"],
@@ -160,8 +313,20 @@ export default function App() {
     }),
     barColors: ["#FE4F3F80", "#242424"],
   };
+  const setPlayFilteredPositions = filteredPositions.filter((position) =>
+    [
+      "freeMiss",
+      "freeScore",
+      "markScore",
+      "markMiss",
+      "45Score",
+      "45Miss",
+    ].includes(position.action)
+  );
 
   // Log the setPlayData1 object for debugging
+  console.log("=doc is pedo below===================");
+
   console.log(JSON.stringify(setPlayData1, null, 2));
 
   const setplayData = {
@@ -179,9 +344,9 @@ export default function App() {
     data: [0.4, 0.6, 0.3],
   };
   const barChartConfig = {
-    backgroundGradientFrom: "#101010",
+    backgroundGradientFrom: "#000",
     backgroundGradientFromOpacity: 1,
-    backgroundGradientTo: "#101010",
+    backgroundGradientTo: "#000",
     backgroundGradientToOpacity: 0.5,
     color: (opacity = 1) => `rgba(255, 99, 71, ${opacity})`,
     strokeWidth: 2, // optional, default 3
@@ -189,10 +354,10 @@ export default function App() {
     useShadowColorFromDataset: false, // optional
   };
   const setplayChartConfig = {
-    backgroundColor: "#101010",
+    backgroundColor: "#000",
 
-    backgroundGradientFrom: "#101010",
-    backgroundGradientTo: "#101010",
+    backgroundGradientFrom: "#000",
+    backgroundGradientTo: "#000",
 
     color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
@@ -228,11 +393,87 @@ export default function App() {
     fillShadowGradientTo: "#ff6347", // Make sure the gradient goes to the same color
     barRadius: 8,
   };
-  function PitchComponent() {
+  const PitchComponent = ({ positions }) => {
+    const mappedActions = useMemo(() => {
+      return positions.map((position, index) => {
+        const actionStyle = actionStyles[position.action];
+        if (actionStyle) {
+          if (
+            position.action === "turnOverLoss" ||
+            position.action === "turnOverWon"
+          ) {
+            return (
+              <View
+                key={index}
+                style={{
+                  position: "absolute",
+                  top: position.y - 10,
+                  left: position.x - 15,
+                  justifyContent: "center",
+                  alignItems: "center",
+
+                  width: 20,
+                  height: 20,
+                }}
+              >
+                {actionStyle.component}
+              </View>
+            );
+          }
+          return (
+            <View
+              key={index}
+              style={[
+                {
+                  position: "absolute",
+                  top: position.y - 10,
+                  left: position.x - 7,
+                },
+                actionStyle.style,
+              ]}
+            >
+              {actionStyle.component || null}
+            </View>
+          );
+        }
+        return (
+          <View
+            key={index}
+            style={{
+              position: "absolute",
+              top: position.y - 10,
+              left: position.x - 7,
+              width: 15,
+              height: 15,
+              backgroundColor: "#FFF",
+              borderRadius: 10,
+            }}
+          />
+        );
+      });
+    }, [positions]);
+
     return (
-      <View className="w-[90%] mx-auto mt-1 bg-[#101010] h-[52vh] rounded-xl "></View>
+      <View className="bg-[#101010] rounded-lg  h-[63vh]">
+        <View className="h-full">
+          {/* Pitch markings */}
+          <View style={styles.pitchMarkings}>
+            <View style={[styles.line, { top: "10%" }]}></View>
+            {/* <View style={styles.centerCircle}></View> */}
+            <View className="w-[30%] left-[35%] h-14 rounded-b-full  border border-zinc-600 top-[15.5%]"></View>
+            <View style={[styles.line, { top: "15.5%" }]}></View>
+            <View style={[styles.line, { top: "34%" }]}></View>
+            <View style={[styles.line, { top: "50%" }]}></View>
+            <View style={[styles.line, { top: "64%" }]}></View>
+            <View style={[styles.line, { top: "83.6%" }]}></View>
+            <View style={[styles.line, { top: "89.5%" }]}></View>
+          </View>
+          {mappedActions}
+        </View>
+      </View>
     );
-  }
+  };
+
   const ChartDataDropdown2 = ({ shotsData, title }) => {
     const [showShotData, setShowShotData] = useState(false);
 
@@ -382,7 +623,7 @@ export default function App() {
           justifyContent: "center",
 
           marginHorizontal: "auto",
-          marginTop: 20,
+          // marginTop: 20,
 
           borderRadius: 16,
         }}
@@ -417,7 +658,7 @@ export default function App() {
   };
   function ShotPercentageComponent() {
     return (
-      <View className="w-[90%] bg-[#101010] p-4 rounded-lg  mx-auto h-auto ">
+      <View className="w-[90%] bg-[#000] p-4 rounded-lg  mx-auto h-auto ">
         <View className=" ">
           <View className="h-auto  justify-center">
             <Text className="text-white text-lg font-semibold text-center mb-2">
@@ -472,7 +713,8 @@ export default function App() {
     );
     return (
       <>
-        <View className="w-[90%] bg-[#101010] mx-auto h-auto mt-5 rounded-t-xl">
+        <View className="w-[90%] bg-[#000] mx-auto h-auto mt-5 rounded-t-xl">
+          <Hr />
           <Text className="text-white mx-auto mt-5 text-lg font-semibold tracking-wider">
             Score Timings
           </Text>
@@ -512,10 +754,10 @@ export default function App() {
             }}
           />
         </View>
-        <View className="flex-row pb-2 bg-[#101010]  rounded-b-lg w-[90%] justify-between items-center  space-x-2 mx-auto ">
+        {/* <View className="flex-row pb-2 bg-[#000]  rounded-b-lg w-[90%] justify-between items-center  space-x-2 mx-auto ">
           <TouchableOpacity
             onPress={() => setShowTimingsData(!showTimingsData)}
-            className="mx-5 bg-[#101010] w-auto mx-auto  items-center  p-2 rounded-md flex-row"
+            className="mx-5 bg-[#000] w-auto mx-auto  items-center  p-2 rounded-md flex-row"
           >
             <Text className="text-white text-center mx-auto"></Text>
             <View className="p-2 rounded-md">
@@ -526,7 +768,7 @@ export default function App() {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setShowTimingsData(!showTimingsData)}
-            className="mx-5 bg-[#101010] w-auto mx-auto  items-center  p-2 rounded-md flex-row"
+            className="mx-5 bg-[#000] w-auto mx-auto  items-center  p-2 rounded-md flex-row"
           >
             <Text className="text-white text-center mx-auto"></Text>
             <View className="p-2 rounded-md">
@@ -535,12 +777,12 @@ export default function App() {
               </Text>
             </View>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
-        <View className=" w-[90%] bg-[#101010] mx-auto">
+        <View className=" w-[90%] bg-[#000] mx-auto">
           {showTimingsData && (
             <View className="mx-auto items-center justify-center my-auto w-[90%]">
-              <View className="w-full bg-[#101010] p-4 rounded-lg ">
+              <View className="w-full bg-[#000] p-4 rounded-lg ">
                 <View className="flex flex-row px-4 justify-between border-b border-gray-700 pb-2">
                   <Text className="text-white w-1/2">Quarter</Text>
                   <Text className="text-white w-1/2">Total</Text>
@@ -569,7 +811,7 @@ export default function App() {
 
   function SetPlayChartComponent() {
     return (
-      <View className=" w-[90%] h-[29vh] mt-2 mx-auto justify-center rounded-xl bg-[#101010]  text-center items-center">
+      <View className=" w-[90%] h-[29vh] mt-2 mx-auto justify-center rounded-xl bg-[#000]  text-center items-center">
         {/* <Text className="text-white text-lg font-semibold mx-auto mt-2">
           Set Play Stats
         </Text> */}
@@ -593,12 +835,16 @@ export default function App() {
     <SafeAreaView className="flex-1 bg-[#000000]">
       <ScrollView
         ref={scrollViewRef}
-        style={{ marginBottom: 105 }}
+        style={{ marginBottom: 40 }}
         // onScrollEndDrag={handleScrollEnd}
         scrollEventThrottle={16}
+        // className="bg-red-600"
       >
-        <View id="page1" className="h-[86vh]  justify-center my-auto ">
-          <View className="flex-row h-[5vh] justify-start  space-x-7 mx-auto items-center w-[90%]">
+        <View
+          id="page1"
+          className="h-auto w-[90%] mx-auto  justify-center my-auto "
+        >
+          {/* <View className="flex-row h-[5vh]  justify-start   space-x-7 mx-auto items-center w-[90%]">
             <View className="flex-1 h-full flex-row space-x-2 items-center">
               <TouchableOpacity className="bg-[#101010] h-auto text-center items-center p-3 rounded-xl w-2/5 mx-auto">
                 <FontAwesomeIcon
@@ -622,9 +868,6 @@ export default function App() {
                 <Text className="text-white text-center text-xl font-semibold">
                   {gameData.gameName}
                 </Text>
-                <Text className="text-zinc-400 text-md font-normal">
-                  {gameData.venue} 12/06/24
-                </Text>
               </View>
             </View>
             <View className="flex-1 h-full flex-row space-x-2 items-center">
@@ -645,18 +888,52 @@ export default function App() {
                 />
               </TouchableOpacity>
             </View>
+          </View> */}
+          <Text className="text-white text-lg text-center">
+            Shots vs {gameData.gameName}
+          </Text>
+          <View className="legend h-[3vh] px-4  items-center w-full  flex-row">
+            <View className="bg-white mr-1 h-2 w-2 rounded-full"></View>
+            <Text className="text-zinc-400 pr-5">Score</Text>
+            <View className="bg-red-400 mr-1 h-2 w-2 rounded-full"></View>
+            <Text className="text-zinc-400 pr-5">Miss</Text>
+            <View className="bg-yellow-200 mr-1 h-2 w-2 rounded-full"></View>
+            <Text className="text-zinc-400 pr-5">Short</Text>
+            <View className="bg-blue-200 mr-1 h-2 w-2 rounded-full"></View>
+            <Text className="text-zinc-400 pr-5">Goal</Text>
+            <View className="bg-purple-200 mr-1 h-2 w-2 rounded-full"></View>
+            <Text className="text-zinc-400 pr-5">Free</Text>
           </View>
-          <PitchComponent />
+          <PitchComponent positions={filteredPositions || []} />
+          <Text className="text-white mt-5 text-lg text-center">Breakdown</Text>
           <ShotChartComponent />
         </View>
-        <View id="page2" className=" h-[85vh] justify-center">
-          <PitchComponent />
+        <View id="page2" className="w-[90%] mx-auto h-auto justify-center">
+          <Text className="text-white mt-5 text-lg text-center">
+            Set Plays Breakdown
+          </Text>
+          <View className="legend h-[3vh] px-4  items-center w-full  flex-row">
+            <View className="bg-white mr-1 h-2 w-2 rounded-full"></View>
+            <Text className="text-zinc-400 pr-5">Score</Text>
+            <View className="bg-red-400 mr-1 h-2 w-2 rounded-full"></View>
+            <Text className="text-zinc-400 pr-5">Miss</Text>
+            <View className="bg-yellow-200 mr-1 h-2 w-2 rounded-full"></View>
+            <Text className="text-zinc-400 pr-5">Short</Text>
+            <View className="bg-blue-200 mr-1 h-2 w-2 rounded-full"></View>
+            <Text className="text-zinc-400 pr-5">Goal</Text>
+            <View className="bg-purple-200 mr-1 h-2 w-2 rounded-full"></View>
+            <Text className="text-zinc-400 pr-5">Free</Text>
+          </View>
+
+          <PitchComponent positions={setPlayFilteredPositions || []} />
+
+          <Text className="text-white mt-5 text-lg text-center">Breakdown</Text>
           <SetPlayChartComponent />
         </View>
         <ScoresTimingsComponent />
         <ShotPercentageComponent />
         <Hr />
-        <View className="bg-[#101010] rounded-lg w-[90%] mx-auto items-center">
+        <View className="bg-[#000] rounded-lg w-[90%] mx-auto items-center">
           <Text className="text-white text-lg font-semibold text-center my-2 mt-5">
             Last 3 games %
           </Text>
@@ -701,3 +978,55 @@ export default function App() {
     </SafeAreaView>
   );
 }
+const styles = StyleSheet.create({
+  pitchContainer: {
+    width: "100%",
+    height: "52vh",
+    backgroundColor: "#f3f3f3",
+    borderRadius: 10,
+    position: "relative",
+    alignSelf: "center",
+    marginTop: 10,
+  },
+  pitch: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: "#101010",
+    borderRadius: 10,
+    position: "relative",
+  },
+  pitchMarkings: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    zIndex: 0,
+  },
+  line: {
+    height: 1,
+    width: "100%",
+
+    backgroundColor: "gray",
+    position: "absolute",
+  },
+  centerCircle: {
+    position: "absolute",
+    width: 56,
+    height: 24,
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 12,
+    top: "50%",
+    left: "50%",
+    transform: [{ translateX: -28 }],
+  },
+  xMarkerLoss: {
+    color: "#FD5F5F",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  xMarkerWon: {
+    color: "#80ed99",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+});

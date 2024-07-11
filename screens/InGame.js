@@ -1109,7 +1109,7 @@ export default function App() {
             className={`w-[96%] mt-5 border-[.5px] border-gray-700
         ${
           tempPosition ? "shadow shadow-[#FE4F3F]/20" : ""
-        }   mx-auto  rounded-md h-[63vh] bg-[#101010]  relative`}
+        }   mx-auto  rounded-md h-[63vh] bg-[#101010] bg-red-600  relative`}
             onStartShouldSetResponder={() => true}
             onResponderRelease={handlePitchPress}
             style={{ zIndex: 1 }}
