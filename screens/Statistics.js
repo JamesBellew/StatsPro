@@ -36,35 +36,11 @@ export default function App() {
   function Hr() {
     return (
       <>
-        <View className="w-[90%] mx-auto h-[1px]  bg-zinc-800"></View>
+        <View className="w-[90%] mx-auto h-[1px] my-10 bg-zinc-800"></View>
       </>
     );
   }
   const actionStyles = {
-    turnOverLoss: {
-      style: {
-        width: 8,
-        height: 8,
-        borderWidth: 2,
-        backgroundColor: "#101010",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 1,
-      },
-      component: <Text style={styles.xMarkerLoss}>X</Text>,
-    },
-    turnOverWon: {
-      style: {
-        width: 8,
-        height: 8,
-        borderWidth: 2,
-        borderColor: "#80ed99",
-        backgroundColor: "#101010",
-        justifyContent: "center",
-        alignItems: "center",
-      },
-      component: <Text style={styles.xMarkerWon}>X</Text>,
-    },
     Wide: {
       style: {
         width: 10,
@@ -78,7 +54,7 @@ export default function App() {
         width: 10,
         height: 10,
         borderRadius: 10,
-        backgroundColor: "#003459",
+        backgroundColor: "#d11149",
       },
     },
     freeScore: {
@@ -86,7 +62,7 @@ export default function App() {
         width: 10,
         height: 10,
         borderRadius: 10,
-        backgroundColor: "#fff",
+        backgroundColor: "#04e762",
       },
     },
     markScore: {
@@ -94,7 +70,7 @@ export default function App() {
         width: 10,
         height: 10,
         borderRadius: 10,
-        backgroundColor: "green",
+        backgroundColor: "#52b788",
       },
     },
     markMiss: {
@@ -102,92 +78,58 @@ export default function App() {
         width: 10,
         height: 10,
         borderRadius: 10,
-        backgroundColor: "red",
+        backgroundColor: "#ef233c",
       },
     },
-    kickoutLoss: {
-      style: {
-        width: 8,
-        height: 8,
-        borderWidth: 2,
-        borderColor: "#FD5F5F",
-        backgroundColor: "#101010",
-      },
-    },
+
     point: {
       style: {
-        width: 8,
-        height: 8,
+        width: 10,
+        height: 10,
         borderRadius: 10,
-        backgroundColor: "#fff",
+        backgroundColor: "#52b788",
       },
     },
     short: {
       style: {
-        width: 8,
-        height: 8,
+        width: 10,
+        height: 10,
         borderRadius: 10,
-        backgroundColor: "#ffcb77",
+        backgroundColor: "#fb8500",
       },
     },
     miss: {
       style: {
-        width: 8,
-        height: 8,
+        width: 10,
+        height: 10,
         borderRadius: 10,
-        backgroundColor: "#f21b3f",
+        backgroundColor: "#ef233c",
       },
     },
-    kickoutCatch: {
+
+    "45Score": {
       style: {
-        width: 8,
-        height: 8,
-        backgroundColor: "#80ed99",
+        width: 10,
+        height: 10,
+        borderRadius: 10,
+        backgroundColor: "#52b788", // Green color
       },
     },
-    kickoutBreakWon: {
+    "45Miss": {
       style: {
-        width: 8,
-        height: 8,
-        backgroundColor: "#4ecdc4",
+        width: 10,
+        height: 10,
+        borderRadius: 10,
+        backgroundColor: "#ef233c", // Red color
       },
     },
-    kickoutOppBreak: {
-      style: {
-        width: 8,
-        height: 8,
-        backgroundColor: "#ffcb77",
-      },
-    },
-    kickOppCatch: {
-      style: {
-        width: 8,
-        height: 8,
-        backgroundColor: "#FE4F3F",
-      },
-    },
-    kickoutOut: {
-      style: {
-        width: 8,
-        height: 8,
-        backgroundColor: "#fff",
-      },
-    },
+
     goal: {
       style: {
         width: 8,
         height: 8,
         borderRadius: 10,
-        backgroundColor: "#00a8e8",
-      },
-    },
-    kickoutWon: {
-      style: {
-        width: 8,
-        height: 8,
-        borderWidth: 2,
-        borderColor: "#FE4F3F",
-        backgroundColor: "#101010",
+        backgroundColor: "#4361ee",
       },
     },
   };
@@ -196,16 +138,6 @@ export default function App() {
   const screenHeight = Dimensions.get("window").height;
   const pageHeight = screenHeight * 0.85; // 85vh of the screen height
 
-  // const handleScrollEnd = (event) => {
-  //   const contentOffsetY = event.nativeEvent.contentOffset.y;
-  //   const pageThreshold = 0.25; // Adjust this value to make scrolling less sensitive
-  //   const index = Math.round(
-  //     (contentOffsetY + pageHeight * pageThreshold) / pageHeight
-  //   );
-  //   const y = index * pageHeight;
-
-  //   scrollViewRef.current.scrollTo({ y, animated: true });
-  // };
   console.log("===========Boyaka==============");
 
   const filteredPositions = gameData.positions.filter(
@@ -454,21 +386,24 @@ export default function App() {
     }, [positions]);
 
     return (
-      <View className="bg-[#101010] rounded-lg  h-[63vh]">
-        <View className="h-full">
-          {/* Pitch markings */}
-          <View style={styles.pitchMarkings}>
-            <View style={[styles.line, { top: "10%" }]}></View>
-            {/* <View style={styles.centerCircle}></View> */}
-            <View className="w-[30%] left-[35%] h-14 rounded-b-full  border border-zinc-600 top-[15.5%]"></View>
-            <View style={[styles.line, { top: "15.5%" }]}></View>
-            <View style={[styles.line, { top: "34%" }]}></View>
-            <View style={[styles.line, { top: "50%" }]}></View>
-            <View style={[styles.line, { top: "64%" }]}></View>
-            <View style={[styles.line, { top: "83.6%" }]}></View>
-            <View style={[styles.line, { top: "89.5%" }]}></View>
+      <View className=" w-full h-[35vh] border-gray-400 border-1 rounded-2xl overflow-hidden">
+        <View className="bg-[#1010102b] border border-[#101010] border-4 rounded-lg  h-[63vh]">
+          <View className="h-full">
+            {/* Pitch markings */}
+            <View style={styles.pitchMarkings}>
+              <View className="w-[15%] absolute left-[42.5%] h-6 border border-b-zinc-600 border-l-zinc-600 border-r-zinc-600"></View>
+              <View style={[styles.line, { top: "10%" }]}></View>
+              {/* <View style={styles.centerCircle}></View> */}
+              <View className="w-[30%] left-[35%] h-14 rounded-b-full  border border-zinc-600 top-[15.5%]"></View>
+              <View style={[styles.line, { top: "15.5%" }]}></View>
+              <View style={[styles.line, { top: "34%" }]}></View>
+              <View style={[styles.line, { top: "50%" }]}></View>
+              <View style={[styles.line, { top: "64%" }]}></View>
+              <View style={[styles.line, { top: "83.6%" }]}></View>
+              <View style={[styles.line, { top: "89.5%" }]}></View>
+            </View>
+            {mappedActions}
           </View>
-          {mappedActions}
         </View>
       </View>
     );
@@ -658,10 +593,10 @@ export default function App() {
   };
   function ShotPercentageComponent() {
     return (
-      <View className="w-[90%] bg-[#000] p-4 rounded-lg  mx-auto h-auto ">
+      <View className="w-[90%] bg-[#000] p-4 rounded-lg my-5 mx-auto h-auto ">
         <View className=" ">
-          <View className="h-auto  justify-center">
-            <Text className="text-white text-lg font-semibold text-center mb-2">
+          <View className="h-auto mb-5  justify-center">
+            <Text className="text-white text-center text-lg font-semibold mb-5">
               Shot Percentage
             </Text>
             <View className="h-6 w-[70%] flex-row  mx-auto rounded-lg">
@@ -714,8 +649,8 @@ export default function App() {
     return (
       <>
         <View className="w-[90%] bg-[#000] mx-auto h-auto mt-5 rounded-t-xl">
-          <Hr />
-          <Text className="text-white mx-auto mt-5 text-lg font-semibold tracking-wider">
+          {/* <Hr /> */}
+          <Text className="text-white  text-center mt-5 text-lg font-semibold tracking-wider">
             Score Timings
           </Text>
         </View>
@@ -804,7 +739,7 @@ export default function App() {
             </View>
           )}
         </View>
-        <Hr />
+        {/* <Hr /> */}
       </>
     );
   };
@@ -833,6 +768,11 @@ export default function App() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#000000]">
+      {/* <View className="h-full absolute w-full  z-40">
+        <View className="bg-red-600 w-full h-1/3 z-50 rounded-b-3xl"></View>
+        <View className="flex-1  w-full z-40 "></View>
+      </View> */}
+
       <ScrollView
         ref={scrollViewRef}
         style={{ marginBottom: 40 }}
@@ -844,7 +784,7 @@ export default function App() {
           id="page1"
           className="h-auto w-[90%] mx-auto  justify-center my-auto "
         >
-          {/* <View className="flex-row h-[5vh]  justify-start   space-x-7 mx-auto items-center w-[90%]">
+          <View className="flex-row h-[5vh] my-5  justify-start   space-x-7 mx-auto items-center w-[90%]">
             <View className="flex-1 h-full flex-row space-x-2 items-center">
               <TouchableOpacity className="bg-[#101010] h-auto text-center items-center p-3 rounded-xl w-2/5 mx-auto">
                 <FontAwesomeIcon
@@ -888,52 +828,54 @@ export default function App() {
                 />
               </TouchableOpacity>
             </View>
-          </View> */}
-          <Text className="text-white text-lg text-center">
-            Shots vs {gameData.gameName}
-          </Text>
-          <View className="legend h-[3vh] px-4  items-center w-full  flex-row">
-            <View className="bg-white mr-1 h-2 w-2 rounded-full"></View>
-            <Text className="text-zinc-400 pr-5">Score</Text>
-            <View className="bg-red-400 mr-1 h-2 w-2 rounded-full"></View>
-            <Text className="text-zinc-400 pr-5">Miss</Text>
-            <View className="bg-yellow-200 mr-1 h-2 w-2 rounded-full"></View>
-            <Text className="text-zinc-400 pr-5">Short</Text>
-            <View className="bg-blue-200 mr-1 h-2 w-2 rounded-full"></View>
-            <Text className="text-zinc-400 pr-5">Goal</Text>
-            <View className="bg-purple-200 mr-1 h-2 w-2 rounded-full"></View>
-            <Text className="text-zinc-400 pr-5">Free</Text>
+          </View>
+          {/* <Text className="text-xl text-white text-center mb-5 mt-2">
+            Stats for game vs {gameData.gameName}
+          </Text> */}
+          <Text className="text-white text-lg  ml-3">Shots/Misses</Text>
+          <View className="legend h-[3vh] mb-4 px-4  items-center w-full  flex-row">
+            <View className="bg-[#52b788] mr-1 h-2 w-2 rounded-full"></View>
+            <Text className="text-zinc-400 pr-2">Score</Text>
+            <View className="bg-[#ef233c] mr-1 h-2 w-2 rounded-full"></View>
+            <Text className="text-zinc-400 pr-2">Miss</Text>
+            <View className="bg-[#fb8500] mr-1 h-2 w-2 rounded-full"></View>
+            <Text className="text-zinc-400 pr-2">Short</Text>
+            <View className="bg-[#4361ee] mr-1 h-2 w-2 rounded-full"></View>
+            <Text className="text-zinc-400 pr-2">Goal</Text>
+            <View className="bg-[#52b788] mr-1 h-2 w-2 rounded-full"></View>
+            <Text className="text-zinc-400 pr-2">Free</Text>
           </View>
           <PitchComponent positions={filteredPositions || []} />
-          <Text className="text-white mt-5 text-lg text-center">Breakdown</Text>
+          {/* <Text className="text-white mt-5 text-lg ml-3">Breakdown</Text> */}
           <ShotChartComponent />
         </View>
+        <Hr></Hr>
         <View id="page2" className="w-[90%] mx-auto h-auto justify-center">
-          <Text className="text-white mt-5 text-lg text-center">
+          <Text className="text-white mt-5 text-lg ml-3 ">
             Set Plays Breakdown
           </Text>
-          <View className="legend h-[3vh] px-4  items-center w-full  flex-row">
-            <View className="bg-white mr-1 h-2 w-2 rounded-full"></View>
-            <Text className="text-zinc-400 pr-5">Score</Text>
-            <View className="bg-red-400 mr-1 h-2 w-2 rounded-full"></View>
-            <Text className="text-zinc-400 pr-5">Miss</Text>
-            <View className="bg-yellow-200 mr-1 h-2 w-2 rounded-full"></View>
-            <Text className="text-zinc-400 pr-5">Short</Text>
-            <View className="bg-blue-200 mr-1 h-2 w-2 rounded-full"></View>
-            <Text className="text-zinc-400 pr-5">Goal</Text>
-            <View className="bg-purple-200 mr-1 h-2 w-2 rounded-full"></View>
-            <Text className="text-zinc-400 pr-5">Free</Text>
+          <View className="legend h-[3vh] mb-4 px-4  items-center w-full  flex-row">
+            <View className="bg-[#52b788] mr-1 h-2 w-2 rounded-full"></View>
+            <Text className="text-zinc-400 pr-2">Score</Text>
+            <View className="bg-[#ef233c] mr-1 h-2 w-2 rounded-full"></View>
+            <Text className="text-zinc-400 pr-2">Miss</Text>
+            <View className="bg-[#ef233c] mr-1 h-2 w-2 rounded-full"></View>
+            <Text className="text-zinc-400 pr-2">Short</Text>
+            <View className="bg-[#52b788] mr-1 h-2 w-2 rounded-full"></View>
+            <Text className="text-zinc-400 pr-2">Goal</Text>
+            <View className="bg-[#52b788] mr-1 h-2 w-2 rounded-full"></View>
+            <Text className="text-zinc-400 pr-2">Free</Text>
           </View>
 
           <PitchComponent positions={setPlayFilteredPositions || []} />
 
-          <Text className="text-white mt-5 text-lg text-center">Breakdown</Text>
+          {/* <Text className="text-white mt-5 text-lg ml-3">Breakdown</Text> */}
           <SetPlayChartComponent />
         </View>
         <ScoresTimingsComponent />
         <ShotPercentageComponent />
-        <Hr />
-        <View className="bg-[#000] rounded-lg w-[90%] mx-auto items-center">
+        {/* <Hr /> */}
+        <View className="bg-[#000] my-5  rounded-lg w-[90%] mx-auto items-center">
           <Text className="text-white text-lg font-semibold text-center my-2 mt-5">
             Last 3 games %
           </Text>
@@ -948,11 +890,16 @@ export default function App() {
             hideLegend={false}
           />
         </View>
+        <Text></Text>
+        <Text></Text>
+        <Text></Text>
+        <Text></Text>
+        <Text></Text>
       </ScrollView>
       <View
         id="top-navigation"
-        className="w-full bg-[#101010b2] h-[8vh] relative justify-center items-center rounded-t-3xl"
-        style={{ zIndex: 1, position: "absolute", bottom: 10 }}
+        className="w-full bg-[#101010] z-50 h-[8vh] relative justify-center items-center rounded-t-3xl"
+        style={{ zIndex: 1, position: "absolute", bottom: 5 }}
       >
         {/* <TouchableOpacity
           onPress={() => navigation.navigate("HomeDashboard")}
