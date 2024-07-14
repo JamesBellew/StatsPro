@@ -111,7 +111,7 @@ export default function App({ route }) {
 
   const recentSavedGamesArray = savedGames.slice().reverse();
   return (
-    <SafeAreaView className="flex-1 bg-[#000000]">
+    <SafeAreaView className="flex-1 bg-[#12131A]">
       <ScrollView>
         {showSavedGamesComp && <SavedGamesComponent />}
         <View className="flex flex-row justify-end  h-10  items-center">
@@ -159,7 +159,7 @@ export default function App({ route }) {
             imageStyle={{ borderRadius: 8 }}
           >
             <LinearGradient
-              colors={["#000", "rgba(16,16,16,0.1)"]}
+              colors={["#12131A", "rgba(16,16,16,0.1)"]}
               start={{ x: 0, y: 1 }}
               end={{ x: 2, y: 0 }}
               style={{ flex: 1, borderRadius: 8 }}
@@ -187,7 +187,7 @@ export default function App({ route }) {
                 >
                   Start Game
                 </Text>
-                <Text className="text-[#FE4F3F]">
+                <Text className="text-[#0b63fb]">
                   {10 - savedGameCount} Remaining
                 </Text>
               </TouchableOpacity>
@@ -200,7 +200,7 @@ export default function App({ route }) {
             imageStyle={{ borderRadius: 8 }}
           >
             <LinearGradient
-              colors={["#000", "rgba(16,16,16,0.1)"]}
+              colors={["#12131A", "rgba(16,16,16,0.1)"]}
               start={{ x: 0, y: 1 }}
               end={{ x: 2, y: 0 }}
               style={{ flex: 1, borderRadius: 8 }}
@@ -238,7 +238,7 @@ export default function App({ route }) {
             imageStyle={{ borderRadius: 8 }}
           >
             <LinearGradient
-              colors={["#000", "rgba(16,16,16,0.1)"]}
+              colors={["#12131A", "rgba(16,16,16,0.1)"]}
               start={{ x: 0, y: 1 }}
               end={{ x: 2, y: 0 }}
               style={{ flex: 1, borderRadius: 8 }}
@@ -275,20 +275,20 @@ export default function App({ route }) {
             <Text className="text-[#444A4F] text-gray-200 text-2xl  capitalize font-semibold">
               Games{" "}
             </Text>
-            <View className="text-xs justify-center rounded-full h-6 w-6 border bg-[#FE4F3F] ">
+            <View className="text-xs justify-center rounded-full h-6 w-6 border bg-[#0b63fb] ">
               <Text className="text-center font-bold text-gray-800">
                 {savedGameCount}
               </Text>
             </View>
           </View>
           <View className="items-end flex-row space-x-2 justify-end">
-            <TouchableOpacity className=" bg-[#101010] rounded-md">
-              <Text className="px-2 py-2 text-[#FE4F3F]  ">Recent</Text>
+            <TouchableOpacity className=" bg-[#191A22] rounded-md">
+              <Text className="px-2 py-2 text-[#0b63fb]  ">Recent</Text>
             </TouchableOpacity>
-            <TouchableOpacity className=" bg-[#101010] rounded-md">
+            <TouchableOpacity className=" bg-[#191A22] rounded-md">
               <Text className="px-2 py-2  text-gray-500">Away</Text>
             </TouchableOpacity>
-            <TouchableOpacity className=" bg-[#101010] rounded-md">
+            <TouchableOpacity className=" bg-[#191A22] rounded-md">
               <Text className="px-2 py-2  text-gray-500">Home</Text>
             </TouchableOpacity>
           </View>
@@ -315,7 +315,7 @@ export default function App({ route }) {
                       // navigation.navigate("InGame", { gameData: game });
                     }}
                     onLongPress={() => setLongPressedGame(game.gameName)}
-                    className={`rounded-2xl mx-5 bg-[#101010] 
+                    className={`rounded-2xl mx-5 bg-[#191A22] 
                    
                        my-auto mb-2 px-3 py-3`}
                   >
@@ -324,7 +324,7 @@ export default function App({ route }) {
                         <Text
                           className={`text-lg text-gray-200  
                         
-                     ${index === gameIndexClicked ? "text-[#FE4F3F]  " : ""}   
+                     ${index === gameIndexClicked ? "text-[#0b63fb]  " : ""}   
                         font-semibold`}
                         >
                           {game.gameName}
@@ -364,7 +364,7 @@ export default function App({ route }) {
                                 gameData: game,
                               })
                             }
-                            className="bg-[#FE4F3F] mr-1 rounded-md px-4 py-2 w-1/3"
+                            className="bg-[#0b63fb] mr-1 rounded-md px-4 py-2 w-1/3"
                           >
                             <Text className="text-center  font-semibold">
                               Statistics
@@ -396,7 +396,7 @@ export default function App({ route }) {
                         </View>
                         <View className="flex-row w-full  px-2 mt-2 items-center mx-auto just">
                           <View className="w-2/4 h-12    flex-row items-center ">
-                            <TouchableOpacity className="bg-[#FE4F3F] bg-zinc-800  mr-1 rounded-full px-4 py-2 h-10 w-10">
+                            <TouchableOpacity className="bg-[#0b63fb] bg-zinc-800  mr-1 rounded-full px-4 py-2 h-10 w-10">
                               <View className="w-full flex my-auto justify-center items-center">
                                 <FontAwesomeIcon
                                   icon={faCloud}

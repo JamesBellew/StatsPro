@@ -784,7 +784,6 @@ export default function App() {
             marginVertical: 0,
             borderRadius: 20,
           }}
-          renderBarLabel={renderBarLabel}
         />
         {/* <ChartDropdown2 dropDownData={setPlayData1} title="Set Play Data" /> */}
       </View>
@@ -861,9 +860,12 @@ export default function App() {
           >
             <View className="flex-row h-[5vh] my-5  justify-start   space-x-7 mx-auto items-center w-[90%]">
               <View className="flex-1 h-full flex-row space-x-2 items-center">
-                <TouchableOpacity className="bg-[#191A22] h-auto text-center items-center p-3 rounded-xl w-2/5 mx-auto">
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("HomeDashboard")}
+                  className="bg-[#191A22] h-auto text-center items-center p-3 rounded-xl w-2/5 mx-auto"
+                >
                   <FontAwesomeIcon
-                    icon={faShare}
+                    icon={faChevronLeft}
                     size={15}
                     color="#fff"
                     className="my-auto justify-center"
