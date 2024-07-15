@@ -5,9 +5,11 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
+  FlatList,
   StyleSheet,
   Dimensions,
 } from "react-native";
+import RNHTMLtoPDF from "react-native-html-to-pdf";
 import {
   BarChart,
   LineChart,
@@ -31,10 +33,21 @@ import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 export default function App() {
   const navigation = useNavigation();
   //!usestates
+
   const [showShotData, setShowShotData] = useState(false);
   const [showTimingsData, setShowTimingsData] = useState(false);
   const [showGameDetailsMenu, setShowGameDetailsMenu] = useState(false);
   const route = useRoute();
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const viewabilityConfig = useRef({
+    viewAreaCoveragePercentThreshold: 50,
+  }).current;
+
+  const onViewableItemsChanged = useRef(({ viewableItems }) => {
+    if (viewableItems && viewableItems.length > 0) {
+      setCurrentIndex(viewableItems[0].index);
+    }
+  }).current;
   const { gameData } = route.params; // Access the passed parameters
   function Hr() {
     return (
@@ -43,6 +56,17 @@ export default function App() {
       </>
     );
   }
+  const createPDF = async () => {
+    let options = {
+      html: "<h1>PDF Content</h1><p>This is a sample PDF</p>",
+      fileName: "sample",
+      directory: "Documents",
+    };
+
+    let file = await RNHTMLtoPDF.convert(options);
+    console.log(file.filePath);
+    alert(`PDF saved to ${file.filePath}`);
+  };
   const renderBarLabel = ({ value }) => {
     if (value === 0) {
       return null;
@@ -166,6 +190,24 @@ export default function App() {
   const filteredPositions = gameData.positions.filter(
     (position) => position.actionCategory === "shot"
   );
+  const ListDataTest = [
+    {
+      id: "1",
+      title: "Scores/Misses",
+      text: "This is some text for page 1",
+      pitchData: filteredPositions, // Pass filteredPositions directly
+    },
+    { id: "2", title: "Kickouts", text: "This is some text for page 2" },
+    { id: "3", title: "Turnovers", text: "This is some text for page 3" },
+  ];
+  const renderItem = ({ item }) => (
+    <View style={styles.page}>
+      <Text style={styles.title}>{item.title}</Text>
+      {item.pitchData && <PitchComponent positions={item.pitchData} />}
+      <Text style={styles.text}>{item.text}</Text>
+    </View>
+  );
+
   const actionCounts = filteredPositions.reduce((acc, position) => {
     acc[position.action] = (acc[position.action] || 0) + 1;
     return acc;
@@ -973,6 +1015,21 @@ export default function App() {
               hideLegend={false}
             />
           </View>
+          <Text style={{ color: "white", textAlign: "center", marginTop: 10 }}>
+            Current Page: {currentIndex + 1}
+          </Text>
+          <View className="bg-[#0b63fb]  mx-auto h-[50vh]">
+            <FlatList
+              data={ListDataTest}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onViewableItemsChanged={onViewableItemsChanged}
+              viewabilityConfig={viewabilityConfig}
+            />
+          </View>
           <Text></Text>
           <Text></Text>
           <Text></Text>
@@ -992,16 +1049,52 @@ export default function App() {
         </TouchableOpacity> */}
           <View className="flex-row ">
             <TouchableOpacity className="p-4 flex">
-              <Text className="text-zinc-400">Kickouts</Text>
-              <View className="w-1 h-1 rounded-full bg-zinc-400 mx-auto"></View>
+              <Text
+                className={`${
+                  currentIndex === 0 ? "text-white" : "text-zinc-400"
+                }`}
+              >
+                Shots
+              </Text>
+              <View
+                className={`${
+                  currentIndex === 0
+                    ? "w-2 h-2 rounded-full bg-[#0b63fb] mx-auto"
+                    : "w-1 h-1 rounded-full bg-zinc-400 mx-auto"
+                }`}
+              ></View>
             </TouchableOpacity>
-            <TouchableOpacity className="p-4 mt-2">
-              <Text className="text-white text-lg">Shots</Text>
-              <View className="w-2 h-2 rounded-full bg-[#0b63fb] mx-auto"></View>
+            <TouchableOpacity className="p-4 ">
+              <Text
+                className={`${
+                  currentIndex === 1 ? "text-white " : "text-zinc-400"
+                }`}
+              >
+                Kickouts
+              </Text>
+              <View
+                className={`${
+                  currentIndex === 1
+                    ? "w-2 h-2 rounded-full bg-[#0b63fb] mx-auto"
+                    : "w-1 h-1 rounded-full bg-zinc-400 mx-auto"
+                }`}
+              ></View>
             </TouchableOpacity>
             <TouchableOpacity className="p-4">
-              <Text className="text-zinc-400">Turnovers</Text>
-              <View className="w-1 h-1 rounded-full bg-zinc-400 mx-auto"></View>
+              <Text
+                className={`${
+                  currentIndex === 2 ? "text-white " : "text-zinc-400"
+                }`}
+              >
+                Turnovers
+              </Text>
+              <View
+                className={`${
+                  currentIndex === 2
+                    ? "w-2 h-2 rounded-full bg-[#0b63fb] mx-auto"
+                    : "w-1 h-1 rounded-full bg-zinc-400 mx-auto"
+                }`}
+              ></View>
             </TouchableOpacity>
           </View>
         </View>
@@ -1010,6 +1103,20 @@ export default function App() {
   );
 }
 const styles = StyleSheet.create({
+  page: {
+    width: Dimensions.get("window").width,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "white",
+  },
+  text: {
+    fontSize: 16,
+    color: "white",
+  },
   pitchContainer: {
     width: "100%",
     height: "52vh",
