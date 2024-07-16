@@ -190,12 +190,73 @@ export default function App() {
   const filteredPositions = gameData.positions.filter(
     (position) => position.actionCategory === "shot"
   );
+  const setPlayFilteredPositions = filteredPositions.filter((position) =>
+    [
+      "freeMiss",
+      "freeScore",
+      "markScore",
+      "markMiss",
+      "45Score",
+      "45Miss",
+    ].includes(position.action)
+  );
+  const setPlayData1 = {
+    labels: ["Free", "45", "Mark"],
+    legend: ["Score", "Miss"],
+    data: ["free", "45", "mark"].map((action) => {
+      const scores = filteredPositions.filter(
+        (position) =>
+          position.action.toLowerCase() === `${action.toLowerCase()}score`
+      ).length;
+      const misses = filteredPositions.filter(
+        (position) =>
+          position.action.toLowerCase() === `${action.toLowerCase()}miss`
+      ).length;
+      return [scores, misses];
+    }),
+    barColors: ["#0b63fb80", "#242424"],
+  };
+  const actionCounts = filteredPositions.reduce((acc, position) => {
+    acc[position.action] = (acc[position.action] || 0) + 1;
+    return acc;
+  }, {});
+  // Create a mapping from action types to these labels
+  const actionMap = {
+    point: "Points",
+    miss: "Wides",
+    goal: "Goals",
+    short: "Short",
+    freeScore: "Free",
+  };
+
+  // Define the labels in the order you want them to appear
+  const labels = ["Points", "Wides", "Goals", "Short", "Free"];
+  // Populate the data array in the order of labels
+  const data = labels.map((label) => {
+    // Find the action key that maps to the current label
+    const actionKey = Object.keys(actionMap).find(
+      (key) => actionMap[key] === label
+    );
+    return actionCounts[actionKey] || 0;
+  });
+  const shotsData = {
+    labels: labels,
+    datasets: [
+      {
+        data: data,
+      },
+    ],
+  };
+
   const ListDataTest = [
     {
       id: "1",
       title: "Scores/Misses",
       text: "This is some text for page 1",
       pitchData: filteredPositions, // Pass filteredPositions directly
+      setPlayData: setPlayFilteredPositions,
+      setPlayDataBarChart: setPlayData1,
+      shotDataChart: shotsData,
     },
     { id: "2", title: "Kickouts", text: "This is some text for page 2" },
     { id: "3", title: "Turnovers", text: "This is some text for page 3" },
@@ -204,14 +265,19 @@ export default function App() {
     <View style={styles.page}>
       <Text style={styles.title}>{item.title}</Text>
       {item.pitchData && <PitchComponent positions={item.pitchData} />}
+      {item.shotDataChart && (
+        <ShotChartComponent shotChartDataProp={item.shotDataChart} />
+      )}
+      <Text></Text>
+
+      {item.setPlayData && <PitchComponent positions={item.setPlayData} />}
+      {item.setPlayDataBarChart && (
+        <SetPlayChartComponent setplayDataProp={item.setPlayDataBarChart} />
+      )}
       <Text style={styles.text}>{item.text}</Text>
     </View>
   );
 
-  const actionCounts = filteredPositions.reduce((acc, position) => {
-    acc[position.action] = (acc[position.action] || 0) + 1;
-    return acc;
-  }, {});
   const shotTimes = filteredPositions.reduce((acc, position) => {
     if (["point", "goal", "freeScore"].includes(position.action)) {
       acc.push({ action: position.action, time: position.time });
@@ -266,60 +332,6 @@ export default function App() {
   console.log("========successfull====================");
   console.log(successfulAttempts);
   const shotPercentage = (successfulAttempts / totalAttempts) * 100;
-
-  // Define the labels in the order you want them to appear
-  const labels = ["Points", "Wides", "Goals", "Short", "Free"];
-  // Create a mapping from action types to these labels
-  const actionMap = {
-    point: "Points",
-    miss: "Wides",
-    goal: "Goals",
-    short: "Short",
-    freeScore: "Free",
-  };
-  // Populate the data array in the order of labels
-  const data = labels.map((label) => {
-    // Find the action key that maps to the current label
-    const actionKey = Object.keys(actionMap).find(
-      (key) => actionMap[key] === label
-    );
-    return actionCounts[actionKey] || 0;
-  });
-  const shotsData = {
-    labels: labels,
-    datasets: [
-      {
-        data: data,
-      },
-    ],
-  };
-
-  const setPlayData1 = {
-    labels: ["Free", "45", "Mark"],
-    legend: ["Score", "Miss"],
-    data: ["free", "45", "mark"].map((action) => {
-      const scores = filteredPositions.filter(
-        (position) =>
-          position.action.toLowerCase() === `${action.toLowerCase()}score`
-      ).length;
-      const misses = filteredPositions.filter(
-        (position) =>
-          position.action.toLowerCase() === `${action.toLowerCase()}miss`
-      ).length;
-      return [scores, misses];
-    }),
-    barColors: ["#0b63fb80", "#242424"],
-  };
-  const setPlayFilteredPositions = filteredPositions.filter((position) =>
-    [
-      "freeMiss",
-      "freeScore",
-      "markScore",
-      "markMiss",
-      "45Score",
-      "45Miss",
-    ].includes(position.action)
-  );
 
   // Log the setPlayData1 object for debugging
   console.log("=doc is pedo below===================");
@@ -612,39 +624,26 @@ export default function App() {
       </View>
     );
   };
-  const ShotChartComponent = () => {
+  const ShotChartComponent = ({ shotChartDataProp }) => {
+    console.log("hows ya pops");
+    console.log(shotChartDataProp);
+
     return (
       <View
         style={{
           width: "90%",
           backgroundColor: "#12131A",
-          // paddingVertical: 16,
           alignItems: "center",
           justifyContent: "center",
-
           marginHorizontal: "auto",
-          // marginTop: 20,
-
           borderRadius: 16,
         }}
         className="h-[25vh]"
       >
-        {/* <Text
-          style={{
-            color: "white",
-            textAlign: "center",
-            fontSize: 18,
-            marginTop: 7,
-            marginBottom: 7,
-            fontWeight: "bold",
-          }}
-        >
-          Shots
-        </Text> */}
         <BarChart
           style={{ marginVertical: 0, borderRadius: 16, marginRight: 0 }}
-          data={shotsData}
-          withInnerLines={false} // Add this line
+          data={shotChartDataProp}
+          withInnerLines={false}
           width={Dimensions.get("window").width * 0.9}
           height={200}
           yAxisLabel=""
@@ -652,7 +651,6 @@ export default function App() {
           chartConfig={chartConfig}
           fromZero
         />
-        {/* <ChartDataDropdown2 shotsData={shotsData} title="Shot Data" /> */}
       </View>
     );
   };
@@ -809,12 +807,12 @@ export default function App() {
     );
   };
 
-  function SetPlayChartComponent() {
+  function SetPlayChartComponent(setplayDataProp) {
+    console.log("====================================");
+    console.log(setplayDataProp);
+    console.log("====================================");
     return (
       <View className=" w-[90%] h-[29vh] mt-2 mx-auto justify-center rounded-xl bg-[#12131A]  text-center items-center">
-        {/* <Text className="text-white text-lg font-semibold mx-auto mt-2">
-          Set Play Stats
-        </Text> */}
         <StackedBarChart
           className="mx-auto "
           data={setPlayData1}
@@ -971,7 +969,7 @@ export default function App() {
             </View>
             <PitchComponent positions={filteredPositions || []} />
             {/* <Text className="text-white mt-5 text-lg ml-3">Breakdown</Text> */}
-            <ShotChartComponent />
+            <ShotChartComponent shotChartDataProp={shotsData} />
           </View>
           <Hr></Hr>
           <View id="page2" className="w-[90%] mx-auto h-auto justify-center">
@@ -994,7 +992,7 @@ export default function App() {
             <PitchComponent positions={setPlayFilteredPositions || []} />
 
             {/* <Text className="text-white mt-5 text-lg ml-3">Breakdown</Text> */}
-            <SetPlayChartComponent />
+            <SetPlayChartComponent setplayDataProp={setPlayData1} />
           </View>
           <ScoresTimingsComponent />
           <ShotPercentageComponent />
@@ -1018,7 +1016,7 @@ export default function App() {
           <Text style={{ color: "white", textAlign: "center", marginTop: 10 }}>
             Current Page: {currentIndex + 1}
           </Text>
-          <View className="bg-[#0b63fb]  mx-auto h-[50vh]">
+          <View className=" bg-purple-400 mx-auto w-full">
             <FlatList
               data={ListDataTest}
               renderItem={renderItem}
