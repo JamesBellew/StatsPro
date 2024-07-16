@@ -251,9 +251,21 @@ export default function App() {
   const ListDataTest = [
     {
       id: "1",
-      title: "Scores/Misses",
+      firstPitchTitle: "Scores/Misses",
+      secondPitchTitle: "Set Plays Breakdown",
       text: "This is some text for page 1",
       pitchData: filteredPositions, // Pass filteredPositions directly
+      firstPitchDataLegend: [
+        { title: "Score", color: "0b63fb" },
+        { title: "Miss", color: "ef233c" },
+      ],
+      secondPitchDataLegend: [
+        { title: "Score", color: "0b63fb" },
+        { title: "Miss", color: "ef233c" },
+        { title: "Short", color: "ef233c" },
+        { title: "Goal", color: "0b63fb" },
+        { title: "Free", color: "0b63fb" },
+      ],
       setPlayData: setPlayFilteredPositions,
       setPlayDataBarChart: setPlayData1,
       shotDataChart: shotsData,
@@ -262,14 +274,59 @@ export default function App() {
     { id: "3", title: "Turnovers", text: "This is some text for page 3" },
   ];
   const renderItem = ({ item }) => (
-    <View style={styles.page}>
-      <Text style={styles.title}>{item.title}</Text>
+    <View style={styles.page} className="px-5">
+      <View className="w-[95%] mb-3">
+        <Text className="" style={styles.title}>
+          {item.firstPitchTitle}
+        </Text>
+      </View>
+
+      {item.firstPitchDataLegend && (
+        <View className=" items-start justify-start items-center w-[90%] flex-row mb-2">
+          {item.firstPitchDataLegend.map((legend) => (
+            <>
+              <View
+                className={`bg-[#${legend.color}] w-3 h-3 mr-2 rounded-full`}
+              ></View>
+              <Text className="text-white capitalize mr-2">{legend.title}</Text>
+            </>
+          ))}
+          {/* <View className="bg-red-600 w-3 h-3 mr-2 rounded-full"></View>
+          <Text className="text-white capitalize">
+            {item.pitchDataLegend[0].title}
+          </Text> */}
+        </View>
+      )}
+
       {item.pitchData && <PitchComponent positions={item.pitchData} />}
       {item.shotDataChart && (
         <ShotChartComponent shotChartDataProp={item.shotDataChart} />
       )}
       <Text></Text>
+      <Hr />
+      <Text></Text>
 
+      <View className="w-[95%] mb-3">
+        <Text className="" style={styles.title}>
+          {item.secondPitchTitle}
+        </Text>
+      </View>
+      {item.secondPitchDataLegend && (
+        <View className=" items-start justify-start items-center w-[90%] flex-row mb-2">
+          {item.secondPitchDataLegend.map((legend) => (
+            <>
+              <View
+                className={`bg-[#${legend.color}] w-3 h-3 mr-2 rounded-full`}
+              ></View>
+              <Text className="text-white capitalize mr-2">{legend.title}</Text>
+            </>
+          ))}
+          {/* <View className="bg-red-600 w-3 h-3 mr-2 rounded-full"></View>
+          <Text className="text-white capitalize">
+            {item.pitchDataLegend[0].title}
+          </Text> */}
+        </View>
+      )}
       {item.setPlayData && <PitchComponent positions={item.setPlayData} />}
       {item.setPlayDataBarChart && (
         <SetPlayChartComponent setplayDataProp={item.setPlayDataBarChart} />
@@ -718,7 +775,7 @@ export default function App() {
           </Text>
         </View>
         <View className="bg-[#12131A] w-[90%] mx-auto">
-          <LineChart
+          {/* <LineChart
             data={{
               labels: scoreTimingsData.labels,
               datasets: scoreTimingsData.datasets.concat([
@@ -750,7 +807,7 @@ export default function App() {
               marginVertical: 8,
               borderRadius: 16,
             }}
-          />
+          /> */}
         </View>
         {/* <View className="flex-row pb-2 bg-[#12131A]  rounded-b-lg w-[90%] justify-between items-center  space-x-2 mx-auto ">
           <TouchableOpacity
@@ -952,31 +1009,26 @@ export default function App() {
             {/* <Text className="text-xl text-white text-center mb-5 mt-2">
             Stats for game vs {gameData.gameName}
           </Text> */}
-            <Text className="text-white text-2xl font-bold  ml-3">
+            {/* <Text className="text-white text-2xl font-bold  ml-3">
               Shots/Misses
-            </Text>
-            <View className="legend h-[3vh] mb-4 px-4  items-center w-full  flex-row">
+            </Text> */}
+            {/* <View className="legend h-[3vh] mb-4 px-4  items-center w-full  flex-row">
               <View className="bg-[#0b63fb] mr-1 h-2 w-2 rounded-full"></View>
               <Text className="text-zinc-400 pr-2 text-lg">Score</Text>
               <View className="bg-[#ef233c] mr-1 h-2 w-2 rounded-full"></View>
               <Text className="text-zinc-400 pr-2 text-lg">Miss</Text>
-              {/* <View className="bg-[#fb8500] mr-1 h-2 w-2 rounded-full"></View>
-              <Text className="text-zinc-400 text-lg pr-2">Short</Text>
-              <View className="bg-[#4361ee] mr-1 h-2 w-2 rounded-full"></View>
-              <Text className="text-zinc-400 text-lg pr-2">Goal</Text>
-              <View className="bg-[#52b788] mr-1 h-2 w-2 rounded-full"></View>
-              <Text className="text-zinc-400 text-lg pr-2">Free</Text> */}
-            </View>
-            <PitchComponent positions={filteredPositions || []} />
+       
+            </View> */}
+            {/* <PitchComponent positions={filteredPositions || []} /> */}
             {/* <Text className="text-white mt-5 text-lg ml-3">Breakdown</Text> */}
-            <ShotChartComponent shotChartDataProp={shotsData} />
+            {/* <ShotChartComponent shotChartDataProp={shotsData} /> */}
           </View>
-          <Hr></Hr>
+          {/* <Hr></Hr> */}
           <View id="page2" className="w-[90%] mx-auto h-auto justify-center">
-            <Text className="text-white mt-5 text-2xl font-bold ml-3 ">
+            {/* <Text className="text-white mt-5 text-2xl font-bold ml-3 ">
               Set Plays Breakdown
-            </Text>
-            <View className="legend h-[3vh] mb-4 px-4  items-center w-full  flex-row">
+            </Text> */}
+            {/* <View className="legend h-[3vh] mb-4 px-4  items-center w-full  flex-row">
               <View className="bg-[#52b788] mr-1 h-2 w-2 rounded-full"></View>
               <Text className="text-zinc-400 pr-2 text-lg">Score</Text>
               <View className="bg-[#ef233c] mr-1 h-2 w-2 rounded-full"></View>
@@ -987,12 +1039,12 @@ export default function App() {
               <Text className="text-zinc-400 pr-2 text-lg">Goal</Text>
               <View className="bg-[#52b788] mr-1 h-2 w-2 rounded-full"></View>
               <Text className="text-zinc-400 pr-2 text-lg">Free</Text>
-            </View>
+            </View> */}
 
-            <PitchComponent positions={setPlayFilteredPositions || []} />
+            {/* <PitchComponent positions={setPlayFilteredPositions || []} /> */}
 
             {/* <Text className="text-white mt-5 text-lg ml-3">Breakdown</Text> */}
-            <SetPlayChartComponent setplayDataProp={setPlayData1} />
+            {/* <SetPlayChartComponent setplayDataProp={setPlayData1} /> */}
           </View>
           <ScoresTimingsComponent />
           <ShotPercentageComponent />
@@ -1013,10 +1065,10 @@ export default function App() {
               hideLegend={false}
             />
           </View>
-          <Text style={{ color: "white", textAlign: "center", marginTop: 10 }}>
+          {/* <Text style={{ color: "white", textAlign: "center", marginTop: 10 }}>
             Current Page: {currentIndex + 1}
-          </Text>
-          <View className=" bg-purple-400 mx-auto w-full">
+          </Text> */}
+          <View className="  mx-auto w-full">
             <FlatList
               data={ListDataTest}
               renderItem={renderItem}
