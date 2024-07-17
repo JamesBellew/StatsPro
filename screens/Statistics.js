@@ -179,13 +179,74 @@ export default function App() {
         backgroundColor: "#4361ee",
       },
     },
+    kickoutBreakWon: {
+      style: {
+        width: 10,
+        height: 10,
+        borderRadius: 10,
+        backgroundColor: "#4361ee",
+        shadowColor: "#ef233c", // Green color for shadow
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.8,
+        shadowRadius: 56,
+      },
+    },
+    kickoutCatch: {
+      style: {
+        width: 10,
+        height: 10,
+        borderRadius: 10,
+        backgroundColor: "#4361ee",
+        shadowColor: "#ef233c", // Green color for shadow
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.8,
+        shadowRadius: 56,
+      },
+    },
+    kickoutOut: {
+      style: {
+        width: 10,
+        height: 10,
+        borderRadius: 10,
+        backgroundColor: "#ef233c",
+        shadowColor: "#ef233c", // Green color for shadow
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.8,
+        shadowRadius: 56,
+      },
+    },
+    kickOppCatch: {
+      style: {
+        width: 10,
+        height: 10,
+        borderRadius: 10,
+        backgroundColor: "#ef233c",
+        shadowColor: "#ef233c", // Green color for shadow
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.8,
+        shadowRadius: 56,
+      },
+    },
+    kickoutOppBreak: {
+      style: {
+        width: 10,
+        height: 10,
+        borderRadius: 10,
+        backgroundColor: "#ef233c",
+        shadowColor: "#ef233c", // Green color for shadow
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.8,
+        shadowRadius: 56,
+      },
+    },
   };
   //!this is for handling scroll to page events
   const scrollViewRef = useRef(null);
   const screenHeight = Dimensions.get("window").height;
   const pageHeight = screenHeight * 0.85; // 85vh of the screen height
-
-  console.log("===========Boyaka==============");
+  const filteredKickoutPositions = gameData.positions.filter(
+    (position) => position.actionCategory === "kickout"
+  );
 
   const filteredPositions = gameData.positions.filter(
     (position) => position.actionCategory === "shot"
@@ -231,6 +292,8 @@ export default function App() {
 
   // Define the labels in the order you want them to appear
   const labels = ["Points", "Wides", "Goals", "Short", "Free"];
+  // Define the labels in the order you want them to appear
+  const kickoutLabels = ["Catch", "Break", "Loss", "Out", "Free"];
   // Populate the data array in the order of labels
   const data = labels.map((label) => {
     // Find the action key that maps to the current label
@@ -239,6 +302,21 @@ export default function App() {
     );
     return actionCounts[actionKey] || 0;
   });
+  const dataKickouts = kickoutLabels.map((label) => {
+    // Find the action key that maps to the current label
+    const actionKey = Object.keys(actionMap).find(
+      (key) => actionMap[key] === label
+    );
+    return actionCounts[actionKey] || 0;
+  });
+  const kickoutsData = {
+    labels: kickoutLabels,
+    datasets: [
+      {
+        data: data,
+      },
+    ],
+  };
   const shotsData = {
     labels: labels,
     datasets: [
@@ -247,93 +325,6 @@ export default function App() {
       },
     ],
   };
-
-  const ListDataTest = [
-    {
-      id: "1",
-      firstPitchTitle: "Scores/Misses",
-      secondPitchTitle: "Set Plays Breakdown",
-      text: "This is some text for page 1",
-      pitchData: filteredPositions, // Pass filteredPositions directly
-      firstPitchDataLegend: [
-        { title: "Score", color: "0b63fb" },
-        { title: "Miss", color: "ef233c" },
-      ],
-      secondPitchDataLegend: [
-        { title: "Score", color: "0b63fb" },
-        { title: "Miss", color: "ef233c" },
-        { title: "Short", color: "ef233c" },
-        { title: "Goal", color: "0b63fb" },
-        { title: "Free", color: "0b63fb" },
-      ],
-      setPlayData: setPlayFilteredPositions,
-      setPlayDataBarChart: setPlayData1,
-      shotDataChart: shotsData,
-    },
-    { id: "2", title: "Kickouts", text: "This is some text for page 2" },
-    { id: "3", title: "Turnovers", text: "This is some text for page 3" },
-  ];
-  const renderItem = ({ item }) => (
-    <View style={styles.page} className="px-5">
-      <View className="w-[95%] mb-3">
-        <Text className="" style={styles.title}>
-          {item.firstPitchTitle}
-        </Text>
-      </View>
-
-      {item.firstPitchDataLegend && (
-        <View className=" items-start justify-start items-center w-[90%] flex-row mb-2">
-          {item.firstPitchDataLegend.map((legend) => (
-            <>
-              <View
-                className={`bg-[#${legend.color}] w-3 h-3 mr-2 rounded-full`}
-              ></View>
-              <Text className="text-white capitalize mr-2">{legend.title}</Text>
-            </>
-          ))}
-          {/* <View className="bg-red-600 w-3 h-3 mr-2 rounded-full"></View>
-          <Text className="text-white capitalize">
-            {item.pitchDataLegend[0].title}
-          </Text> */}
-        </View>
-      )}
-
-      {item.pitchData && <PitchComponent positions={item.pitchData} />}
-      {item.shotDataChart && (
-        <ShotChartComponent shotChartDataProp={item.shotDataChart} />
-      )}
-      <Text></Text>
-      <Hr />
-      <Text></Text>
-
-      <View className="w-[95%] mb-3">
-        <Text className="" style={styles.title}>
-          {item.secondPitchTitle}
-        </Text>
-      </View>
-      {item.secondPitchDataLegend && (
-        <View className=" items-start justify-start items-center w-[90%] flex-row mb-2">
-          {item.secondPitchDataLegend.map((legend) => (
-            <>
-              <View
-                className={`bg-[#${legend.color}] w-3 h-3 mr-2 rounded-full`}
-              ></View>
-              <Text className="text-white capitalize mr-2">{legend.title}</Text>
-            </>
-          ))}
-          {/* <View className="bg-red-600 w-3 h-3 mr-2 rounded-full"></View>
-          <Text className="text-white capitalize">
-            {item.pitchDataLegend[0].title}
-          </Text> */}
-        </View>
-      )}
-      {item.setPlayData && <PitchComponent positions={item.setPlayData} />}
-      {item.setPlayDataBarChart && (
-        <SetPlayChartComponent setplayDataProp={item.setPlayDataBarChart} />
-      )}
-      <Text style={styles.text}>{item.text}</Text>
-    </View>
-  );
 
   const shotTimes = filteredPositions.reduce((acc, position) => {
     if (["point", "goal", "freeScore"].includes(position.action)) {
@@ -459,7 +450,9 @@ export default function App() {
     fillShadowGradientTo: "#0964FB", // Make sure the gradient goes to the same color
     barRadius: 8,
   };
-  const PitchComponent = ({ positions }) => {
+  const PitchComponent = ({ positions, type }) => {
+    console.log("beeeelo");
+    console.log(type);
     const mappedActions = useMemo(() => {
       return positions.map((position, index) => {
         const actionStyle = actionStyles[position.action];
@@ -520,7 +513,14 @@ export default function App() {
     }, [positions]);
 
     return (
-      <View className=" w-full h-[35vh] border-gray-400 border-1 rounded-2xl overflow-hidden">
+      <View
+        className={` w-full
+        h-[35vh]
+        ${type === "kickout" ? "h-[35vh]" : "h-[35vh] mt-0 "}
+       
+        
+        border-gray-400  border-1 rounded-2xl overflow-hidden`}
+      >
         <View className="bg-[#191A22]  rounded-3xl  h-[63vh]">
           <View className="h-full">
             {/* Pitch markings */}
@@ -542,6 +542,186 @@ export default function App() {
       </View>
     );
   };
+
+  const maxValue = Math.max(
+    ...scoreTimingsData.datasets.map((dataset) => Math.max(...dataset.data))
+  );
+  const ListDataTest = [
+    {
+      id: "1",
+      firstPitchTitle: "Scores/Misses",
+      secondPitchTitle: "Set Plays Breakdown",
+      lineChartTitle: "Score Timings",
+      text: "This is some text for page 1",
+      pitchData: filteredPositions, // Pass filteredPositions directly
+      pitchType: "shot",
+      firstPitchDataLegend: [
+        { title: "Score", color: "0b63fb" },
+        { title: "Miss", color: "ef233c" },
+      ],
+      secondPitchDataLegend: [
+        { title: "Score", color: "0b63fb" },
+        { title: "Miss", color: "ef233c" },
+        { title: "Short", color: "ef233c" },
+        { title: "Goal", color: "0b63fb" },
+        { title: "Free", color: "0b63fb" },
+      ],
+      lineChartData: {
+        labels: ["Q1", "Q2", "Q3", "Q4"],
+        datasets: [
+          {
+            data: quarters.map(
+              (quarter) =>
+                shotTimes.filter(
+                  (shot) =>
+                    shot.time >= quarter.start && shot.time < quarter.end
+                ).length
+            ),
+          },
+        ],
+      },
+      setPlayData: setPlayFilteredPositions,
+      setPlayDataBarChart: setPlayData1,
+      shotDataChart: shotsData,
+    },
+    {
+      id: "2",
+      firstPitchTitle: "Kickouts",
+      secondPitchTitle: "Kickouts Breakdown",
+      lineChartTitle: "Kickouts Timings",
+      text: "This is some text for page 1",
+      pitchData: filteredKickoutPositions, // Pass filteredPositions directly
+      pitchType: "kickout",
+      firstPitchDataLegend: [
+        { title: "Won", color: "0b63fb" },
+        { title: "Loss", color: "ef233c" },
+      ],
+      secondPitchDataLegend: [
+        { title: "Catch", color: "0b63fb" },
+        { title: "Break Won", color: "ef233c" },
+        { title: "Loss", color: "ef233c" },
+        { title: "Break Loss", color: "0b63fb" },
+        { title: "Out", color: "0b63fb" },
+      ],
+      lineChartData: {
+        labels: ["Q1", "Q2", "Q3", "Q4"],
+        datasets: [
+          {
+            data: quarters.map(
+              (quarter) =>
+                shotTimes.filter(
+                  (shot) =>
+                    shot.time >= quarter.start && shot.time < quarter.end
+                ).length
+            ),
+          },
+        ],
+      },
+      setPlayData: setPlayFilteredPositions,
+      setPlayDataBarChart: setPlayData1,
+      shotDataChart: kickoutsData,
+    },
+    { id: "3", title: "Turnovers", text: "This is some text for page 3" },
+  ];
+  const renderItem = ({ item }) => (
+    <View style={styles.page} className="px-5  h-auto ">
+      <View className="w-[95%] mb-3">
+        <Text className="" style={styles.title}>
+          {item.firstPitchTitle}
+        </Text>
+      </View>
+      {item.firstPitchDataLegend && (
+        <View className="items-start justify-start items-center w-[90%] flex-row mb-2">
+          {item.firstPitchDataLegend.map((legend) => (
+            <>
+              <View
+                className={`bg-[#${legend.color}] w-3 h-3 mr-2 rounded-full`}
+              ></View>
+              <Text className="text-white capitalize mr-2">{legend.title}</Text>
+            </>
+          ))}
+        </View>
+      )}
+      {item.pitchData && (
+        <PitchComponent positions={item.pitchData} type={item.pitchType} />
+      )}
+      {item.shotDataChart && (
+        <ShotChartComponent shotChartDataProp={item.shotDataChart} />
+      )}
+      <Text></Text>
+      <Hr />
+      <Text></Text>
+      <View className="w-[95%] mb-3">
+        <Text className="" style={styles.title}>
+          {item.secondPitchTitle}
+        </Text>
+      </View>
+      {item.secondPitchDataLegend && (
+        <View className="items-start justify-start items-center w-[90%] h-auto flex-row mb-2">
+          {item.secondPitchDataLegend.map((legend) => (
+            <>
+              <View
+                className={`bg-[#${legend.color}] w-3 h-3 mr-2 rounded-full`}
+              ></View>
+              <Text className="text-white capitalize mr-2">{legend.title}</Text>
+            </>
+          ))}
+        </View>
+      )}
+      {item.setPlayData && <PitchComponent positions={item.setPlayData} />}
+      {item.setPlayDataBarChart && (
+        <SetPlayChartComponent setplayDataProp={item.setPlayDataBarChart} />
+      )}
+      <Hr />
+      <Text className="text-white  text-center mt-5 text-xl font-semibold tracking-wider">
+        {item.lineChartTitle && (
+          <>
+            <Text>{item.lineChartTitle}</Text>
+          </>
+        )}
+        {/* <Text className="text-white  text-center mt-5 text-xl font-semibold tracking-wider">
+            Score Timings
+          </Text> */}
+      </Text>
+      {item.lineChartData && (
+        <LineChart
+          data={{
+            labels: item.lineChartData.labels,
+            datasets: item.lineChartData.datasets.concat([
+              { data: [1] }, // min
+              { data: [maxValue] }, // max
+            ]),
+          }}
+          width={Dimensions.get("window").width * 0.9} // from react-native
+          height={225}
+          chartConfig={{
+            propsForBackgroundLines: {
+              strokeWidth: 0,
+            },
+            backgroundColor: "#12131A",
+            backgroundGradientFrom: "#12131A",
+            backgroundGradientTo: "#12131A",
+            fillShadowGradient: "rgba(11, 99, 251, 1)",
+            fillShadowGradientTo: "rgba(0, 0, 0, 1)", // Bottom gradient color
+            fillShadowGradientOpacity: 1, // Ensure the gradient is solid
+            decimalPlaces: 0, // optional, defaults to 2dp
+            withDots: false,
+            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            style: {
+              borderRadius: 16,
+            },
+          }}
+          bezier
+          style={{
+            marginVertical: 8,
+            borderRadius: 16,
+          }}
+        />
+      )}
+      <ShotPercentageComponent />
+      <Text style={styles.text}>{item.text}</Text>
+    </View>
+  );
 
   const ChartDataDropdown2 = ({ shotsData, title }) => {
     const [showShotData, setShowShotData] = useState(false);
@@ -770,9 +950,6 @@ export default function App() {
       <>
         <View className="w-[90%] bg-[#12131A] mx-auto h-auto mt-5 rounded-t-xl">
           {/* <Hr /> */}
-          <Text className="text-white  text-center mt-5 text-xl font-semibold tracking-wider">
-            Score Timings
-          </Text>
         </View>
         <View className="bg-[#12131A] w-[90%] mx-auto">
           {/* <LineChart
@@ -905,32 +1082,32 @@ export default function App() {
             <View className=" justify-center mx-auto w-[95%] mx-10 relative">
               <View className=" w-[95%] mx-auto flex-row h-auto">
                 <View className="w-1/2 h-full ">
-                  <Text className="text-xl mx-10 mt-10 font-bold text-gray-800 ">
+                  <Text className="text-xl mx-5 mt-10 font-bold text-gray-800 ">
                     Game Details
                   </Text>
-                  <Text className="text-xl mx-10  capitalize  text-gray-500 ">
+                  <Text className="text-xl mx-5  capitalize  text-gray-500 ">
                     {gameData.timestamp}
                   </Text>
-                  <Text className="text-3xl mx-10 font-bold capitalize mt-3 text-[#191A22] ">
+                  <Text className="text-2xl mx-5 font-bold capitalize mt-3 text-[#191A22] ">
                     {gameData.gameName} {gameData.venue}
                   </Text>
                 </View>
                 <View className="w-1/2 h-full items-end ">
-                  <Text className="text-xl mx-10 mt-10 font-bold text-gray-800 ">
+                  <Text className="text-xl mx-5 mt-10 font-bold text-gray-800 ">
                     Score
                   </Text>
-                  <Text className="text-xl mx-10    text-gray-500 ">FT</Text>
+                  <Text className="text-xl mx-5    text-gray-500 ">FT</Text>
                   {/* <Text className="text-md mx-10 font-semibold capitalize mt-3 text-[#191A22] ">
                 {gameData.timestamp}
               </Text> */}
-                  <Text className="text-3xl mx-10 font-bold capitalize mt-3 text-[#348364] ">
+                  <Text className="text-2xl mx-5 font-bold capitalize mt-3 text-[#0b63fb] ">
                     2:10 - 3:09
                   </Text>
                 </View>
               </View>
 
               <View className="justify-center mx-auto w-full  items-center">
-                <TouchableOpacity className="p-4 bg-[#050F01] w-[90%] items-center  rounded-3xl mt-16">
+                <TouchableOpacity className="p-4 bg-[#0b63fb] w-[90%] items-center  rounded-3xl mt-16">
                   <Text className="font-bold text-white text-md px-4">
                     Share to WhatsApp
                   </Text>
@@ -946,7 +1123,7 @@ export default function App() {
       <SafeAreaView className="flex-1 bg-[#12131A]">
         <ScrollView
           ref={scrollViewRef}
-          style={{ marginBottom: 60 }}
+          style={{ marginBottom: 40 }}
           // onScrollEndDrag={handleScrollEnd}
           scrollEventThrottle={16}
           // className="bg-red-600"
@@ -955,9 +1132,23 @@ export default function App() {
             id="page1"
             className="h-auto w-[90%] mx-auto  justify-center my-auto "
           >
-            <View className="flex-row h-[5vh] my-5  justify-start   space-x-7 mx-auto items-center w-[90%]">
+            <View className="flex-row h-[5vh] my-5  justify-start   space-x-7 mx-auto items-center w-[95%]">
               <View className="flex-1 h-full flex-row space-x-2 items-center">
-                <TouchableOpacity
+                <View>
+                  <Text className="text-white text-start text-xl ">
+                    {gameData.gameName}
+                  </Text>
+                  <View className="flex-row">
+                    <Text className="text-gray-400 mr-2 capitalize text-start text-sm font-medium">
+                      {gameData.venue}
+                    </Text>
+                    <Text className="text-gray-400 capitalize text-start text-sm font-medium">
+                      {gameData.timestamp}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* <TouchableOpacity
                   onPress={() => navigation.navigate("HomeDashboard")}
                   className="bg-[#191A22] h-auto text-center items-center p-3 rounded-xl w-2/5 mx-auto"
                 >
@@ -967,27 +1158,33 @@ export default function App() {
                     color="#fff"
                     className="my-auto justify-center"
                   />
-                </TouchableOpacity>
-                <TouchableOpacity className="bg-[#191A22] h-auto text-center items-center p-3 rounded-xl w-2/5 mx-auto">
+                </TouchableOpacity> */}
+                {/* <TouchableOpacity className="bg-[#191A22] h-auto text-center items-center p-3 rounded-xl w-2/5 mx-auto">
                   <FontAwesomeIcon
                     icon={faSliders}
                     size={15}
                     color="#fff"
                     className="my-auto justify-center"
                   />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
-              <View className="flex-row items-center">
-                <View className="text-center">
-                  <Text className="text-white text-center text-2xl font-semibold">
-                    {gameData.gameName}
-                  </Text>
+              {/* <View className="flex-row bg-red-500 items-center">
+                <View className="text-center space-x-1 px-3 py-2 rounded-xl ">
+                  <Text className="text-white text-center text-2xl font-semibold"></Text>
                 </View>
-              </View>
-              <View className="flex-1 h-full flex-row space-x-2 items-center">
-                <TouchableOpacity className="bg-[#191A22] h-auto text-center items-center p-3 rounded-xl w-2/5 mx-auto">
+              </View> */}
+              <View className="flex-1   h-full flex-row space-x-2  items-center">
+                <TouchableOpacity className="bg-[#191A22]  h-auto text-center items-center p-3 rounded-full w-1/3 mx-auto">
                   <FontAwesomeIcon
-                    icon={faDownload}
+                    icon={faChevronLeft}
+                    size={15}
+                    color="#fff"
+                    className="my-auto justify-center"
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity className="bg-[#191A22] h-auto text-center items-center p-3 rounded-full w-1/3 mx-auto">
+                  <FontAwesomeIcon
+                    icon={faShare}
                     size={15}
                     color="#fff"
                     className="my-auto justify-center"
@@ -995,7 +1192,7 @@ export default function App() {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => setShowGameDetailsMenu(true)}
-                  className="bg-[#191A22] h-auto text-center items-center p-3 rounded-xl w-2/5 mx-auto"
+                  className="bg-[#191A22] h-auto text-center items-center p-3 rounded-full w-1/3 mx-auto"
                 >
                   <FontAwesomeIcon
                     icon={faInfo}
@@ -1047,9 +1244,10 @@ export default function App() {
             {/* <SetPlayChartComponent setplayDataProp={setPlayData1} /> */}
           </View>
           <ScoresTimingsComponent />
-          <ShotPercentageComponent />
+          {/* <ShotPercentageComponent /> */}
           {/* <Hr /> */}
-          <View className="bg-[#12131A] my-5  rounded-lg w-[90%] mx-auto items-center">
+          {/* last thing to put in yadeee */}
+          {/* <View className="bg-[#12131A] my-5  rounded-lg w-[90%] mx-auto items-center">
             <Text className="text-white text-xl font-semibold text-center my-2 mt-5">
               Last 3 games %
             </Text>
@@ -1064,7 +1262,7 @@ export default function App() {
               chartConfig={barChartConfig}
               hideLegend={false}
             />
-          </View>
+          </View> */}
           {/* <Text style={{ color: "white", textAlign: "center", marginTop: 10 }}>
             Current Page: {currentIndex + 1}
           </Text> */}
@@ -1097,7 +1295,7 @@ export default function App() {
         >
           <FontAwesomeIcon icon={faChevronLeft} size={25} color="#0b63fb" />
         </TouchableOpacity> */}
-          <View className="flex-row ">
+          <View className="flex-row bg-[#191A22] rounded-3xl px-5 justify-center items-center">
             <TouchableOpacity className="p-4 flex">
               <Text
                 className={`${
@@ -1109,7 +1307,7 @@ export default function App() {
               <View
                 className={`${
                   currentIndex === 0
-                    ? "w-2 h-2 rounded-full bg-[#0b63fb] mx-auto"
+                    ? "w-1 h-1 rounded-full bg-[#0b63fb] mx-auto"
                     : "w-1 h-1 rounded-full bg-zinc-400 mx-auto"
                 }`}
               ></View>
@@ -1125,7 +1323,7 @@ export default function App() {
               <View
                 className={`${
                   currentIndex === 1
-                    ? "w-2 h-2 rounded-full bg-[#0b63fb] mx-auto"
+                    ? "w-1 h-1 rounded-full bg-[#0b63fb] mx-auto"
                     : "w-1 h-1 rounded-full bg-zinc-400 mx-auto"
                 }`}
               ></View>
