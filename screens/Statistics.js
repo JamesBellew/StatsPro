@@ -32,6 +32,8 @@ import {
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 export default function App() {
   const navigation = useNavigation();
+  //!useREfs
+  const flatListRef = useRef(null);
   //!usestates
 
   const [showShotData, setShowShotData] = useState(false);
@@ -48,6 +50,11 @@ export default function App() {
       setCurrentIndex(viewableItems[0].index);
     }
   }).current;
+  const handlePress = (index) => {
+    setCurrentIndex(index);
+    flatListRef.current.scrollToIndex({ animated: true, index: index });
+  };
+
   const { gameData } = route.params; // Access the passed parameters
   function Hr() {
     return (
@@ -621,14 +628,83 @@ export default function App() {
       setPlayDataBarChart: setPlayData1,
       shotDataChart: kickoutsData,
     },
-    { id: "3", title: "Turnovers", text: "This is some text for page 3" },
+    {
+      id: "3",
+      firstPitchTitle: "Turnovers",
+      secondPitchTitle: "Turnovers Breakdown",
+      lineChartTitle: "Turnover Timings",
+      text: "This is some text for page 1",
+      pitchData: filteredKickoutPositions, // Pass filteredPositions directly
+      pitchType: "kickout",
+      firstPitchDataLegend: [
+        { title: "Won", color: "0b63fb" },
+        { title: "Loss", color: "ef233c" },
+      ],
+      secondPitchDataLegend: [
+        { title: "Catch", color: "0b63fb" },
+        { title: "Break Won", color: "ef233c" },
+        { title: "Loss", color: "ef233c" },
+        { title: "Break Loss", color: "0b63fb" },
+        { title: "Out", color: "0b63fb" },
+      ],
+      lineChartData: {
+        labels: ["Q1", "Q2", "Q3", "Q4"],
+        datasets: [
+          {
+            data: quarters.map(
+              (quarter) =>
+                shotTimes.filter(
+                  (shot) =>
+                    shot.time >= quarter.start && shot.time < quarter.end
+                ).length
+            ),
+          },
+        ],
+      },
+      setPlayData: setPlayFilteredPositions,
+      setPlayDataBarChart: setPlayData1,
+      shotDataChart: kickoutsData,
+    },
   ];
   const renderItem = ({ item }) => (
     <View style={styles.page} className="px-5  h-auto ">
-      <View className="w-[95%] mb-3">
-        <Text className="" style={styles.title}>
-          {item.firstPitchTitle}
-        </Text>
+      <View>
+        <View className="w-[95%] flex-row mb-3">
+          <View className="w-3/5">
+            <Text className="" style={styles.title}>
+              {item.firstPitchTitle}
+            </Text>
+          </View>
+          <View className="w-2/5   items-end items-end">
+            <Text className="mx-auto  justify-center my-auto items-center text-white text-md font-semibold">
+              {Math.round(shotPercentage)}%
+            </Text>
+            <View className="h-2 mb-2justify-end my-auto w-[100%] flex-row   rounded-lg">
+              <View
+                style={{
+                  width: `${Math.round(shotPercentage)}%`,
+                  height: "100%",
+                  backgroundColor: "#0b63fb86",
+                  borderTopLeftRadius: 8,
+                  borderBottomLeftRadius: 8,
+                }}
+              >
+                {/* <Text className="mx-auto justify-center my-auto items-center text-white text-md font-semibold">
+                {Math.round(shotPercentage)}%
+              </Text> */}
+              </View>
+              <View
+                style={{
+                  width: `${100 - Math.round(shotPercentage)}%`,
+                  height: "100%",
+                  backgroundColor: "#242424",
+                  borderTopRightRadius: 8,
+                  borderBottomRightRadius: 8,
+                }}
+              ></View>
+            </View>
+          </View>
+        </View>
       </View>
       {item.firstPitchDataLegend && (
         <View className="items-start justify-start items-center w-[90%] flex-row mb-2">
@@ -718,7 +794,7 @@ export default function App() {
           }}
         />
       )}
-      <ShotPercentageComponent />
+      {/* <ShotPercentageComponent /> */}
       <Text style={styles.text}>{item.text}</Text>
     </View>
   );
@@ -1089,7 +1165,10 @@ export default function App() {
                     {gameData.timestamp}
                   </Text>
                   <Text className="text-2xl mx-5 font-bold capitalize mt-3 text-[#191A22] ">
-                    {gameData.gameName} {gameData.venue}
+                    {gameData.gameName}
+                  </Text>
+                  <Text className="text-xl mx-5  capitalize  text-gray-500 ">
+                    {gameData.venue}
                   </Text>
                 </View>
                 <View className="w-1/2 h-full items-end ">
@@ -1102,6 +1181,9 @@ export default function App() {
               </Text> */}
                   <Text className="text-2xl mx-5 font-bold capitalize mt-3 text-[#0b63fb] ">
                     2:10 - 3:09
+                  </Text>
+                  <Text className="text-xl mx-5  capitalize  text-gray-500 ">
+                    Win
                   </Text>
                 </View>
               </View>
@@ -1174,7 +1256,10 @@ export default function App() {
                 </View>
               </View> */}
               <View className="flex-1   h-full flex-row space-x-2  items-center">
-                <TouchableOpacity className="bg-[#191A22]  h-auto text-center items-center p-3 rounded-full w-1/3 mx-auto">
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("HomeDashboard")}
+                  className="bg-[#191A22]  h-auto text-center items-center p-3 rounded-full w-1/3 mx-auto"
+                >
                   <FontAwesomeIcon
                     icon={faChevronLeft}
                     size={15}
@@ -1268,6 +1353,7 @@ export default function App() {
           </Text> */}
           <View className="  mx-auto w-full">
             <FlatList
+              ref={flatListRef}
               data={ListDataTest}
               renderItem={renderItem}
               keyExtractor={(item) => item.id}
@@ -1296,7 +1382,10 @@ export default function App() {
           <FontAwesomeIcon icon={faChevronLeft} size={25} color="#0b63fb" />
         </TouchableOpacity> */}
           <View className="flex-row bg-[#191A22] rounded-3xl px-5 justify-center items-center">
-            <TouchableOpacity className="p-4 flex">
+            <TouchableOpacity
+              className="p-4 flex"
+              onPress={() => handlePress(0)}
+            >
               <Text
                 className={`${
                   currentIndex === 0 ? "text-white" : "text-zinc-400"
@@ -1312,7 +1401,7 @@ export default function App() {
                 }`}
               ></View>
             </TouchableOpacity>
-            <TouchableOpacity className="p-4 ">
+            <TouchableOpacity className="p-4" onPress={() => handlePress(1)}>
               <Text
                 className={`${
                   currentIndex === 1 ? "text-white " : "text-zinc-400"
@@ -1328,7 +1417,7 @@ export default function App() {
                 }`}
               ></View>
             </TouchableOpacity>
-            <TouchableOpacity className="p-4">
+            <TouchableOpacity className="p-4" onPress={() => handlePress(2)}>
               <Text
                 className={`${
                   currentIndex === 2 ? "text-white " : "text-zinc-400"
