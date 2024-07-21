@@ -1348,9 +1348,9 @@ export default function App() {
               hideLegend={false}
             />
           </View> */}
-          {/* <Text style={{ color: "white", textAlign: "center", marginTop: 10 }}>
-            Current Page: {currentIndex + 1}
-          </Text> */}
+          <Text style={{ color: "white", textAlign: "center", marginTop: 10 }}>
+            Current Page is: {currentIndex + 1}
+          </Text>
           <View className="  mx-auto w-full">
             <FlatList
               ref={flatListRef}
