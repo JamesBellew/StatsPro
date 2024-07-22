@@ -254,6 +254,9 @@ export default function App() {
   const filteredKickoutPositions = gameData.positions.filter(
     (position) => position.actionCategory === "kickout"
   );
+  const filteredTurnoverPositions = gameData.positions.filter(
+    (position) => position.actionCategory === "T/O"
+  );
 
   const filteredPositions = gameData.positions.filter(
     (position) => position.actionCategory === "shot"
@@ -316,15 +319,12 @@ export default function App() {
         filteredKickoutPositions.filter(
           (position) => position.action === "kickoutOut"
         ).length,
-        0, // Assuming "Out" does not have a win/loss category
+        0, // Assuming "Out" does nob have a win/loss category
       ],
     ],
     barColors: ["#0b63fb80", "#242424"],
   };
-  console.log("lez get to tesing below :(((((");
-  console.log(filteredKickoutPositions);
-  console.log(setPlayData1);
-  console.log(kickoutBarChartData);
+
   const kickoutsCount = filteredKickoutPositions.reduce((count, position) => {
     if (position.actionCategory === "kickout") {
       if (!count[position.action]) {
@@ -389,14 +389,7 @@ export default function App() {
     }
     return acc;
   }, []);
-  console.log(gameData.gameName);
-  console.log(filteredPositions);
-  console.log("====================================");
-  // Print out the totals of each action
-  console.log(actionCounts);
-  console.log("====================================");
-  console.log(shotTimes);
-  console.log("====================================");
+
   const quarters = [
     { label: "Q1", start: 0, end: 1050 },
     { label: "Q2", start: 1050, end: 2100 },
@@ -418,7 +411,6 @@ export default function App() {
     ],
   };
 
-  console.log(JSON.stringify(scoreTimingsData, null, 2));
   const actions = ["Free", "45", "Mark"];
   const kickoutActionCounts = {
     kickOppCatch: 1,
@@ -438,6 +430,23 @@ export default function App() {
 
   const totalKickouts = goodKickouts + missKickouts;
   const kickoutsPercentage = (goodKickouts / totalKickouts) * 100;
+  let turnOverWonCount = 0;
+  let turnOverLossCount = 0;
+  filteredTurnoverPositions.forEach(function (turnover) {
+    console.log(turnover.action);
+    if (turnover.action === "turnOverWon") {
+      turnOverWonCount += 1;
+    } else {
+      turnOverLossCount += 1;
+    }
+  });
+  console.log(turnOverWonCount + "  is the total number of won turnovers");
+  console.log(turnOverLossCount + "  is the total number of Loss turnovers");
+  // Calculating the turnover percentage
+  const turnoverPercentage =
+    (turnOverWonCount / (turnOverLossCount + turnOverWonCount)) * 100;
+  // const turnoverPercentage = 60;
+
   const totalAttempts =
     (actionCounts.freeScore || 0) +
     (actionCounts.goal || 0) +
@@ -446,22 +455,12 @@ export default function App() {
     (actionCounts.short || 0);
   const kickoutsWonNumber =
     (actionCounts.kickoutCatch || 0) + (actionCounts.kickoutBreakWon || 0);
-  console.log("belo ya dog ya ");
-  console.log(kickoutsCount);
+
   const successfulAttempts =
     (actionCounts.freeScore || 0) +
     (actionCounts.goal || 0) +
     (actionCounts.point || 0);
-  console.log("========total attempts=================");
-  console.log(totalAttempts);
-  console.log("========successfull====================");
-  console.log(successfulAttempts);
   const shotPercentage = (successfulAttempts / totalAttempts) * 100;
-
-  // Log the setPlayData1 object for debugging
-  console.log("=doc is pedo below===================");
-
-  console.log(JSON.stringify(setPlayData1, null, 2));
 
   const setplayData = {
     labels: ["Free", "45", "Mark"],
@@ -528,8 +527,6 @@ export default function App() {
     barRadius: 8,
   };
   const PitchComponent = ({ positions, type }) => {
-    console.log("beeeelo");
-    console.log(type);
     const mappedActions = useMemo(() => {
       return positions.map((position, index) => {
         const actionStyle = actionStyles[position.action];
@@ -706,8 +703,8 @@ export default function App() {
       secondPitchTitle: "Turnovers Breakdown",
       lineChartTitle: "Turnover Timings",
       text: "This is some text for page 1",
-      firstChartPercentage: (successfulAttempts / totalAttempts) * 100,
-      pitchData: filteredKickoutPositions, // Pass filteredPositions directly
+      firstChartPercentage: turnoverPercentage,
+      pitchData: filteredTurnoverPositions, // Pass filteredPositions directly
       pitchType: "kickout",
       firstPitchDataLegend: [
         { title: "Won", color: "0b63fb" },
@@ -1011,9 +1008,6 @@ export default function App() {
     );
   };
   const ShotChartComponent = ({ shotChartDataProp }) => {
-    console.log("hows ya pops");
-    console.log(shotChartDataProp);
-
     return (
       <View
         style={{
@@ -1190,10 +1184,6 @@ export default function App() {
     );
   };
   function SetPlayChartComponent({ setplayDataProp = { data: [] } }) {
-    console.log("==========jj=======================");
-    console.log(setplayDataProp);
-    console.log("====================================");
-
     // Add defensive checks to ensure data is defined
     const chartData =
       setplayDataProp && setplayDataProp.data ? setplayDataProp : { data: [] };
