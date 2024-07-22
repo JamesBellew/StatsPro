@@ -284,6 +284,56 @@ export default function App() {
     }),
     barColors: ["#0b63fb80", "#242424"],
   };
+  const kickoutActions = [
+    "kickoutCatch",
+    "kickoutBreakWon",
+    "kickoutOppBreak",
+    "kickOppCatch",
+    "kickoutOut",
+  ];
+
+  const kickoutBarChartData = {
+    labels: ["Catch", "Breaking Ball", "Out"],
+    legend: ["Win", "Loss"],
+    data: [
+      [
+        filteredKickoutPositions.filter(
+          (position) => position.action === "kickoutCatch"
+        ).length,
+        filteredKickoutPositions.filter(
+          (position) => position.action === "kickOppCatch"
+        ).length,
+      ],
+      [
+        filteredKickoutPositions.filter(
+          (position) => position.action === "kickoutBreakWon"
+        ).length,
+        filteredKickoutPositions.filter(
+          (position) => position.action === "kickoutOppBreak"
+        ).length,
+      ],
+      [
+        filteredKickoutPositions.filter(
+          (position) => position.action === "kickoutOut"
+        ).length,
+        0, // Assuming "Out" does not have a win/loss category
+      ],
+    ],
+    barColors: ["#0b63fb80", "#242424"],
+  };
+  console.log("lez get to tesing below :(((((");
+  console.log(filteredKickoutPositions);
+  console.log(setPlayData1);
+  console.log(kickoutBarChartData);
+  const kickoutsCount = filteredKickoutPositions.reduce((count, position) => {
+    if (position.actionCategory === "kickout") {
+      if (!count[position.action]) {
+        count[position.action] = 0;
+      }
+      count[position.action]++;
+    }
+    return count;
+  }, {});
   const actionCounts = filteredPositions.reduce((acc, position) => {
     acc[position.action] = (acc[position.action] || 0) + 1;
     return acc;
@@ -300,7 +350,7 @@ export default function App() {
   // Define the labels in the order you want them to appear
   const labels = ["Points", "Wides", "Goals", "Short", "Free"];
   // Define the labels in the order you want them to appear
-  const kickoutLabels = ["Catch", "Break", "Loss", "Out", "Free"];
+  const kickoutLabels = ["Catch", "Break", "Loss", "Out", "Op Catch"];
   // Populate the data array in the order of labels
   const data = labels.map((label) => {
     // Find the action key that maps to the current label
@@ -370,14 +420,34 @@ export default function App() {
 
   console.log(JSON.stringify(scoreTimingsData, null, 2));
   const actions = ["Free", "45", "Mark"];
+  const kickoutActionCounts = {
+    kickOppCatch: 1,
+    kickoutBreakWon: 1,
+    kickoutCatch: 1,
+    kickoutOppBreak: 1,
+    kickoutOut: 1,
+  };
 
+  const goodKickouts =
+    (kickoutActionCounts.kickoutCatch || 0) +
+    (kickoutActionCounts.kickoutBreakWon || 0);
+  const missKickouts =
+    (kickoutActionCounts.kickOppCatch || 0) +
+    (kickoutActionCounts.kickoutOppBreak || 0) +
+    (kickoutActionCounts.kickoutOut || 0);
+
+  const totalKickouts = goodKickouts + missKickouts;
+  const kickoutsPercentage = (goodKickouts / totalKickouts) * 100;
   const totalAttempts =
     (actionCounts.freeScore || 0) +
     (actionCounts.goal || 0) +
     (actionCounts.point || 0) +
     (actionCounts.miss || 0) +
     (actionCounts.short || 0);
-
+  const kickoutsWonNumber =
+    (actionCounts.kickoutCatch || 0) + (actionCounts.kickoutBreakWon || 0);
+  console.log("belo ya dog ya ");
+  console.log(kickoutsCount);
   const successfulAttempts =
     (actionCounts.freeScore || 0) +
     (actionCounts.goal || 0) +
@@ -562,6 +632,7 @@ export default function App() {
       text: "This is some text for page 1",
       pitchData: filteredPositions, // Pass filteredPositions directly
       pitchType: "shot",
+      firstChartPercentage: (successfulAttempts / totalAttempts) * 100,
       firstPitchDataLegend: [
         { title: "Score", color: "0b63fb" },
         { title: "Miss", color: "ef233c" },
@@ -597,6 +668,7 @@ export default function App() {
       secondPitchTitle: "Kickouts Breakdown",
       lineChartTitle: "Kickouts Timings",
       text: "This is some text for page 1",
+      firstChartPercentage: kickoutsPercentage,
       pitchData: filteredKickoutPositions, // Pass filteredPositions directly
       pitchType: "kickout",
       firstPitchDataLegend: [
@@ -624,8 +696,8 @@ export default function App() {
           },
         ],
       },
-      setPlayData: setPlayFilteredPositions,
-      setPlayDataBarChart: setPlayData1,
+      setPlayData: filteredKickoutPositions,
+      setPlayDataBarChart: kickoutBarChartData,
       shotDataChart: kickoutsData,
     },
     {
@@ -634,6 +706,7 @@ export default function App() {
       secondPitchTitle: "Turnovers Breakdown",
       lineChartTitle: "Turnover Timings",
       text: "This is some text for page 1",
+      firstChartPercentage: (successfulAttempts / totalAttempts) * 100,
       pitchData: filteredKickoutPositions, // Pass filteredPositions directly
       pitchType: "kickout",
       firstPitchDataLegend: [
@@ -677,12 +750,12 @@ export default function App() {
           </View>
           <View className="w-2/5   items-end items-end">
             <Text className="mx-auto  justify-center my-auto items-center text-white text-md font-semibold">
-              {Math.round(shotPercentage)}%
+              {Math.round(item.firstChartPercentage)}%
             </Text>
             <View className="h-2 mb-2justify-end my-auto w-[100%] flex-row   rounded-lg">
               <View
                 style={{
-                  width: `${Math.round(shotPercentage)}%`,
+                  width: `${Math.round(item.firstChartPercentage)}%`,
                   height: "100%",
                   backgroundColor: "#0b63fb86",
                   borderTopLeftRadius: 8,
@@ -1116,16 +1189,20 @@ export default function App() {
       </>
     );
   };
-
-  function SetPlayChartComponent(setplayDataProp) {
-    console.log("====================================");
+  function SetPlayChartComponent({ setplayDataProp = { data: [] } }) {
+    console.log("==========jj=======================");
     console.log(setplayDataProp);
     console.log("====================================");
+
+    // Add defensive checks to ensure data is defined
+    const chartData =
+      setplayDataProp && setplayDataProp.data ? setplayDataProp : { data: [] };
+
     return (
       <View className=" w-[90%] h-[29vh] mt-2 mx-auto justify-center rounded-xl bg-[#12131A]  text-center items-center">
         <StackedBarChart
-          className="mx-auto "
-          data={setPlayData1}
+          className="mx-auto"
+          data={chartData}
           width={Dimensions.get("window").width * 0.9}
           height={220}
           renderBarLabel={renderBarLabel}
@@ -1139,7 +1216,6 @@ export default function App() {
       </View>
     );
   }
-
   return (
     <>
       {showGameDetailsMenu && (
@@ -1348,9 +1424,9 @@ export default function App() {
               hideLegend={false}
             />
           </View> */}
-          <Text style={{ color: "white", textAlign: "center", marginTop: 10 }}>
+          {/* <Text style={{ color: "white", textAlign: "center", marginTop: 10 }}>
             Current Page is: {currentIndex + 1}
-          </Text>
+          </Text> */}
           <View className="  mx-auto w-full">
             <FlatList
               ref={flatListRef}
