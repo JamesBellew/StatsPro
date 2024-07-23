@@ -294,7 +294,31 @@ export default function App() {
     "kickOppCatch",
     "kickoutOut",
   ];
+  const turnoverBarChartData = {
+    labels: ["Turnover Won", "Turnover Loss"],
+    legend: ["1st Half", "2nd Half"],
+    data: [
+      [
+        filteredTurnoverPositions.filter(
+          (position) => position.action === "turnOverWon"
+        ).length,
+        //add in a simple check to see if it is in the first/second half
+      ],
+      [
+        filteredTurnoverPositions.filter(
+          (position) => position.action === "turnOverLoss"
+        ).length,
+      ],
 
+      // [
+      //   filteredKickoutPositions.filter(
+      //     (position) => position.action === "kickoutOut"
+      //   ).length,
+      //   0, // Assuming "Out" does nob have a win/loss category
+      // ],
+    ],
+    barColors: ["#0b63fb80", "#242424"],
+  };
   const kickoutBarChartData = {
     labels: ["Catch", "Breaking Ball", "Out"],
     legend: ["Win", "Loss"],
@@ -731,8 +755,8 @@ export default function App() {
           },
         ],
       },
-      setPlayData: setPlayFilteredPositions,
-      setPlayDataBarChart: setPlayData1,
+      setPlayData: filteredTurnoverPositions,
+      setPlayDataBarChart: turnoverBarChartData,
       shotDataChart: kickoutsData,
     },
   ];
@@ -778,13 +802,13 @@ export default function App() {
       </View>
       {item.firstPitchDataLegend && (
         <View className="items-start justify-start items-center w-[90%] flex-row mb-2">
-          {item.firstPitchDataLegend.map((legend) => (
-            <>
+          {item.firstPitchDataLegend.map((legend, index) => (
+            <React.Fragment key={index}>
               <View
                 className={`bg-[#${legend.color}] w-3 h-3 mr-2 rounded-full`}
               ></View>
               <Text className="text-white capitalize mr-2">{legend.title}</Text>
-            </>
+            </React.Fragment>
           ))}
         </View>
       )}
