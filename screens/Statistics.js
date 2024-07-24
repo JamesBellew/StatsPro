@@ -19,6 +19,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/native";
 import { useRoute } from "@react-navigation/native";
+
 import {
   faFutbol,
   faInfo,
@@ -81,6 +82,30 @@ export default function App() {
     return value.toString();
   };
   const actionStyles = {
+    turnOverWon: {
+      style: {
+        width: 8,
+        height: 8,
+        borderWidth: 2,
+        borderColor: "#80ed99",
+        backgroundColor: "#101010",
+        justifyContent: "center",
+        alignItems: "center",
+      },
+      component: <Text style={styles.xMarkerWon}>X</Text>,
+    },
+    turnOverLoss: {
+      style: {
+        width: 8,
+        height: 8,
+        borderWidth: 2,
+        borderColor: "#80ed99",
+        backgroundColor: "#0b63fb",
+        justifyContent: "center",
+        alignItems: "center",
+      },
+      component: <Text style={styles.xMarkerLoss}>X</Text>,
+    },
     Wide: {
       style: {
         width: 10,
@@ -190,7 +215,7 @@ export default function App() {
       style: {
         width: 10,
         height: 10,
-        borderRadius: 10,
+
         backgroundColor: "#4361ee",
         shadowColor: "#ef233c", // Green color for shadow
         shadowOffset: { width: 0, height: 0 },
@@ -202,7 +227,7 @@ export default function App() {
       style: {
         width: 10,
         height: 10,
-        borderRadius: 10,
+
         backgroundColor: "#4361ee",
         shadowColor: "#ef233c", // Green color for shadow
         shadowOffset: { width: 0, height: 0 },
@@ -214,7 +239,7 @@ export default function App() {
       style: {
         width: 10,
         height: 10,
-        borderRadius: 10,
+
         backgroundColor: "#ef233c",
         shadowColor: "#ef233c", // Green color for shadow
         shadowOffset: { width: 0, height: 0 },
@@ -226,7 +251,7 @@ export default function App() {
       style: {
         width: 10,
         height: 10,
-        borderRadius: 10,
+
         backgroundColor: "#ef233c",
         shadowColor: "#ef233c", // Green color for shadow
         shadowOffset: { width: 0, height: 0 },
@@ -238,7 +263,7 @@ export default function App() {
       style: {
         width: 10,
         height: 10,
-        borderRadius: 10,
+
         backgroundColor: "#ef233c",
         shadowColor: "#ef233c", // Green color for shadow
         shadowOffset: { width: 0, height: 0 },
@@ -299,23 +324,25 @@ export default function App() {
     legend: ["1st Half", "2nd Half"],
     data: [
       [
+        // 1st Half
         filteredTurnoverPositions.filter(
-          (position) => position.action === "turnOverWon"
+          (position) => position.action === "turnOverWon" && position.half === 1
         ).length,
-        //add in a simple check to see if it is in the first/second half
+        filteredTurnoverPositions.filter(
+          (position) =>
+            position.action === "turnOverLoss" && position.half === 1
+        ).length,
       ],
       [
+        // 2nd Half
         filteredTurnoverPositions.filter(
-          (position) => position.action === "turnOverLoss"
+          (position) => position.action === "turnOverWon" && position.half === 2
+        ).length,
+        filteredTurnoverPositions.filter(
+          (position) =>
+            position.action === "turnOverLoss" && position.half === 2
         ).length,
       ],
-
-      // [
-      //   filteredKickoutPositions.filter(
-      //     (position) => position.action === "kickoutOut"
-      //   ).length,
-      //   0, // Assuming "Out" does nob have a win/loss category
-      // ],
     ],
     barColors: ["#0b63fb80", "#242424"],
   };
@@ -375,6 +402,13 @@ export default function App() {
   const labels = ["Points", "Wides", "Goals", "Short", "Free"];
   // Define the labels in the order you want them to appear
   const kickoutLabels = ["Catch", "Break", "Loss", "Out", "Op Catch"];
+  // Define the labels in the order you want them to appear
+  const turnoverLabels = [
+    "1st half Won",
+    "1st Half Loss",
+    "2nd Half Won",
+    "2nd Half Loss",
+  ];
   // Populate the data array in the order of labels
   const data = labels.map((label) => {
     // Find the action key that maps to the current label
@@ -612,21 +646,17 @@ export default function App() {
 
     return (
       <View
-        className={` w-full
-        h-[35vh]
-        ${type === "kickout" ? "h-[35vh]" : "h-[35vh] mt-0 "}
-       
-        
-        border-gray-400  border-1 rounded-2xl overflow-hidden`}
+        className={`w-full ${
+          type === "kickout" ? "h-[35vh]" : "h-[35vh]"
+        } border-gray-400 border-1 rounded-2xl overflow-hidden`}
       >
-        <View className="bg-[#191A22]  rounded-3xl  h-[63vh]">
+        <View className="bg-[#191A22] rounded-3xl h-full">
           <View className="h-full">
             {/* Pitch markings */}
             <View style={styles.pitchMarkings}>
               <View className="w-[15%] absolute left-[42.5%] h-6 border border-b-zinc-600 border-l-zinc-600 border-r-zinc-600"></View>
               <View style={[styles.line, { top: "10%" }]}></View>
-              {/* <View style={styles.centerCircle}></View> */}
-              <View className="w-[30%] left-[35%] h-14 rounded-b-full  border border-zinc-600 top-[15.5%]"></View>
+              <View className="w-[30%] left-[35%] h-14 rounded-b-full border border-zinc-600 top-[15.5%]"></View>
               <View style={[styles.line, { top: "15.5%" }]}></View>
               <View style={[styles.line, { top: "34%" }]}></View>
               <View style={[styles.line, { top: "50%" }]}></View>
@@ -735,11 +765,10 @@ export default function App() {
         { title: "Loss", color: "ef233c" },
       ],
       secondPitchDataLegend: [
-        { title: "Catch", color: "0b63fb" },
-        { title: "Break Won", color: "ef233c" },
-        { title: "Loss", color: "ef233c" },
-        { title: "Break Loss", color: "0b63fb" },
-        { title: "Out", color: "0b63fb" },
+        { title: "1st Won", color: "0b63fb" },
+        { title: "1st Loss", color: "ef233c" },
+        { title: "2nd Won", color: "ef233c" },
+        { title: "2nd Loss ", color: "0b63fb" },
       ],
       lineChartData: {
         labels: ["Q1", "Q2", "Q3", "Q4"],
@@ -800,21 +829,27 @@ export default function App() {
           </View>
         </View>
       </View>
-      {item.firstPitchDataLegend && (
-        <View className="items-start justify-start items-center w-[90%] flex-row mb-2">
-          {item.firstPitchDataLegend.map((legend, index) => (
-            <React.Fragment key={index}>
-              <View
-                className={`bg-[#${legend.color}] w-3 h-3 mr-2 rounded-full`}
-              ></View>
-              <Text className="text-white capitalize mr-2">{legend.title}</Text>
-            </React.Fragment>
-          ))}
-        </View>
-      )}
-      {item.pitchData && (
-        <PitchComponent positions={item.pitchData} type={item.pitchType} />
-      )}
+      <View className="w-full  top- h-auto ">
+        {item.firstPitchDataLegend && (
+          <View className="items-start justify-start items-center w-[90%] flex-row mb-2">
+            {item.firstPitchDataLegend.map((legend, index) => (
+              <React.Fragment key={index}>
+                <View
+                  className={`bg-[#${legend.color}] w-3 h-3 mr-2 rounded-full`}
+                ></View>
+                <Text className="text-white capitalize mr-2">
+                  {legend.title}
+                </Text>
+              </React.Fragment>
+            ))}
+          </View>
+        )}
+        {item.pitchData && (
+          <View className=" w-full  z-50">
+            <PitchComponent positions={item.pitchData} type={item.pitchType} />
+          </View>
+        )}
+      </View>
       {item.shotDataChart && (
         <ShotChartComponent shotChartDataProp={item.shotDataChart} />
       )}
@@ -1236,9 +1271,9 @@ export default function App() {
         <View className="h-full absolute w-full  z-40">
           <TouchableOpacity
             onPress={() => setShowGameDetailsMenu(false)}
-            className="flex-1  w-full z-40 "
+            className="flex-1 bg-black/50  w-full z-40 "
           ></TouchableOpacity>
-          <View className="bg-gray-300 items-center justify-center w-full h-auto z-50 rounded-3xl">
+          <View className="bg-[#12131A] items-center justify-center w-full h-auto z-50 rounded-3xl">
             {/* <TouchableOpacity
               onPress={() => setShowGameDetailsMenu(false)}
               className="bg-[#191A22]  absolute top-20  w-10 h-10 justify-center items-center rounded-lg  left-10"
@@ -1248,13 +1283,13 @@ export default function App() {
             <View className=" justify-center mx-auto w-[95%] mx-10 relative">
               <View className=" w-[95%] mx-auto flex-row h-auto">
                 <View className="w-1/2 h-full ">
-                  <Text className="text-xl mx-5 mt-10 font-bold text-gray-800 ">
+                  <Text className="text-xl mx-5 mt-10 font-bold text-gray-200 ">
                     Game Details
                   </Text>
                   <Text className="text-xl mx-5  capitalize  text-gray-500 ">
                     {gameData.timestamp}
                   </Text>
-                  <Text className="text-2xl mx-5 font-bold capitalize mt-3 text-[#191A22] ">
+                  <Text className="text-2xl mx-5 font-bold capitalize mt-3 text-gray-200 ">
                     {gameData.gameName}
                   </Text>
                   <Text className="text-xl mx-5  capitalize  text-gray-500 ">
@@ -1262,7 +1297,7 @@ export default function App() {
                   </Text>
                 </View>
                 <View className="w-1/2 h-full items-end ">
-                  <Text className="text-xl mx-5 mt-10 font-bold text-gray-800 ">
+                  <Text className="text-xl mx-5 mt-10 font-bold text-gray-200 ">
                     Score
                   </Text>
                   <Text className="text-xl mx-5    text-gray-500 ">FT</Text>
@@ -1471,7 +1506,7 @@ export default function App() {
         >
           <FontAwesomeIcon icon={faChevronLeft} size={25} color="#0b63fb" />
         </TouchableOpacity> */}
-          <View className="flex-row bg-[#191A22] rounded-3xl px-5 justify-center items-center">
+          <View className="flex-row bg-[#191a229f] rounded-3xl px-10 justify-center items-center">
             <TouchableOpacity
               className="p-4 flex"
               onPress={() => handlePress(0)}
@@ -1590,7 +1625,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   xMarkerWon: {
-    color: "#80ed99",
+    color: "#0b63fb",
     fontSize: 12,
     fontWeight: "bold",
   },
