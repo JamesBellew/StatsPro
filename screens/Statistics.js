@@ -647,7 +647,7 @@ export default function App() {
     return (
       <View
         className={`w-full ${
-          type === "kickout" ? "h-[35vh]" : "h-[35vh]"
+          type === "kickout" ? "h-[63vh]" : "h-[63vh]"
         } border-gray-400 border-1 rounded-2xl overflow-hidden`}
       >
         <View className="bg-[#191A22] rounded-3xl h-full">
@@ -670,7 +670,57 @@ export default function App() {
       </View>
     );
   };
+  const DataTableComponent = ({ tableData }) => {
+    return (
+      <>
+        <View className=" w-[90%] mx-auto rounded-lg p-2">
+          <View className="w-full mx-auto flex-row p-2">
+            <View className="w-1/3 px-1">
+              <Text className="text-gray-200  ">Action</Text>
+            </View>
 
+            <View className="w-1/3 px-1">
+              <Text className="text-gray-200 text-center">Player</Text>
+            </View>
+            <View className="w-1/3 px-1">
+              <Text className="text-gray-200 text-center">Score</Text>
+            </View>
+          </View>
+          <ScrollView
+            className="h-[50vh]"
+            style={{ maxHeight: "10vh" }} // Set a maxHeight to ensure it scrolls within its bounds
+            contentContainerStyle={{ flexGrow: 1 }}
+          >
+            {tableData.map((position, index) => (
+              <View
+                key={index}
+                className="flex-row bg-[#191A22] my-1  p-3 rounded-lg"
+              >
+                <View className="w-1/3 flex-row px-1">
+                  <Text className="text-gray-500 mr-2 text-center">
+                    {String(Math.round(position.time / 60)).padStart(2, "0")}
+                  </Text>
+
+                  <Text className="text-gray-200 text-center">
+                    {position.action}
+                  </Text>
+                </View>
+
+                <View className="w-1/3 my-auto  px-1">
+                  <Text className="text-gray-200 text-center">
+                    {position.player}
+                  </Text>
+                </View>
+                <View className="w-1/3 my-auto  px-1">
+                  <Text className="text-gray-200 text-center">2-11</Text>
+                </View>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      </>
+    );
+  };
   const maxValue = Math.max(
     ...scoreTimingsData.datasets.map((dataset) => Math.max(...dataset.data))
   );
@@ -845,7 +895,14 @@ export default function App() {
           </View>
         )}
         {item.pitchData && (
-          <View className=" w-full  z-50">
+          //! here is wherw I can fix the pitch height issue
+          <View
+            className={` w-full mx-auto
+          ${currentIndex === 0 ? "max-h-[33vh]" : "max-h-[63vh]"}
+
+           
+           overflow-hidden  z-50`}
+          >
             <PitchComponent positions={item.pitchData} type={item.pitchType} />
           </View>
         )}
@@ -863,17 +920,31 @@ export default function App() {
       </View>
       {item.secondPitchDataLegend && (
         <View className="items-start justify-start items-center w-[90%] h-auto flex-row mb-2">
-          {item.secondPitchDataLegend.map((legend) => (
+          {item.secondPitchDataLegend.map((legend, index) => (
             <>
-              <View
-                className={`bg-[#${legend.color}] w-3 h-3 mr-2 rounded-full`}
-              ></View>
-              <Text className="text-white capitalize mr-2">{legend.title}</Text>
+              <React.Fragment key={index}>
+                <View
+                  className={`bg-[#${legend.color}] w-3 h-3 mr-2 rounded-full`}
+                ></View>
+                <Text className="text-white capitalize mr-2">
+                  {legend.title}
+                </Text>
+              </React.Fragment>
             </>
           ))}
         </View>
       )}
-      {item.setPlayData && <PitchComponent positions={item.setPlayData} />}
+      {item.setPlayData && (
+        <View
+          className={` w-full mx-auto
+         ${currentIndex === 0 ? "max-h-[33vh]" : "max-h-[63vh]"}
+
+          
+          overflow-hidden  z-50`}
+        >
+          <PitchComponent positions={item.setPlayData} />
+        </View>
+      )}
       {item.setPlayDataBarChart && (
         <SetPlayChartComponent setplayDataProp={item.setPlayDataBarChart} />
       )}
@@ -923,8 +994,13 @@ export default function App() {
           }}
         />
       )}
-      {/* <ShotPercentageComponent /> */}
-      <Text style={styles.text}>{item.text}</Text>
+
+      {/* enter new shot data table here  */}
+      <Hr />
+      <Text className="" style={styles.title}>
+        {item.firstPitchTitle} Data
+      </Text>
+      <DataTableComponent tableData={item.pitchData} />
     </View>
   );
 
@@ -1489,6 +1565,7 @@ export default function App() {
               viewabilityConfig={viewabilityConfig}
             />
           </View>
+
           <Text></Text>
           <Text></Text>
           <Text></Text>
