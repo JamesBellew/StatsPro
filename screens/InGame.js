@@ -58,7 +58,7 @@ export default function App() {
         height: 8,
         borderWidth: 2,
         // borderColor: "#fff",
-        backgroundColor: "#101010",
+        backgroundColor: "#191A22",
         justifyContent: "center",
         alignItems: "center",
         zIndex: 1,
@@ -71,7 +71,7 @@ export default function App() {
         height: 8,
         borderWidth: 2,
         borderColor: "#80ed99",
-        backgroundColor: "#101010",
+        backgroundColor: "#191A22",
         justifyContent: "center",
         alignItems: "center",
       },
@@ -82,7 +82,7 @@ export default function App() {
         width: 10,
         height: 10,
         borderRadius: 0,
-        backgroundColor: "#FE4F3F",
+        backgroundColor: "#0b63fb",
       },
     },
     free: {
@@ -90,7 +90,7 @@ export default function App() {
         width: 10,
         height: 10,
         borderRadius: 10,
-        backgroundColor: "#003459",
+        backgroundColor: "#0b63fb",
       },
     },
     kickoutLoss: {
@@ -99,7 +99,7 @@ export default function App() {
         height: 8,
         borderWidth: 2,
         borderColor: "#FD5F5F",
-        backgroundColor: "#101010",
+        backgroundColor: "#191A22",
       },
     },
     point: {
@@ -107,7 +107,7 @@ export default function App() {
         width: 8,
         height: 8,
         borderRadius: 10,
-        backgroundColor: "#fff",
+        backgroundColor: "#0b63fb",
       },
     },
     short: {
@@ -137,7 +137,7 @@ export default function App() {
 
         // borderRadius: 10,
 
-        backgroundColor: "#80ed99",
+        backgroundColor: "#0b63fb",
       },
     },
     kickoutBreakWon: {
@@ -147,7 +147,7 @@ export default function App() {
 
         // borderRadius: 10,
 
-        backgroundColor: "#4ecdc4",
+        backgroundColor: "#0b63fb",
       },
     },
     kickoutOppBreak: {
@@ -167,7 +167,7 @@ export default function App() {
 
         // borderRadius: 10,
 
-        backgroundColor: "#FE4F3F",
+        backgroundColor: "#0b63fb",
       },
     },
     kickoutOut: {
@@ -189,7 +189,7 @@ export default function App() {
 
         borderRadius: 10,
 
-        backgroundColor: "#00a8e8",
+        backgroundColor: "#0b63fb",
       },
     },
     kickoutWon: {
@@ -197,8 +197,8 @@ export default function App() {
         width: 8,
         height: 8,
         borderWidth: 2,
-        borderColor: "#FE4F3F",
-        backgroundColor: "#101010",
+        borderColor: "#0b63fb",
+        backgroundColor: "#0b63fb",
       },
     },
   };
@@ -475,7 +475,7 @@ export default function App() {
         <View className="justify-center mx-auto items-center my-auto">
           <TouchableOpacity
             onPress={handleGameStart}
-            className="bg-[#FE4F3F]
+            className="bg-[#0b63fb]
             px-4 rounded-md
             py-2
             "
@@ -495,7 +495,7 @@ export default function App() {
         <View className="justify-center mx-auto items-center my-auto">
           <TouchableOpacity
             onPress={handleGameStart}
-            className="bg-[#FE4F3F]
+            className="bg-[#0b63fb]
           px-4 rounded-md
           py-2
           "
@@ -509,7 +509,7 @@ export default function App() {
   function UnsavedChangesModal() {
     return (
       <>
-        <View className="w-full z-50 h-1/3 rounded-t-md justify-center items-center bottom-0 absolute bg-[#101010]">
+        <View className="w-full z-50 h-1/3 rounded-t-md justify-center items-center bottom-0 absolute bg-[#191A22]">
           <Text className="text-white">
             You have unsaved changes in this game
           </Text>
@@ -522,7 +522,7 @@ export default function App() {
                 setShowUnsavedGameModal(false);
                 setShowSaveGameDataModal(true);
               }}
-              className="bg-[#FE4F3F] mr-2  p-4 w-1/4 rounded-md"
+              className="bg-[#0b63fb] mr-2  p-4 w-1/4 rounded-md"
             >
               <Text className="text-center">Save Game</Text>
             </TouchableOpacity>
@@ -762,7 +762,7 @@ export default function App() {
     <>
       {showSaveGameDataModal && (
         <TouchableOpacity
-          className="w-full h-full bg-[#101010]/50 z-50 absolute justify-center items-center"
+          className="w-full h-full bg-[#191A22]/50 z-50 absolute justify-center items-center"
           onPress={() => setShowSaveGameDataModal(false)}
           activeOpacity={1} // Ensures the click outside the modal triggers the onPress
         >
@@ -777,7 +777,7 @@ export default function App() {
               You can re-open the saved game at any time and continue working on
               it
             </Text>
-            <View className="bg-[#101010]/20 mt-5 w-3/4 p-2 rounded-md">
+            <View className="bg-[#191A22]/20 mt-5 w-3/4 p-2 rounded-md">
               <Text className="text-center text-white text-md mt-2">
                 Kilkerley vs {opponent}
               </Text>
@@ -790,14 +790,14 @@ export default function App() {
             </View>
             <TouchableOpacity
               onPress={() => saveGameData(positions)}
-              className="text-center mt-5 text-md font-semibold bg-[#101010] px-5 py-2 rounded-md text-white border-[#FE4F3F]/20 border"
+              className="text-center mt-5 text-md font-semibold bg-[#191A22] px-5 py-2 rounded-md text-white border-[#0b63fb]/20 border"
             >
-              <Text className="text-[#FE4F3F] ">Save Game</Text>
+              <Text className="text-[#0b63fb] ">Save Game</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
       )}
-      <SafeAreaView className="flex-1 bg-[#000]  overflow-visible">
+      <SafeAreaView className="flex-1 bg-[#12131A]  overflow-visible">
         {showUnsavedGameModal && <UnsavedChangesModal />}
         <ScrollView>
           {showStartGameModal && <StartGameModal />}
@@ -826,7 +826,7 @@ export default function App() {
           <View className="flex mx-auto h-auto   rounded-b-3xl w-full relative">
             <View className="flex  h-auto space-x-1 p-2 flex-row justify-end items-end">
               <View className="w-[98%]     flex-row h-10 items-center justif-center mx-auto rounded-lg">
-                <View className="w-[15%] space-x-1 bg-[#101010] px-3   py-2 rounded-md ">
+                <View className="w-[15%] space-x-1 bg-[#191A22] px-3   py-2 rounded-md ">
                   <TouchableOpacity
                     // onPress={() => navigation.navigate("HomeDashboard")}
                     onPress={() => {
@@ -841,14 +841,14 @@ export default function App() {
                     <FontAwesomeIcon
                       icon={faChevronLeft}
                       size={25}
-                      color="#FE4F3F"
+                      color="#0b63fb"
                     />
                   </TouchableOpacity>
                 </View>
                 <TouchableOpacity
                   onPress={() => setShowEditTimeModal(true)}
                   className={`${
-                    showEditTimerModal ? "border-b-2 border-b-[#FE4F3F]" : ""
+                    showEditTimerModal ? "border-b-2 border-b-[#0b63fb]" : ""
                   } w-[15%]  rounded-md  h-full justify-center text-center `}
                 >
                   <Text className="text-center font-bold text-lg text-white">
@@ -865,7 +865,7 @@ export default function App() {
                     {scoreBoard.point}
                   </Text>
                 </View>
-                <View className="w-[15%] space-x-1 bg-[#101010] px-3   py-2 rounded-md ">
+                <View className="w-[15%] space-x-1 bg-[#191A22] px-3   py-2 rounded-md ">
                   <TouchableOpacity
                     onPress={() => setShowSaveGameDataModal(true)}
                     className="w-full flex justify-center items-center"
@@ -905,7 +905,7 @@ export default function App() {
                   onPress={handleLogout}
                   className="mr-2 h-auto bg-white/20 top-0 z-50 w-auto p-2 rounded-md mr-3"
                 >
-                  <Text className="text-[#FE4F3F]">Logout</Text>
+                  <Text className="text-[#0b63fb]">Logout</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -917,7 +917,7 @@ export default function App() {
               <View className="flex-row s w-[30%] space-x-1  justify-center">
                 <TouchableOpacity
                   onPress={() => setShowHalftimeModal(!showHalftimeModal)}
-                  className={`bg-[#101010] w-[50%]  p-2 rounded-md
+                  className={`bg-[#191A22] w-[50%]  p-2 rounded-md
                 
               
                 
@@ -927,7 +927,7 @@ export default function App() {
                     <FontAwesomeIcon
                       icon={faStopwatch}
                       size={23}
-                      color={`${timerLimitReached ? "#FE4F3F" : "#FFF"}`}
+                      color={`${timerLimitReached ? "#0b63fb" : "#FFF"}`}
                     />
                   </Text>
                 </TouchableOpacity>
@@ -938,8 +938,8 @@ export default function App() {
                     setShowIngameStatModal(false);
                   }}
                   className={` ${
-                    showEditLineupModal ? "border-b-2 border-b-[#FE4F3F]" : ""
-                  } bg-[#101010] w-[50%] p-2 rounded flex justify-center items-center`}
+                    showEditLineupModal ? "border-b-2 border-b-[#0b63fb]" : ""
+                  } bg-[#191A22] w-[50%] p-2 rounded flex justify-center items-center`}
                 >
                   <View className="w-full flex justify-center items-center">
                     <FontAwesomeIcon
@@ -954,30 +954,30 @@ export default function App() {
               {/* Home and Away buttons */}
               <View className="flex-row  w-[35%] mx-2 h-full justify-center   ">
                 <TouchableOpacity
-                  className={`p-2 w-[50%] bg-[#101010] mx-auto my-auto h-full rounded-md ${
+                  className={`p-2 w-[50%] bg-[#191A22] mx-auto my-auto h-full rounded-md ${
                     selected === "Home" ? "border bg-gray-200" : ""
                   }`}
                   onPress={() => setSelected("Home")}
                 >
                   <Text
                     className={`text-white text-center my-auto ${
-                      selected === "Home" ? "text-[#101010]" : ""
+                      selected === "Home" ? "text-[#191A22]" : ""
                     }`}
                   >
                     Home
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  className={`p-2 bg-[#101010] w-[50%] rounded-md  ${
+                  className={`p-2 bg-[#191A22] w-[50%] rounded-md  ${
                     selected === "Away"
-                      ? "border-b border-b-[#FE4F3F] bg-gray-200"
-                      : "bg-[#101010]"
+                      ? "border-b border-b-[#0b63fb] bg-gray-200"
+                      : "bg-[#191A22]"
                   }`}
                   onPress={() => setSelected("Away")}
                 >
                   <Text
                     className={`text-white my-auto text-center ${
-                      selected === "Away" ? "text-[#101010]" : ""
+                      selected === "Away" ? "text-[#191A22]" : ""
                     }`}
                   >
                     Away
@@ -986,14 +986,14 @@ export default function App() {
                 {/* <TouchableOpacity
                 className={`p-2 w-[50%] mx-auto rounded ${
                   selected === "Home"
-                    ? "border border-[#FE4F3F]"
-                    : "bg-[#101010]"
+                    ? "border border-[#0b63fb]"
+                    : "bg-[#191A22]"
                 }`}
                 onPress={() => setSelected("Home")}
               >
                 <Text
                   className={`text-white text-center ${
-                    selected === "Home" ? "text-[#FE4F3F]" : ""
+                    selected === "Home" ? "text-[#0b63fb]" : ""
                   }`}
                 >
                   Home
@@ -1001,7 +1001,7 @@ export default function App() {
               </TouchableOpacity>
               <TouchableOpacity
                 className={`p-2 w-[50%] rounded ${
-                  selected === "Away" ? "bg-[#FE4F3F]" : "bg-[#101010]"
+                  selected === "Away" ? "bg-[#0b63fb]" : "bg-[#191A22]"
                 }`}
                 onPress={() => setSelected("Away")}
               >
@@ -1020,8 +1020,8 @@ export default function App() {
                 <TouchableOpacity
                   onPress={() => setShowActionsOnPitch(!showActionsOnPitch)}
                   className={`${
-                    showActionsOnPitch ? "border-b-2 border-b-[#FE4F3F]" : ""
-                  } bg-[#101010] w-[50%] z-[-1]  p-2 rounded`}
+                    showActionsOnPitch ? "border-b-2 border-b-[#0b63fb]" : ""
+                  } bg-[#191A22] w-[50%] z-[-1]  p-2 rounded`}
                 >
                   <View className="w-full flex justify-center items-center">
                     <FontAwesomeIcon icon={faEye} size={25} color="#FFFFFF" />
@@ -1030,8 +1030,8 @@ export default function App() {
                 <TouchableOpacity
                   onPress={() => setShowIngameStatModal(!showIngameStatModal)}
                   className={`  ${
-                    showIngameStatModal ? "border-b-2 border-b-[#FE4F3F]" : ""
-                  } p-2 w-[50%] h-10 mx-auto bg-[#101010] rounded `}
+                    showIngameStatModal ? "border-b-2 border-b-[#0b63fb]" : ""
+                  } p-2 w-[50%] h-10 mx-auto bg-[#191A22] rounded `}
                 >
                   <View className="w-full flex justify-center items-center">
                     <FontAwesomeIcon
@@ -1064,7 +1064,7 @@ export default function App() {
                     className={`
         ${
           showActionsOnPitchFilter === item.category
-            ? "border-b-2 border-b-[#FE4F3F]"
+            ? "border-b-2 border-b-[#0b63fb]"
             : ""
         }
         w-1/5 rounded-md mx-auto mx-1 py-2  items-center justify-center`}
@@ -1082,7 +1082,7 @@ export default function App() {
                 className={`
               ${
                 showActionsOnPitchFilter === "all"
-                  ? "border-b-2 border-b-[#FE4F3F]"
+                  ? "border-b-2 border-b-[#0b63fb]"
                   : ""
               }
               w-1/5 rounded-md mx-auto mx-1 py-2  items-center justify-center`}
@@ -1096,7 +1096,7 @@ export default function App() {
                 className={`
               ${
                 showActionsOnPitchFilter === "none"
-                  ? "border-b-2 border-b-[#FE4F3F]"
+                  ? "border-b-2 border-b-[#0b63fb]"
                   : ""
               }
               w-1/5 rounded-md mx-auto mx-1 py-2  items-center justify-center`}
@@ -1108,8 +1108,8 @@ export default function App() {
           <View
             className={`w-[96%] mt-5 border-[.5px] border-gray-700
         ${
-          tempPosition ? "shadow shadow-[#FE4F3F]/20" : ""
-        }   mx-auto  rounded-md h-[63vh] bg-[#101010]   relative`}
+          tempPosition ? "shadow shadow-[#0b63fb]/20" : ""
+        }   mx-auto  rounded-md h-[63vh] bg-[#191A22]   relative`}
             onStartShouldSetResponder={() => true}
             onResponderRelease={handlePitchPress}
             style={{ zIndex: 1 }}
@@ -1119,11 +1119,11 @@ export default function App() {
               <>
                 <TouchableOpacity
                   onPress={() => shootingDirectionClickHandler("up")}
-                  className="bg-[#FE4F3F]/50 w-full z-50 mx-auto text-center items-center jus h-[10%] absolute"
+                  className="bg-[#0b63fb]/50 w-full z-50 mx-auto text-center items-center jus h-[10%] absolute"
                 ></TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => shootingDirectionClickHandler("down")}
-                  className="bg-[#FE4F3F]/50 w-full z-50  bottom-0  h-[10%] absolute"
+                  className="bg-[#0b63fb]/50 w-full z-50  bottom-0  h-[10%] absolute"
                 ></TouchableOpacity>
               </>
             )}
@@ -1352,7 +1352,7 @@ export default function App() {
                         resizeMode="contain"
                         className={`flex justify-center items-center ${
                           item.playerNumber === selectedNumber
-                            ? "border-b border-b-1 border-b-[#FE4F3F]"
+                            ? "border-b border-b-1 border-b-[#0b63fb]"
                             : ""
                         }`}
                         style={{ width: "100%", height: "100%" }}
@@ -1378,7 +1378,7 @@ export default function App() {
                         setActionTimeStamp(actionTimeStamp - 60);
                       }
                     }}
-                    className="w-10 h-10 justify-center items-center my-auto mr-2 bg-[#101010] rounded-full p-2"
+                    className="w-10 h-10 justify-center items-center my-auto mr-2 bg-[#191A22] rounded-full p-2"
                   >
                     <Text className="text-white text-center my-auto font-bold">
                       -
@@ -1388,7 +1388,7 @@ export default function App() {
                     {Math.floor(actionTimeStamp / 60)} Min
                   </Text>
                   <TouchableOpacity
-                    className="w-10 h-10 justify-center items-center my-auto ml-2 bg-[#101010] rounded-full p-2"
+                    className="w-10 h-10 justify-center items-center my-auto ml-2 bg-[#191A22] rounded-full p-2"
                     onPress={() => {
                       setActionTimeStamp((prevTimeStamp) => {
                         const newTimeStamp = Number(prevTimeStamp);
@@ -1416,18 +1416,18 @@ export default function App() {
                   // style={styles.saveButton}
                 >
                   <Text className="text-center w-auto h-auto rounded-full">
-                    <Icon name="ban" width={14} color="#101010" />
+                    <Icon name="ban" width={14} color="#191A22" />
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleSavePosition}
                   className={`  flex-1  flex     ${
                     selectedNumber != null ? "" : "hidden"
-                  }  mx-auto justify-center items-center m  rounded-md p-3 border bg-[#FE4F3F]  `}
+                  }  mx-auto justify-center items-center m  rounded-md p-3 border bg-[#0b63fb]  `}
                   // style={styles.saveButton}
                 >
                   <Text className="text-center w-auto h-auto rounded-full">
-                    <Icon name="check" width={14} color="#101010" />
+                    <Icon name="check" width={14} color="#191A22" />
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -1439,14 +1439,14 @@ export default function App() {
             <View
               className={`  w-[96%] mx-auto rounded-md  ${
                 showActionAlertError
-                  ? "bg-[#FE4F3F]/10 border  rounded-md   shadow-[#FE4F3F]/20"
+                  ? "bg-[#0b63fb]/10 border  rounded-md   shadow-[#0b63fb]/20"
                   : ""
               }`}
             >
               <View className="h-10 w-[97%] mx-auto   flex-row items-center justify-center px-1">
                 {/* Left buttons */}
                 <View className="flex-row space-x-1 mx-auto items-center justify-center w-[40%]">
-                  <TouchableOpacity className="bg-[#101010] w-[50%] p-2 rounded">
+                  <TouchableOpacity className="bg-[#191A22] w-[50%] p-2 rounded">
                     <Text className="text-white text-center">Save</Text>
                   </TouchableOpacity>
 
@@ -1466,7 +1466,7 @@ export default function App() {
                       actionMenuActionCategory == "kickout"
                         ? "border-b border-b-[#fff]"
                         : ""
-                    } bg-[#101010] w-[50%] p-2 rounded`}
+                    } bg-[#191A22] w-[50%] p-2 rounded`}
                   >
                     <Text className="text-white text-center">Kickout</Text>
                   </TouchableOpacity>
@@ -1479,7 +1479,7 @@ export default function App() {
                       actionMenuActionCategory == "shot"
                         ? "border-b border-b-[#fff]"
                         : ""
-                    } p-2 w-[100%] rounded bg-[#101010]`}
+                    } p-2 w-[100%] rounded bg-[#191A22]`}
                     onPress={() => {
                       if (
                         actionMenuActionCategory === "shot" &&
@@ -1515,11 +1515,11 @@ export default function App() {
                       actionMenuActionCategory == "T/O"
                         ? "border-b border-b-[#fff]"
                         : ""
-                    } bg-[#101010] w-[50%] p-2 rounded`}
+                    } bg-[#191A22] w-[50%] p-2 rounded`}
                   >
                     <Text className="text-white text-center">T/O</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity className="bg-[#101010] w-[50%] p-2 rounded">
+                  <TouchableOpacity className="bg-[#191A22] w-[50%] p-2 rounded">
                     <Text className="text-white text-center">Tackle</Text>
                   </TouchableOpacity>
                 </View>
@@ -1540,7 +1540,7 @@ export default function App() {
                         className={`
                    ${
                      actionSelected === item.action
-                       ? "border-b-2 border-b-[#FE4F3F]"
+                       ? "border-b-2 border-b-[#0b63fb]"
                        : ""
                    }
                    w-1/5 rounded-md py-2   justify-center
@@ -1606,7 +1606,7 @@ export default function App() {
                     <FontAwesomeIcon
                       icon={faCircleXmark}
                       size={35}
-                      color="#000"
+                      color="#12131A"
                     />
                   </Text>
                 </TouchableOpacity>
@@ -1617,9 +1617,9 @@ export default function App() {
                   <View className="flex-row space-x-1 mx-auto">
                     <TouchableOpacity
                       onPress={() => handleStatModalFilter("shot")}
-                      className={`bg-[#101010] ${
+                      className={`bg-[#191A22] ${
                         ingameStatModalFilter === "shot"
-                          ? "border border-[#FE4F3F]"
+                          ? "border border-[#0b63fb]"
                           : ""
                       }  w-16 p-2 rounded`}
                     >
@@ -1627,9 +1627,9 @@ export default function App() {
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => handleStatModalFilter("kickout")}
-                      className={`bg-[#101010] ${
+                      className={`bg-[#191A22] ${
                         ingameStatModalFilter === "kickout"
-                          ? "border border-[#FE4F3F]"
+                          ? "border border-[#0b63fb]"
                           : ""
                       }  w-auto p-2 rounded`}
                     >
@@ -1637,9 +1637,9 @@ export default function App() {
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => handleStatModalFilter("T/O")}
-                      className={`bg-[#101010] ${
+                      className={`bg-[#191A22] ${
                         ingameStatModalFilter === "T/O"
-                          ? "border-2 border-[#FE4F3F]"
+                          ? "border-2 border-[#0b63fb]"
                           : ""
                       }  w-16 p-2 rounded`}
                     >
@@ -1647,9 +1647,9 @@ export default function App() {
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => handleStatModalFilter("All")}
-                      className={`bg-[#101010] ${
+                      className={`bg-[#191A22] ${
                         ingameStatModalFilter === "All"
-                          ? "border border-[#FE4F3F]"
+                          ? "border border-[#0b63fb]"
                           : ""
                       }  w-16 p-2 rounded`}
                     >
@@ -1698,7 +1698,7 @@ export default function App() {
                           </TouchableOpacity>
                           <TouchableOpacity
                             onPress={() => setLongPressedId(null)}
-                            className="ml-2 bg-[#FE4F3F] w-auto px-5 py-1 rounded-md justify-center items-center"
+                            className="ml-2 bg-[#0b63fb] w-auto px-5 py-1 rounded-md justify-center items-center"
                           >
                             <Text>Cancel</Text>
                           </TouchableOpacity>
@@ -1792,7 +1792,7 @@ export default function App() {
                         resizeMode="contain"
                         className={`flex justify-center items-center ${
                           item.playerNumber === substitution.startingPlayer
-                            ? "border-b border-b-1 border-b-[#FE4F3F]"
+                            ? "border-b border-b-1 border-b-[#0b63fb]"
                             : ""
                         }`}
                         style={{ width: "100%", height: "100%" }}
@@ -1834,7 +1834,7 @@ export default function App() {
                         resizeMode="contain"
                         className={`flex justify-center items-center ${
                           item.playerNumber === substitution.subPlayer
-                            ? "border-b border-b-1 border-b-[#FE4F3F]"
+                            ? "border-b border-b-1 border-b-[#0b63fb]"
                             : ""
                         }`}
                         style={{ width: "100%", height: "100%" }}
@@ -1868,7 +1868,7 @@ export default function App() {
 
                 ${
                   substitution.startingPlayer && substitution.subPlayer
-                    ? "bg-[#FE4F3F]"
+                    ? "bg-[#0b63fb]"
                     : "bg-gray-100"
                 }
                 `}
@@ -1984,7 +1984,7 @@ const styles = StyleSheet.create({
     //  transform: [{ translateX: -50% }],
   },
   saveButton: {
-    backgroundColor: "#FE4F3F",
+    backgroundColor: "#0b63fb",
     padding: 10,
     borderRadius: 5,
   },
@@ -1998,7 +1998,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#383838",
   },
   buttonEnabled: {
-    backgroundColor: "#FE4F3F",
+    backgroundColor: "#0b63fb",
   },
   buttonDisabled: {
     backgroundColor: "grey",
@@ -2031,7 +2031,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   xMarkerWon: {
-    color: "#80ed99",
+    color: "#0b63fb",
     fontSize: 12,
     fontWeight: "bold",
   },

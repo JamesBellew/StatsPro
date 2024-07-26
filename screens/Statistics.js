@@ -670,6 +670,57 @@ export default function App() {
       </View>
     );
   };
+  const DataTableSummaryComponent = ({ tableData }) => {
+    return (
+      <>
+        <View className=" w-[90%] mx-auto rounded-lg p-2">
+          <View className="w-full mx-auto flex-row p-2">
+            <View className="w-1/3 px-1">
+              <Text className="text-gray-200  ">Action</Text>
+            </View>
+
+            <View className="w-1/3 px-1">
+              <Text className="text-gray-200 text-center">Player</Text>
+            </View>
+            <View className="w-1/3 px-1">
+              <Text className="text-gray-200 text-center">Score</Text>
+            </View>
+          </View>
+          <ScrollView
+            className="h-[50vh]"
+            style={{ maxHeight: "10vh" }} // Set a maxHeight to ensure it scrolls within its bounds
+            contentContainerStyle={{ flexGrow: 1 }}
+          >
+            {tableData.map((position, index) => (
+              <View
+                key={index}
+                className="flex-row bg-[#191A22] my-1  p-3 rounded-lg"
+              >
+                <View className="w-1/3 flex-row px-1">
+                  <Text className="text-gray-500 mr-2 text-center">
+                    {String(Math.round(position.time / 60)).padStart(2, "0")}
+                  </Text>
+
+                  <Text className="text-gray-200 text-center">
+                    {position.action}
+                  </Text>
+                </View>
+
+                <View className="w-1/3 my-auto  px-1">
+                  <Text className="text-gray-200 text-center">
+                    {position.player}
+                  </Text>
+                </View>
+                <View className="w-1/3 my-auto  px-1">
+                  <Text className="text-gray-200 text-center">2-11</Text>
+                </View>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      </>
+    );
+  };
   const DataTableComponent = ({ tableData }) => {
     return (
       <>
@@ -1565,7 +1616,51 @@ export default function App() {
               viewabilityConfig={viewabilityConfig}
             />
           </View>
+          <View className=" w-[90%] mx-auto rounded-lg p-2">
+            <View className="w-full mx-auto flex-row p-2">
+              <View className="w-1/3 px-1">
+                <Text className="text-gray-200  ">Action</Text>
+              </View>
 
+              <View className="w-1/3 px-1">
+                <Text className="text-gray-200 text-center">Player</Text>
+              </View>
+              <View className="w-1/3 px-1">
+                <Text className="text-gray-200 text-center">Score</Text>
+              </View>
+            </View>
+            <ScrollView
+              className="h-[50vh]"
+              style={{ maxHeight: "10vh" }} // Set a maxHeight to ensure it scrolls within its bounds
+              contentContainerStyle={{ flexGrow: 1 }}
+            >
+              {filteredPositions.map((position, index) => (
+                <View
+                  key={index}
+                  className="flex-row bg-[#191A22] my-1  p-3 rounded-lg"
+                >
+                  <View className="w-1/3 flex-row px-1">
+                    <Text className="text-gray-500 mr-2 text-center">
+                      {String(Math.round(position.time / 60)).padStart(2, "0")}
+                    </Text>
+
+                    <Text className="text-gray-200 text-center">
+                      {position.action}
+                    </Text>
+                  </View>
+
+                  <View className="w-1/3 my-auto  px-1">
+                    <Text className="text-gray-200 text-center">
+                      {position.player}
+                    </Text>
+                  </View>
+                  <View className="w-1/3 my-auto  px-1">
+                    <Text className="text-gray-200 text-center">2-11</Text>
+                  </View>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
           <Text></Text>
           <Text></Text>
           <Text></Text>
