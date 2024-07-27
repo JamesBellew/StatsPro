@@ -286,6 +286,35 @@ export default function App() {
   const filteredPositions = gameData.positions.filter(
     (position) => position.actionCategory === "shot"
   );
+  console.log("boyaka");
+  console.log(filteredPositions);
+  const scoringActions = ["point", "freeScore", "45Score", "goal", "markScore"];
+  const missActions = ["miss", "short", "freeMiss", "markMiss", "45Miss"];
+
+  const summaryShotsPositionsFiltered = filteredPositions.reduce(
+    (acc, position) => {
+      const playerIndex = acc.findIndex(
+        (item) => item.player === position.player
+      );
+      if (playerIndex === -1) {
+        acc.push({
+          player: position.player,
+          scores: scoringActions.includes(position.action) ? 1 : 0,
+          misses: missActions.includes(position.action) ? 1 : 0,
+        });
+      } else {
+        if (scoringActions.includes(position.action)) {
+          acc[playerIndex].scores += 1;
+        }
+        if (missActions.includes(position.action)) {
+          acc[playerIndex].misses += 1;
+        }
+      }
+      return acc;
+    },
+    []
+  );
+  console.log(summaryShotsPositionsFiltered);
   const setPlayFilteredPositions = filteredPositions.filter((position) =>
     [
       "freeMiss",
@@ -1051,7 +1080,7 @@ export default function App() {
       <Text className="" style={styles.title}>
         {item.firstPitchTitle} Data
       </Text>
-      <DataTableComponent tableData={item.pitchData} />
+      {/* <DataTableComponent tableData={item.pitchData} /> */}
     </View>
   );
 
@@ -1616,51 +1645,56 @@ export default function App() {
               viewabilityConfig={viewabilityConfig}
             />
           </View>
-          <View className=" w-[90%] mx-auto rounded-lg p-2">
-            <View className="w-full mx-auto flex-row p-2">
-              <View className="w-1/3 px-1">
-                <Text className="text-gray-200  ">Action</Text>
-              </View>
 
-              <View className="w-1/3 px-1">
-                <Text className="text-gray-200 text-center">Player</Text>
-              </View>
-              <View className="w-1/3 px-1">
-                <Text className="text-gray-200 text-center">Score</Text>
-              </View>
-            </View>
-            <ScrollView
-              className="h-[50vh]"
-              style={{ maxHeight: "10vh" }} // Set a maxHeight to ensure it scrolls within its bounds
-              contentContainerStyle={{ flexGrow: 1 }}
-            >
-              {filteredPositions.map((position, index) => (
-                <View
-                  key={index}
-                  className="flex-row bg-[#191A22] my-1  p-3 rounded-lg"
-                >
-                  <View className="w-1/3 flex-row px-1">
-                    <Text className="text-gray-500 mr-2 text-center">
-                      {String(Math.round(position.time / 60)).padStart(2, "0")}
-                    </Text>
-
-                    <Text className="text-gray-200 text-center">
-                      {position.action}
-                    </Text>
-                  </View>
-
-                  <View className="w-1/3 my-auto  px-1">
-                    <Text className="text-gray-200 text-center">
-                      {position.player}
-                    </Text>
-                  </View>
-                  <View className="w-1/3 my-auto  px-1">
-                    <Text className="text-gray-200 text-center">2-11</Text>
+          {summaryShotsPositionsFiltered.map((summary, index) => {
+            const total = summary.scores + summary.misses;
+            return (
+              <View
+                key={index}
+                className="w-[85%]  flex-row bg-[#191A22] mt-2 mx-auto rounded-lg p-2 justify-between"
+              >
+                <View className=" h-auto flex-row w-full">
+                  {/* <View className="bg-white rounded-full h-12 w-12 mr-5"></View> */}
+                  <View className=" my-auto h-12 flex-1 flex-row">
+                    <View className="w-[30%]    px-1 my-auto justify-center h-full flex-col">
+                      <Text className="text-gray-300 text-md font-semibold">
+                        C Bellew
+                      </Text>
+                      <Text className="text-gray-500 text-sm font-mono">
+                        {summary.player}
+                      </Text>
+                    </View>
+                    <View className=" justify-center flex-col h-full items-center w-[40%] ">
+                      <View className="flex-row w-full px-2 ">
+                        <Text className="text-gray-300">
+                          {summary.scores} Points
+                        </Text>
+                        <Text className="ml-auto text-gray-300">
+                          {summary.misses} Misses
+                        </Text>
+                      </View>
+                      <View className=" px-2 mx-auto items-center justify-center  flex-row w-full">
+                        <View
+                          className="bg-blue-600 rounded-e-md rounded-l-lg h-3"
+                          style={{ width: (summary.scores / total) * 100 }}
+                        ></View>
+                        <View
+                          className="bg-red-600 h-3 rounded-r-lg"
+                          style={{ width: (summary.misses / total) * 100 }}
+                        ></View>
+                      </View>
+                    </View>
+                    <View className=" w-[40%] h-full">
+                      <Text className="text-lg mx-auto my-auto font-bold text-[#0b63fb]">
+                        {Math.round((summary.scores / total) * 100)}%
+                      </Text>
+                    </View>
                   </View>
                 </View>
-              ))}
-            </ScrollView>
-          </View>
+              </View>
+            );
+          })}
+
           <Text></Text>
           <Text></Text>
           <Text></Text>
