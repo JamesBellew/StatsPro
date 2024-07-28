@@ -5,10 +5,13 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
+  Animated,
   FlatList,
   StyleSheet,
   Dimensions,
 } from "react-native";
+import { Easing } from "react-native-reanimated";
+
 import RNHTMLtoPDF from "react-native-html-to-pdf";
 import {
   BarChart,
@@ -19,7 +22,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useNavigation } from "@react-navigation/native";
 import { useRoute } from "@react-navigation/native";
-
+import Svg, { Path } from "react-native-svg";
 import {
   faFutbol,
   faInfo,
@@ -614,9 +617,47 @@ export default function App() {
     barRadius: 8,
   };
   const PitchComponent = ({ positions, type }) => {
+    const pitchWidth = Dimensions.get("window").width * 0.9; // 90% of the screen width
+    const pitchHeight = Dimensions.get("window").height * 0.63; // Assuming 63% of the screen height for the pitch
+
+    // Center of the top red box
+    const centerOfTopGoal = {
+      x: pitchWidth / 2,
+      y: 0, // Adjust if the red box is not at the absolute top
+    };
+
+    // Sort positions by time
+    const sortedPositions = useMemo(() => {
+      return positions.sort((a, b) => a.time - b.time);
+    }, [positions]);
+
+    const [visiblePaths, setVisiblePaths] = useState([]);
+
+    useEffect(() => {
+      sortedPositions.forEach((position, index) => {
+        setTimeout(() => {
+          setVisiblePaths((prevVisiblePaths) => [
+            ...prevVisiblePaths,
+            { ...position, animatedValue: new Animated.Value(0) },
+          ]);
+        }, index * 200); // Adjust the delay as needed
+      });
+    }, [sortedPositions]);
+
+    useEffect(() => {
+      visiblePaths.forEach(({ animatedValue }, index) => {
+        Animated.timing(animatedValue, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: false,
+        }).start();
+      });
+    }, [visiblePaths]);
+
     const mappedActions = useMemo(() => {
-      return positions.map((position, index) => {
+      return visiblePaths.map((position, index) => {
         const actionStyle = actionStyles[position.action];
+
         if (actionStyle) {
           if (
             position.action === "turnOverLoss" ||
@@ -631,7 +672,6 @@ export default function App() {
                   left: position.x - 15,
                   justifyContent: "center",
                   alignItems: "center",
-
                   width: 20,
                   height: 20,
                 }}
@@ -640,20 +680,53 @@ export default function App() {
               </View>
             );
           }
+
+          const dx = centerOfTopGoal.x - position.x;
+          const dy = centerOfTopGoal.y - position.y;
+          const controlPointX = (position.x + centerOfTopGoal.x) / 2;
+          const controlPointY = position.y - 50; // Adjust this value to control the curve
+
+          const pathData = `M${position.x},${position.y} Q${controlPointX},${controlPointY} ${centerOfTopGoal.x},${centerOfTopGoal.y}`;
+
+          const strokeDasharray = position.animatedValue.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, pitchHeight], // Adjust the output range as needed
+          });
+
           return (
-            <View
-              key={index}
-              style={[
-                {
-                  position: "absolute",
-                  top: position.y - 10,
-                  left: position.x - 7,
-                },
-                actionStyle.style,
-              ]}
-            >
-              {actionStyle.component || null}
-            </View>
+            <React.Fragment key={index}>
+              {position.action === "point" && (
+                <Svg
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: pitchWidth,
+                    height: pitchHeight,
+                  }}
+                >
+                  <Path
+                    d={pathData}
+                    stroke="#0b63fb"
+                    strokeWidth="1"
+                    fill="none"
+                    strokeDasharray={strokeDasharray}
+                  />
+                </Svg>
+              )}
+              <View
+                style={[
+                  {
+                    position: "absolute",
+                    top: position.y - 10,
+                    left: position.x - 7,
+                  },
+                  actionStyle.style,
+                ]}
+              >
+                {actionStyle.component || null}
+              </View>
+            </React.Fragment>
           );
         }
         return (
@@ -671,7 +744,7 @@ export default function App() {
           />
         );
       });
-    }, [positions]);
+    }, [visiblePaths]);
 
     return (
       <View
@@ -699,6 +772,7 @@ export default function App() {
       </View>
     );
   };
+
   const DataTableSummaryComponent = ({ tableData }) => {
     return (
       <>
@@ -1665,7 +1739,7 @@ export default function App() {
                       </Text>
                     </View>
                     <View className=" justify-center flex-col h-full items-center w-[40%] ">
-                      <View className="flex-row w-full px-2 ">
+                      <View className="flex-row w-full mb-1 px-2 ">
                         <Text className="text-gray-300">
                           {summary.scores} Points
                         </Text>
@@ -1824,6 +1898,16 @@ const styles = StyleSheet.create({
     top: "50%",
     left: "50%",
     transform: [{ translateX: -28 }],
+  },
+  curvedLine: {
+    width: "20%",
+    height: 100,
+    position: "absolute",
+    bottom: -25,
+    left: "40%",
+    borderRadius: 35,
+    backgroundColor: "black",
+    transform: [{ scaleX: 5 }, { scaleY: 1 }],
   },
   xMarkerLoss: {
     color: "#FD5F5F",
