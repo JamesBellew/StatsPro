@@ -626,23 +626,29 @@ export default function App() {
       y: 0, // Adjust if the red box is not at the absolute top
     };
 
-    // Sort positions by time
-    const sortedPositions = useMemo(() => {
-      return positions.sort((a, b) => a.time - b.time);
+    // Separate positions into points and others
+    const points = useMemo(() => {
+      return positions
+        .filter((position) => position.action === "point")
+        .sort((a, b) => a.time - b.time);
+    }, [positions]);
+
+    const others = useMemo(() => {
+      return positions.filter((position) => position.action !== "point");
     }, [positions]);
 
     const [visiblePaths, setVisiblePaths] = useState([]);
 
     useEffect(() => {
-      sortedPositions.forEach((position, index) => {
+      points.forEach((position, index) => {
         setTimeout(() => {
           setVisiblePaths((prevVisiblePaths) => [
             ...prevVisiblePaths,
             { ...position, animatedValue: new Animated.Value(0) },
           ]);
-        }, index * 200); // Adjust the delay as needed
+        }, index * 300); // Adjust the delay as needed
       });
-    }, [sortedPositions]);
+    }, [points]);
 
     useEffect(() => {
       visiblePaths.forEach(({ animatedValue }, index) => {
@@ -655,7 +661,9 @@ export default function App() {
     }, [visiblePaths]);
 
     const mappedActions = useMemo(() => {
-      return visiblePaths.map((position, index) => {
+      const allPositions = [...visiblePaths, ...others]; // Combine staggered points and other actions
+
+      return allPositions.map((position, index) => {
         const actionStyle = actionStyles[position.action];
 
         if (actionStyle) {
@@ -688,10 +696,12 @@ export default function App() {
 
           const pathData = `M${position.x},${position.y} Q${controlPointX},${controlPointY} ${centerOfTopGoal.x},${centerOfTopGoal.y}`;
 
-          const strokeDasharray = position.animatedValue.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, pitchHeight], // Adjust the output range as needed
-          });
+          const strokeDasharray = position.animatedValue
+            ? position.animatedValue.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, pitchHeight], // Adjust the output range as needed
+              })
+            : pitchHeight;
 
           return (
             <React.Fragment key={index}>
@@ -708,7 +718,7 @@ export default function App() {
                   <Path
                     d={pathData}
                     stroke="#0b63fb"
-                    strokeWidth="1"
+                    strokeWidth=".3"
                     fill="none"
                     strokeDasharray={strokeDasharray}
                   />
@@ -744,7 +754,7 @@ export default function App() {
           />
         );
       });
-    }, [visiblePaths]);
+    }, [visiblePaths, others]);
 
     return (
       <View
