@@ -1730,54 +1730,81 @@ export default function App() {
             />
           </View>
 
-          {summaryShotsPositionsFiltered.map((summary, index) => {
-            const total = summary.scores + summary.misses;
-            return (
-              <View
-                key={index}
-                className="w-[85%]  flex-row bg-[#191A22] mt-2 mx-auto rounded-lg p-2 justify-between"
-              >
-                <View className=" h-auto flex-row w-full">
-                  {/* <View className="bg-white rounded-full h-12 w-12 mr-5"></View> */}
-                  <View className=" my-auto h-12 flex-1 flex-row">
-                    <View className="w-[30%]    px-1 my-auto justify-center h-full flex-col">
-                      <Text className="text-gray-300 text-md font-semibold">
-                        C Bellew
-                      </Text>
-                      <Text className="text-gray-500 text-sm font-mono">
-                        {summary.player}
-                      </Text>
-                    </View>
-                    <View className=" justify-center flex-col h-full items-center w-[40%] ">
-                      <View className="flex-row w-full mb-1 px-2 ">
-                        <Text className="text-gray-300">
-                          {summary.scores} Points
+          {summaryShotsPositionsFiltered
+            .map((summary) => ({
+              ...summary,
+              percentage: Math.round(
+                (summary.scores / (summary.scores + summary.misses)) * 100
+              ),
+            }))
+            .sort((a, b) => b.percentage - a.percentage)
+            .map((summary, index) => {
+              const total = summary.scores + summary.misses;
+              const getClassNameByPercentage = (percentage) => {
+                if (percentage <= 25) {
+                  return "bg-red-500";
+                } else if (percentage <= 50) {
+                  return "bg-blue-300";
+                } else if (percentage <= 75) {
+                  return "bg-blue-400";
+                } else {
+                  return "bg-blue-700";
+                }
+              };
+              const percentage = summary.percentage;
+              const barClassName = getClassNameByPercentage(percentage);
+              return (
+                <View
+                  key={index}
+                  className="w-[85%] flex-row bg-[#191A22] mt-2 mx-auto rounded-lg p-2 justify-between"
+                >
+                  <View className="h-auto flex-row w-full">
+                    <View className="my-auto h-12 flex-1 flex-row">
+                      <View className="w-[30%] px-1 my-auto justify-center h-full flex-col">
+                        <Text className="text-gray-300 text-md font-semibold">
+                          C Bellew
                         </Text>
-                        <Text className="ml-auto text-gray-300">
-                          {summary.misses} Misses
+                        <Text className="text-gray-500 text-sm font-mono">
+                          {summary.player}
                         </Text>
                       </View>
-                      <View className=" px-2 mx-auto items-center justify-center  flex-row w-full">
+                      <View className="justify-center flex-col h-full items-center w-[40%]">
+                        <View className="flex-row w-full mb-1 px-2">
+                          <Text className="text-gray-300">
+                            {summary.scores} Points
+                          </Text>
+                          <Text className="ml-auto text-gray-300">
+                            {summary.misses} Misses
+                          </Text>
+                        </View>
+                        <View className="px-2 mx-auto items-center justify-center flex-row w-full">
+                          <View
+                            className="bg-blue-600 rounded-l-lg h-2"
+                            style={{
+                              width: `${(summary.scores / total) * 100}%`,
+                            }}
+                          ></View>
+                          <View
+                            className="bg-gray-300 h-2 rounded-r-lg"
+                            style={{
+                              width: `${(summary.misses / total) * 100}%`,
+                            }}
+                          ></View>
+                        </View>
+                      </View>
+                      <View className="w-[40%] h-full">
+                        <Text className="text-lg mx-auto my-auto font-bold text-gray-300">
+                          {percentage}%
+                        </Text>
                         <View
-                          className="bg-blue-600 rounded-e-md rounded-l-lg h-3"
-                          style={{ width: (summary.scores / total) * 100 }}
-                        ></View>
-                        <View
-                          className="bg-red-600 h-3 rounded-r-lg"
-                          style={{ width: (summary.misses / total) * 100 }}
+                          className={`w-8 mx-auto h-[2px] rounded-lg top-[-1vh] ${barClassName}`}
                         ></View>
                       </View>
-                    </View>
-                    <View className=" w-[40%] h-full">
-                      <Text className="text-lg mx-auto my-auto font-bold text-[#0b63fb]">
-                        {Math.round((summary.scores / total) * 100)}%
-                      </Text>
                     </View>
                   </View>
                 </View>
-              </View>
-            );
-          })}
+              );
+            })}
 
           <Text></Text>
           <Text></Text>
