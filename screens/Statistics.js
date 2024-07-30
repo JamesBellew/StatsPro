@@ -275,6 +275,39 @@ export default function App() {
       },
     },
   };
+  // Function to ensure all required fields are initialized to zero if they are missing
+  const initializeSetPlayData = (data) => {
+    const requiredFields = [
+      ["freeScore", "freeMiss"],
+      ["45Score", "45Miss"],
+      ["markScore", "markMiss"],
+    ];
+
+    const result = {
+      labels: ["Free", "45", "Mark"],
+      legend: ["Score", "Miss"],
+      data: [],
+      barColors: ["#0b63fb80", "#242424"],
+    };
+
+    requiredFields.forEach((fields) => {
+      const scores =
+        data.filter(
+          (position) =>
+            position.action.toLowerCase() === fields[0].toLowerCase()
+        ).length || 0;
+      const misses =
+        data.filter(
+          (position) =>
+            position.action.toLowerCase() === fields[1].toLowerCase()
+        ).length || 0;
+      result.data.push([scores, misses]);
+    });
+
+    console.log("Initialized Set Play Data:", result); // Add logging
+    return result;
+  };
+
   //!this is for handling scroll to page events
   const scrollViewRef = useRef(null);
   const screenHeight = Dimensions.get("window").height;
@@ -328,22 +361,24 @@ export default function App() {
       "45Miss",
     ].includes(position.action)
   );
-  const setPlayData1 = {
-    labels: ["Free", "45", "Mark"],
-    legend: ["Score", "Miss"],
-    data: ["free", "45", "mark"].map((action) => {
-      const scores = filteredPositions.filter(
-        (position) =>
-          position.action.toLowerCase() === `${action.toLowerCase()}score`
-      ).length;
-      const misses = filteredPositions.filter(
-        (position) =>
-          position.action.toLowerCase() === `${action.toLowerCase()}miss`
-      ).length;
-      return [scores, misses];
-    }),
-    barColors: ["#0b63fb80", "#242424"],
-  };
+  // Update the setPlayData1 initialization
+  const setPlayData1 = initializeSetPlayData(filteredPositions);
+  // const setPlayData1 = {
+  //   labels: ["Free", "45", "Mark"],
+  //   legend: ["Score", "Miss"],
+  //   data: ["free", "45", "mark"].map((action) => {
+  //     const scores = filteredPositions.filter(
+  //       (position) =>
+  //         position.action.toLowerCase() === `${action.toLowerCase()}score`
+  //     ).length;
+  //     const misses = filteredPositions.filter(
+  //       (position) =>
+  //         position.action.toLowerCase() === `${action.toLowerCase()}miss`
+  //     ).length;
+  //     return [scores, misses];
+  //   }),
+  //   barColors: ["#0b63fb80", "#242424"],
+  // };
   const kickoutActions = [
     "kickoutCatch",
     "kickoutBreakWon",
@@ -1025,11 +1060,7 @@ export default function App() {
                   borderTopLeftRadius: 8,
                   borderBottomLeftRadius: 8,
                 }}
-              >
-                {/* <Text className="mx-auto justify-center my-auto items-center text-white text-md font-semibold">
-                {Math.round(shotPercentage)}%
-              </Text> */}
-              </View>
+              ></View>
               <View
                 style={{
                   width: `${100 - Math.round(shotPercentage)}%`,
@@ -1082,12 +1113,14 @@ export default function App() {
           {item.secondPitchTitle}
         </Text>
       </View>
+      {/* below is cuaing issue rendering when not existsed */}
       {item.secondPitchDataLegend && (
         <View className="items-start justify-start items-center w-[90%] h-auto flex-row mb-2">
           {item.secondPitchDataLegend.map((legend, index) => (
             <>
               <React.Fragment key={index}>
                 <View
+                  key={index}
                   className={`bg-[#${legend.color}] w-3 h-3 mr-2 rounded-full`}
                 ></View>
                 <Text className="text-white capitalize mr-2">
@@ -1109,9 +1142,13 @@ export default function App() {
           <PitchComponent positions={item.setPlayData} />
         </View>
       )}
+
       {item.setPlayDataBarChart && (
-        <SetPlayChartComponent setplayDataProp={item.setPlayDataBarChart} />
+        <>
+          <SetPlayChartComponent setplayDataProp={setPlayData1} />
+        </>
       )}
+      {/* above is causing issue */}
       <Hr />
       <Text className="text-white  text-center mt-5 text-xl font-semibold tracking-wider">
         {item.lineChartTitle && (
@@ -1119,9 +1156,9 @@ export default function App() {
             <Text>{item.lineChartTitle}</Text>
           </>
         )}
-        {/* <Text className="text-white  text-center mt-5 text-xl font-semibold tracking-wider">
-            Score Timings
-          </Text> */}
+        <Text className="text-white  text-center mt-5 text-xl font-semibold tracking-wider">
+          Score Timings
+        </Text>
       </Text>
       {item.lineChartData && (
         <LineChart
@@ -1158,7 +1195,6 @@ export default function App() {
           }}
         />
       )}
-
       {/* enter new shot data table here  */}
       <Hr />
       <Text className="" style={styles.title}>
@@ -1482,18 +1518,50 @@ export default function App() {
       </>
     );
   };
-  function SetPlayChartComponent({ setplayDataProp = { data: [] } }) {
-    // Add defensive checks to ensure data is defined
-    const chartData =
-      setplayDataProp && setplayDataProp.data ? setplayDataProp : { data: [] };
+  // Component definition
+  function SetPlayChartComponent({ setplayDataProp }) {
+    // Defensive checks to ensure data is defined and correct
+    const chartData = useMemo(() => {
+      if (
+        !setplayDataProp ||
+        !setplayDataProp.data ||
+        !Array.isArray(setplayDataProp.data) ||
+        setplayDataProp.data.length === 0
+      ) {
+        return { data: [], labels: [], legend: [], barColors: [] };
+      }
+
+      // Ensure all data entries are numbers
+      const validData = setplayDataProp.data.map((entry) =>
+        entry.map((value) => (isNaN(value) ? 0 : value))
+      );
+
+      return {
+        ...setplayDataProp,
+        data: validData,
+      };
+    }, [setplayDataProp]);
+
+    console.log("Chart Data:", chartData); // Add logging
+
+    // Ensure width and height are valid
+    const chartWidth = useMemo(() => {
+      const width = Dimensions.get("window").width * 0.9;
+      return isNaN(width) ? 300 : width; // Fallback to 300 if NaN
+    }, []);
+
+    const chartHeight = useMemo(() => {
+      const height = 220;
+      return isNaN(height) ? 220 : height; // Fallback to 220 if NaN
+    }, []);
 
     return (
-      <View className=" w-[90%] h-[29vh] mt-2 mx-auto justify-center rounded-xl bg-[#12131A]  text-center items-center">
+      <View className="w-[90%] h-[29vh] mt-2 mx-auto justify-center rounded-xl bg-[#12131A] text-center items-center">
         <StackedBarChart
           className="mx-auto"
           data={chartData}
-          width={Dimensions.get("window").width * 0.9}
-          height={220}
+          width={chartWidth}
+          height={chartHeight}
           renderBarLabel={renderBarLabel}
           chartConfig={setplayChartConfig}
           style={{
@@ -1501,10 +1569,33 @@ export default function App() {
             borderRadius: 20,
           }}
         />
-        {/* <ChartDropdown2 dropDownData={setPlayData1} title="Set Play Data" /> */}
       </View>
     );
   }
+
+  // function SetPlayChartComponent({ setplayDataProp = { data: [] } }) {
+  //   // Add defensive checks to ensure data is defined
+  //   const chartData =
+  //     setplayDataProp && setplayDataProp.data ? setplayDataProp : { data: [] };
+
+  //   return (
+  //     <View className=" w-[90%] h-[29vh] mt-2 mx-auto justify-center rounded-xl bg-[#12131A]  text-center items-center">
+  //       <StackedBarChart
+  //         className="mx-auto"
+  //         data={chartData}
+  //         width={Dimensions.get("window").width * 0.9}
+  //         height={220}
+  //         renderBarLabel={renderBarLabel}
+  //         chartConfig={setplayChartConfig}
+  //         style={{
+  //           marginVertical: 0,
+  //           borderRadius: 20,
+  //         }}
+  //       />
+  //       {/* <ChartDropdown2 dropDownData={setPlayData1} title="Set Play Data" /> */}
+  //     </View>
+  //   );
+  // }
   return (
     <>
       {showGameDetailsMenu && (
@@ -1721,7 +1812,8 @@ export default function App() {
               ref={flatListRef}
               data={ListDataTest}
               renderItem={renderItem}
-              keyExtractor={(item) => item.id}
+              // keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item.id.toString()}
               horizontal
               pagingEnabled
               showsHorizontalScrollIndicator={false}
@@ -1764,7 +1856,7 @@ export default function App() {
                         <Text className="text-gray-300 text-md font-semibold">
                           C Bellew
                         </Text>
-                        <Text className="text-gray-500 text-sm font-mono">
+                        <Text className="text-gray-500 text-sm">
                           {summary.player}
                         </Text>
                       </View>
