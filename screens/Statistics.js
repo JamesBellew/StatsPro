@@ -1552,7 +1552,7 @@ export default function App() {
 
     const chartHeight = useMemo(() => {
       const height = 220;
-      return isNaN(height) ? 220 : height; // Fallback to 220 if NaN
+      return isNaN(height) ? 220 : height; // Fallback to 220 if NaN , dpesn not work
     }, []);
 
     return (
