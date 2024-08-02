@@ -226,7 +226,7 @@ export default function App() {
         shadowRadius: 56,
       },
     },
-    kickoutCatch: {
+    kickoutCatchWon: {
       style: {
         width: 10,
         height: 10,
@@ -350,6 +350,88 @@ export default function App() {
     },
     []
   );
+
+  const kickoutActionsSummary = {
+    catch: ["kickoutCatchWon", "kickOppCatch"],
+    break: ["kickoutBreakWon", "kickoutOppBreak"],
+  };
+
+  const summaryKickoutsPositionsFiltered = filteredKickoutPositions.reduce(
+    (acc, position) => {
+      const actionType = Object.keys(kickoutActionsSummary).find((key) =>
+        kickoutActionsSummary[key].includes(position.action)
+      );
+
+      if (actionType) {
+        const playerIndex = acc.findIndex((item) => item.player === actionType);
+
+        if (playerIndex === -1) {
+          acc.push({
+            player: actionType,
+            scores: position.action.includes("Won") ? 1 : 0,
+            misses: position.action.includes("Opp") ? 1 : 0,
+          });
+        } else {
+          if (position.action.includes("Won")) {
+            acc[playerIndex].scores += 1;
+          }
+          if (position.action.includes("Opp")) {
+            acc[playerIndex].misses += 1;
+          }
+        }
+      }
+
+      return acc;
+    },
+    []
+  );
+  const windowHeight = Dimensions.get("window").height;
+  const pitchHeight = windowHeight * 0.63; // Convert 63vh to pixels
+
+  const summaryTurnoversPositionsFiltered = filteredTurnoverPositions.reduce(
+    (acc, position) => {
+      const third = Math.floor((position.y / pitchHeight) * 3);
+      let section;
+
+      switch (third) {
+        case 0:
+          section = "top";
+          break;
+        case 1:
+          section = "middle";
+          break;
+        case 2:
+          section = "bottom";
+          break;
+        default:
+          section = "unknown";
+      }
+
+      const playerIndex = acc.findIndex((item) => item.player === section);
+
+      if (playerIndex === -1) {
+        acc.push({
+          player: section, // Using 'player' key to keep it consistent
+          scores: position.action.includes("Won") ? 1 : 0, // Using 'scores' for won turnovers
+          misses: position.action.includes("Loss") ? 1 : 0, // Using 'misses' for lost turnovers
+        });
+      } else {
+        if (position.action.includes("Won")) {
+          acc[playerIndex].scores += 1;
+        }
+        if (position.action.includes("Loss")) {
+          acc[playerIndex].misses += 1;
+        }
+      }
+
+      return acc;
+    },
+    []
+  );
+
+  console.log(summaryTurnoversPositionsFiltered);
+  console.log("fuck ya");
+  console.log(summaryKickoutsPositionsFiltered);
   // console.log(summaryShotsPositionsFiltered);
   const setPlayFilteredPositions = filteredPositions.filter((position) =>
     [
@@ -380,7 +462,7 @@ export default function App() {
   //   barColors: ["#0b63fb80", "#242424"],
   // };
   const kickoutActions = [
-    "kickoutCatch",
+    "kickoutCatchWon",
     "kickoutBreakWon",
     "kickoutOppBreak",
     "kickOppCatch",
@@ -419,7 +501,7 @@ export default function App() {
     data: [
       [
         filteredKickoutPositions.filter(
-          (position) => position.action === "kickoutCatch"
+          (position) => position.action === "kickoutCatchWon"
         ).length,
         filteredKickoutPositions.filter(
           (position) => position.action === "kickOppCatch"
@@ -540,13 +622,13 @@ export default function App() {
   const kickoutActionCounts = {
     kickOppCatch: 1,
     kickoutBreakWon: 1,
-    kickoutCatch: 1,
+    kickoutCatchWon: 1,
     kickoutOppBreak: 1,
     kickoutOut: 1,
   };
 
   const goodKickouts =
-    (kickoutActionCounts.kickoutCatch || 0) +
+    (kickoutActionCounts.kickoutCatchWon || 0) +
     (kickoutActionCounts.kickoutBreakWon || 0);
   const missKickouts =
     (kickoutActionCounts.kickOppCatch || 0) +
@@ -579,7 +661,7 @@ export default function App() {
     (actionCounts.miss || 0) +
     (actionCounts.short || 0);
   const kickoutsWonNumber =
-    (actionCounts.kickoutCatch || 0) + (actionCounts.kickoutBreakWon || 0);
+    (actionCounts.kickoutCatchWon || 0) + (actionCounts.kickoutBreakWon || 0);
 
   const successfulAttempts =
     (actionCounts.freeScore || 0) +
@@ -849,9 +931,9 @@ export default function App() {
             <View className="h-auto flex-row w-full">
               <View className="my-auto h-12 flex-1 flex-row">
                 <View className="w-[30%] px-1 my-auto justify-center h-full flex-col">
-                  <Text className="text-gray-300 text-md font-semibold">
+                  {/* <Text className="text-gray-300 text-md font-semibold">
                     C Bellew
-                  </Text>
+                  </Text> */}
                   <Text className="text-gray-500 text-sm">
                     {summary.player}
                   </Text>
@@ -1036,7 +1118,7 @@ export default function App() {
       setPlayData: setPlayFilteredPositions,
       setPlayDataBarChart: setPlayData1,
       shotDataChart: shotsData,
-      summaryDataPercentage: filteredPositions,
+      summaryDataPercentage: summaryShotsPositionsFiltered,
     },
     {
       id: "2",
@@ -1075,7 +1157,7 @@ export default function App() {
       setPlayData: filteredKickoutPositions,
       setPlayDataBarChart: kickoutBarChartData,
       shotDataChart: kickoutsData,
-      summaryDataPercentage: filteredKickoutPositions,
+      summaryDataPercentage: summaryKickoutsPositionsFiltered,
     },
     {
       id: "3",
@@ -1113,7 +1195,7 @@ export default function App() {
       setPlayData: filteredTurnoverPositions,
       setPlayDataBarChart: turnoverBarChartData,
       shotDataChart: kickoutsData,
-      summaryDataPercentage: filteredPositions,
+      summaryDataPercentage: summaryTurnoversPositionsFiltered,
     },
   ];
   const renderItem = ({ item }) => (
@@ -1276,11 +1358,11 @@ export default function App() {
       <Text className="" style={styles.title}>
         {item.firstPitchTitle} Data
       </Text>
-      {item.summaryDataPercentage && (
-        <SummaryDataPercentageComponent
-          summaryPositions={summaryShotsPositionsFiltered}
-        />
-      )}
+
+      <SummaryDataPercentageComponent
+        summaryPositions={item.summaryDataPercentage}
+      />
+
       {/* <DataTableComponent tableData={item.pitchData} /> */}
     </View>
   );

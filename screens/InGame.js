@@ -130,7 +130,7 @@ export default function App() {
         backgroundColor: "#f21b3f",
       },
     },
-    kickoutCatch: {
+    kickoutCatchWon: {
       style: {
         width: 8,
         height: 8,
@@ -297,7 +297,7 @@ export default function App() {
     },
     {
       category: "kickout",
-      action: "kickoutCatch",
+      action: "kickoutCatchWon",
       label: "Catch",
     },
     {
