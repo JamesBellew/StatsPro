@@ -899,7 +899,10 @@ export default function App() {
       </View>
     );
   };
-  const SummaryDataPercentageComponent = ({ summaryPositions }) => {
+  const SummaryDataPercentageComponent = ({
+    summaryPositions,
+    summaryType,
+  }) => {
     return summaryPositions
       .map((summary) => ({
         ...summary,
@@ -931,6 +934,16 @@ export default function App() {
             <View className="h-auto flex-row w-full">
               <View className="my-auto h-12 flex-1 flex-row">
                 <View className="w-[30%] px-1 my-auto justify-center h-full flex-col">
+                  {summaryType === "shot" && (
+                    <Text className="text-gray-300 text-md font-semibold">
+                      C Bellew
+                    </Text>
+                  )}
+                  {summaryType === "turnover" && (
+                    <Text className="text-gray-300 text-md font-semibold">
+                      Section
+                    </Text>
+                  )}
                   {/* <Text className="text-gray-300 text-md font-semibold">
                     C Bellew
                   </Text> */}
@@ -1119,6 +1132,7 @@ export default function App() {
       setPlayDataBarChart: setPlayData1,
       shotDataChart: shotsData,
       summaryDataPercentage: summaryShotsPositionsFiltered,
+      dataType: "shot",
     },
     {
       id: "2",
@@ -1158,6 +1172,7 @@ export default function App() {
       setPlayDataBarChart: kickoutBarChartData,
       shotDataChart: kickoutsData,
       summaryDataPercentage: summaryKickoutsPositionsFiltered,
+      dataType: "kickout",
     },
     {
       id: "3",
@@ -1196,6 +1211,7 @@ export default function App() {
       setPlayDataBarChart: turnoverBarChartData,
       shotDataChart: kickoutsData,
       summaryDataPercentage: summaryTurnoversPositionsFiltered,
+      dataType: "turnover",
     },
   ];
   const renderItem = ({ item }) => (
@@ -1308,16 +1324,18 @@ export default function App() {
       )}
       {/* above is causing issue */}
       <Hr />
-      <Text className="text-white  text-center mt-5 text-xl font-semibold tracking-wider">
-        {item.lineChartTitle && (
-          <>
-            <Text>{item.lineChartTitle}</Text>
-          </>
-        )}
-        <Text className="text-white  text-center mt-5 text-xl font-semibold tracking-wider">
-          Score Timings
+      <View className=" w-full ml-10">
+        <Text className="text-white  items-start justify-start mt-5 text-2xl font-bold tracking-wider">
+          {item.lineChartTitle && (
+            <>
+              <Text>{item.lineChartTitle}</Text>
+            </>
+          )}
+          {/* <Text className="text-white   mt-5 text-xl font-semibold tracking-wider">
+            Score Timings
+          </Text> */}
         </Text>
-      </Text>
+      </View>
       {item.lineChartData && (
         <LineChart
           data={{
@@ -1355,12 +1373,15 @@ export default function App() {
       )}
       {/* enter new shot data table here  */}
       <Hr />
-      <Text className="" style={styles.title}>
-        {item.firstPitchTitle} Data
-      </Text>
+      <View className="ml-10 mb-5 justify-start items-start w-full px-2">
+        <Text className="text-white w-auto text-2xl font-bold ">
+          {item.firstPitchTitle} Data
+        </Text>
+      </View>
 
       <SummaryDataPercentageComponent
         summaryPositions={item.summaryDataPercentage}
+        summaryType={item.dataType}
       />
 
       {/* <DataTableComponent tableData={item.pitchData} /> */}
