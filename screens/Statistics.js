@@ -1371,7 +1371,7 @@ export default function App() {
           }}
         />
       )}
-      {/* enter new shot data table here  */}
+      {/* enter new shot data table here hai  */}
       <Hr />
       <View className="ml-10 mb-5 justify-start items-start w-full px-2">
         <Text className="text-white w-auto text-2xl font-bold ">
