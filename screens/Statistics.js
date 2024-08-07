@@ -927,63 +927,65 @@ export default function App() {
         const percentage = summary.percentage;
         const barClassName = getClassNameByPercentage(percentage);
         return (
-          <View
-            key={index}
-            className="w-[85%] flex-row bg-[#191A22] mt-2 mx-auto rounded-lg p-1 px-2 justify-between"
-          >
-            <View className="h-auto flex-row w-full">
-              <View className="my-auto h-12 flex-1 flex-row">
-                <View className="w-[30%] px-1 my-auto justify-center h-full flex-col">
-                  {summaryType === "shot" && (
-                    <Text className="text-gray-300 text-md font-semibold">
-                      C Bellew
-                    </Text>
-                  )}
-                  {summaryType === "turnover" && (
-                    <Text className="text-gray-300 text-md font-semibold">
-                      Section
-                    </Text>
-                  )}
-                  {/* <Text className="text-gray-300 text-md font-semibold">
+          <>
+            <View
+              key={index}
+              className="w-[85%] flex-row bg-[#191A22] mt-2 mx-auto rounded-lg p-1 px-2 justify-between"
+            >
+              <View className="h-auto flex-row w-full">
+                <View className="my-auto h-12 flex-1 flex-row">
+                  <View className="w-[30%] px-1 my-auto justify-center h-full flex-col">
+                    {summaryType === "shot" && (
+                      <Text className="text-gray-300 text-md font-semibold">
+                        C Bellew
+                      </Text>
+                    )}
+                    {summaryType === "turnover" && (
+                      <Text className="text-gray-300 text-md font-semibold">
+                        Section
+                      </Text>
+                    )}
+                    {/* <Text className="text-gray-300 text-md font-semibold">
                     C Bellew
                   </Text> */}
-                  <Text className="text-gray-500 text-sm">
-                    {summary.player}
-                  </Text>
-                </View>
-                <View className="justify-center flex-col h-full items-center w-[40%]">
-                  <View className="px-2 mx-auto items-center justify-center flex-row w-full">
-                    <View
-                      className="bg-blue-600 rounded-l-lg h-1"
-                      style={{
-                        width: `${(summary.scores / total) * 100}%`,
-                      }}
-                    ></View>
-                    <View
-                      className="bg-gray-400 h-1 rounded-r-lg"
-                      style={{
-                        width: `${(summary.misses / total) * 100}%`,
-                      }}
-                    ></View>
-                  </View>
-                  <View className="flex-row w-full mt-2 px-2">
-                    <Text className="text-gray-300">{summary.scores} +</Text>
-                    <Text className="ml-auto text-gray-300">
-                      {summary.misses} -
+                    <Text className="text-gray-500 text-sm">
+                      {summary.player}
                     </Text>
                   </View>
-                </View>
-                <View className="w-[40%] h-full">
-                  <Text className="text-lg mx-auto my-auto font-bold text-gray-300">
-                    {percentage}%
-                  </Text>
-                  <View
-                    className={`w-8 mx-auto h-[2px] rounded-lg top-[-1vh] ${barClassName}`}
-                  ></View>
+                  <View className="justify-center flex-col h-full items-center w-[40%]">
+                    <View className="px-2 mx-auto items-center justify-center flex-row w-full">
+                      <View
+                        className="bg-blue-600 rounded-l-lg h-1"
+                        style={{
+                          width: `${(summary.scores / total) * 100}%`,
+                        }}
+                      ></View>
+                      <View
+                        className="bg-gray-400 h-1 rounded-r-lg"
+                        style={{
+                          width: `${(summary.misses / total) * 100}%`,
+                        }}
+                      ></View>
+                    </View>
+                    <View className="flex-row w-full mt-2 px-2">
+                      <Text className="text-gray-300">{summary.scores} +</Text>
+                      <Text className="ml-auto text-gray-300">
+                        {summary.misses} -
+                      </Text>
+                    </View>
+                  </View>
+                  <View className="w-[40%] h-full">
+                    <Text className="text-lg mx-auto my-auto font-bold text-gray-300">
+                      {percentage}%
+                    </Text>
+                    <View
+                      className={`w-8 mx-auto h-[2px] rounded-lg top-[-1vh] ${barClassName}`}
+                    ></View>
+                  </View>
                 </View>
               </View>
             </View>
-          </View>
+          </>
         );
       });
   };
@@ -1373,10 +1375,11 @@ export default function App() {
       )}
       {/* enter new shot data table here hai  */}
       <Hr />
-      <View className="ml-10 mb-5 justify-start items-start w-full px-2">
+      <View className="ml-10 mb-2 justify-start items-start w-full px-2">
         <Text className="text-white w-auto text-2xl font-bold ">
           {item.firstPitchTitle} Data
         </Text>
+        <Text className="text-white">This is where I will put the legend</Text>
       </View>
 
       <SummaryDataPercentageComponent
