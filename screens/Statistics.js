@@ -1134,6 +1134,10 @@ export default function App() {
       setPlayDataBarChart: setPlayData1,
       shotDataChart: shotsData,
       summaryDataPercentage: summaryShotsPositionsFiltered,
+      summaryDataLegend: [
+        { title: "score", color: "#0b63fb" },
+        { title: "miss", color: "#c9c9c9" },
+      ],
       dataType: "shot",
     },
     {
@@ -1174,6 +1178,10 @@ export default function App() {
       setPlayDataBarChart: kickoutBarChartData,
       shotDataChart: kickoutsData,
       summaryDataPercentage: summaryKickoutsPositionsFiltered,
+      summaryDataLegend: [
+        { title: "won", color: "#0b63fb" },
+        { title: "loss", color: "#c9c9c9" },
+      ],
       dataType: "kickout",
     },
     {
@@ -1213,6 +1221,10 @@ export default function App() {
       setPlayDataBarChart: turnoverBarChartData,
       shotDataChart: kickoutsData,
       summaryDataPercentage: summaryTurnoversPositionsFiltered,
+      summaryDataLegend: [
+        { title: "won", color: "#0b63fb" },
+        { title: "loss", color: "#c9c9c9" },
+      ],
       dataType: "turnover",
     },
   ];
@@ -1299,7 +1311,7 @@ export default function App() {
               <React.Fragment key={index}>
                 <View
                   key={index}
-                  className={`bg-[#${legend.color}] w-3 h-3 mr-2 rounded-full`}
+                  className={`bg-[${legend.color}] w-3 h-3 mr-2 rounded-full`}
                 ></View>
                 <Text className="text-white capitalize mr-2">
                   {legend.title}
@@ -1379,7 +1391,17 @@ export default function App() {
         <Text className="text-white w-auto text-2xl font-bold ">
           {item.firstPitchTitle} Data
         </Text>
-        <Text className="text-white">This is where I will put the legend</Text>
+        <View className=" w-auto flex-row space-x-2 py-2">
+          {item.summaryDataLegend &&
+            item.summaryDataLegend.map((legend) => (
+              <>
+                <View
+                  className={`rounded-2xl w-10 bg-[${legend.color}] h-1 my-auto mr-2`}
+                ></View>
+                <Text className="text-white mr-4">{legend.title}</Text>
+              </>
+            ))}
+        </View>
       </View>
 
       <SummaryDataPercentageComponent
