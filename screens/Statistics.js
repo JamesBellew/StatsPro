@@ -735,7 +735,7 @@ export default function App() {
   };
   const PitchComponent = ({ positions, type }) => {
     const pitchWidth = Dimensions.get("window").width * 0.9; // 90% of the screen width
-    const pitchHeight = Dimensions.get("window").height * 0.63; // Assuming 63% of the screen height for the pitch
+    const pitchHeight = Dimensions.get("window").height * 0.75; // Assuming 63% of the screen height for the pitch
 
     // Center of the top red box
     const centerOfTopGoal = {
@@ -1229,41 +1229,41 @@ export default function App() {
     },
   ];
   const renderItem = ({ item }) => (
-    <View style={styles.page} className="px-5  h-auto ">
-      <View>
-        <View className="w-[95%] flex-row mb-3">
-          <View className="w-3/5">
-            <Text className="" style={styles.title}>
-              {item.firstPitchTitle}
-            </Text>
-          </View>
-          <View className="w-2/5   items-end items-end">
-            <Text className="mx-auto  justify-center my-auto items-center text-white text-md font-semibold">
-              {Math.round(item.firstChartPercentage)}%
-            </Text>
-            <View className="h-2 mb-2justify-end my-auto w-[100%] flex-row   rounded-lg">
-              <View
-                style={{
-                  width: `${Math.round(item.firstChartPercentage)}%`,
-                  height: "100%",
-                  backgroundColor: "#0b63fb86",
-                  borderTopLeftRadius: 8,
-                  borderBottomLeftRadius: 8,
-                }}
-              ></View>
-              <View
-                style={{
-                  width: `${100 - Math.round(shotPercentage)}%`,
-                  height: "100%",
-                  backgroundColor: "#242424",
-                  borderTopRightRadius: 8,
-                  borderBottomRightRadius: 8,
-                }}
-              ></View>
-            </View>
+    <View style={styles.page} className="px-5  top-0  h-auto ">
+      {/* <View className="bg-red-600"> */}
+      <View className="w-[95%] flex-row mb-3">
+        <View className="w-3/5 ">
+          <Text className="" style={styles.title}>
+            {item.firstPitchTitle}
+          </Text>
+        </View>
+        <View className="w-2/5   items-end items-end">
+          <Text className="mx-auto  justify-center my-auto items-center text-white text-md font-semibold">
+            {Math.round(item.firstChartPercentage)}%
+          </Text>
+          <View className="h-2 mb-2justify-end my-auto w-[100%] flex-row   rounded-lg">
+            <View
+              style={{
+                width: `${Math.round(item.firstChartPercentage)}%`,
+                height: "100%",
+                backgroundColor: "#0b63fb86",
+                borderTopLeftRadius: 8,
+                borderBottomLeftRadius: 8,
+              }}
+            ></View>
+            <View
+              style={{
+                width: `${100 - Math.round(shotPercentage)}%`,
+                height: "100%",
+                backgroundColor: "#242424",
+                borderTopRightRadius: 8,
+                borderBottomRightRadius: 8,
+              }}
+            ></View>
           </View>
         </View>
       </View>
+      {/* </View> */}
       <View className="w-full  top- h-auto ">
         {item.firstPitchDataLegend && (
           <View className="items-start justify-start items-center w-[90%] flex-row mb-2">
@@ -1283,7 +1283,7 @@ export default function App() {
           //! here is wherw I can fix the pitch height issue
           <View
             className={` w-full mx-auto
-          ${currentIndex === 0 ? "max-h-[33vh]" : "max-h-[63vh]"}
+          ${currentIndex === 0 ? "max-h-[63vh]" : "max-h-[63vh]"}
 
            
            overflow-hidden  z-50`}
@@ -1324,7 +1324,7 @@ export default function App() {
       {item.setPlayData && (
         <View
           className={` w-full mx-auto
-         ${currentIndex === 0 ? "max-h-[33vh]" : "max-h-[63vh]"}
+         ${currentIndex === 0 ? "max-h-[63vh]" : "max-h-[63vh]"}
 
           
           overflow-hidden  z-50`}
@@ -2185,7 +2185,7 @@ export default function App() {
 const styles = StyleSheet.create({
   page: {
     width: Dimensions.get("window").width,
-    justifyContent: "center",
+    justifyContent: "start",
     alignItems: "center",
   },
   title: {
