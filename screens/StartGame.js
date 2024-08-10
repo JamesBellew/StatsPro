@@ -9,6 +9,7 @@ import {
   StyleSheet,
   ImageBackground,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { CommonActions } from "@react-navigation/native";
@@ -33,10 +34,11 @@ export default function App() {
   };
   const [opponentText, onChangeOpponentText] = useState("");
   const [venue, setVenue] = useState("home");
+  const [selectedValue, setSelectedValue] = useState("lineout1");
   const [text, onChangeText] = useState("");
 
   return (
-    <SafeAreaView className="flex-1 bg-[#000000]">
+    <SafeAreaView className="flex-1 bg-[#12131A]">
       <View className="flex mx-auto h-56 bg-[#101010] rounded-b-3xl w-full relative">
         <ImageBackground
           source={require("../assets/oneil.jpeg")}
@@ -44,7 +46,7 @@ export default function App() {
           imageStyle={{ borderRadius: 8 }}
         >
           <LinearGradient
-            colors={["#000", "rgba(16,16,16,0.4)"]}
+            colors={["#12131A", "rgba(16,16,16,0.4)"]}
             start={{ x: 0, y: 0.85 }}
             end={{ x: 0, y: 0 }}
             style={{ flex: 1, borderRadius: 8 }}
@@ -117,7 +119,7 @@ export default function App() {
               // venue === "home" && styles.checkboxSelected,
             ]}
             className={`${
-              venue === "home" ? "border-b border-b-[#FE4F3F] bg-white" : ""
+              venue === "home" ? "border-b border-b-[#0b63fb] bg-white" : ""
             }`}
           >
             <Text style={styles.checkboxText}>Home</Text>
@@ -129,24 +131,30 @@ export default function App() {
               // venue === "away" && styles.checkboxSelected,
             ]}
             className={`${
-              venue === "away" ? "border-b border-b-[#FE4F3F] bg-white" : ""
+              venue === "away" ? "border-b border-b-[#0b63fb] bg-white" : ""
             }`}
           >
             <Text style={styles.checkboxText}>Away</Text>
           </TouchableOpacity>
         </View>
-        {/* <Text className="px-5 text-white">Lineup</Text> */}
-        {/* <TextInput
-          style={styles.input}
-          className="w-72 shadow appearance-none rounded-lg mx-auto bg-[#383838] text-white px-3 leading-tight focus:outline-none focus:shadow-outline"
-          placeholder="Username"
-          placeholderTextColor={"white"}
-          onChangeText={onChangeText}
-          value={text}
-        /> */}
+        <Text className="px-5 text-white">LineOut</Text>
+        <View className=" h-[10vh] justify-center">
+          <Picker
+            selectedValue={selectedValue}
+            onValueChange={(itemValue) => setSelectedValue(itemValue)}
+            itemStyle={{ color: "white", fontSize: 16 }} // Adjust font size and color here
+          >
+            <Picker.Item label="lineout 1" value="lineout1" />
+            <Picker.Item label="lineout 2" value="lineout2" />
+            <Picker.Item label="lineout 3" value="lineout3" />
+            <Picker.Item label="lineout 3" value="lineout3" />
+            <Picker.Item label="lineout 3" value="lineout3" />
+          </Picker>
+        </View>
+
         <TouchableOpacity
           onPress={handleStartGame}
-          className="mx-auto bg-[#FE4F3F] px-10 py-2 rounded-md mt-5"
+          className="mx-auto bg-[#0b63fb] px-10 py-2 rounded-md mt-10"
         >
           <Text className="text-lg font-semibold text-gray-300 tracking-widest  ">
             Start
