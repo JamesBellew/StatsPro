@@ -24,6 +24,14 @@ export default function App() {
     console.log("====================================");
     navigation.navigate("InGame", { opponent: opponentText, venue: venue });
   };
+  const lineoutOptions = [
+    { label: "Numbers (Default)", value: "numbers" },
+    { label: "lineout 1", value: "lineout1" },
+    { label: "lineout 2", value: "lineout2" },
+    { label: "lineout 3", value: "lineout3" },
+    { label: "lineout 4", value: "lineout4" },
+    { label: "lineout 5", value: "lineout5" },
+  ];
   const handleLogout = () => {
     navigation.dispatch(
       CommonActions.reset({
@@ -137,41 +145,41 @@ export default function App() {
             <Text style={styles.checkboxText}>Away</Text>
           </TouchableOpacity>
         </View>
-        <Text className="px-5 text-white">LineOut</Text>
-        <View className=" h-[10vh] justify-center">
+        <View className="flex-row w-[90%]  items-center ">
+          <Text className="px-5 text-white">LineOut</Text>
+          <TouchableOpacity className="bg-[#0b63fb12] flex-row justify-center my-auto items-center  py-1 rounded-lg ml-auto">
+            <Text className="pr-1 text-white ml-auto">{selectedValue}</Text>
+            <TouchableOpacity className="bg-[#0b63fb12] px-3 py-1 rounded-lg ml-auto">
+              <Text>View</Text>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </View>
+
+        <View className=" h-[10vh] mt-5 justify-center  overflow-hidden">
           <Picker
             selectedValue={selectedValue}
             onValueChange={(itemValue) => setSelectedValue(itemValue)}
-            itemStyle={{ color: "white", fontSize: 16 }} // Adjust font size and color here
+            itemStyle={{ color: "white", fontSize: 16, marginHorizontal: 10 }} // Adjust font size and color here
           >
-            <Picker.Item label="lineout 1" value="lineout1" />
-            <Picker.Item label="lineout 2" value="lineout2" />
-            <Picker.Item label="lineout 3" value="lineout3" />
-            <Picker.Item label="lineout 3" value="lineout3" />
-            <Picker.Item label="lineout 3" value="lineout3" />
+            {lineoutOptions.map((option, index) => (
+              <Picker.Item
+                key={index}
+                label={option.label}
+                value={option.value}
+              />
+            ))}
           </Picker>
         </View>
 
         <TouchableOpacity
           onPress={handleStartGame}
-          className="mx-auto bg-[#0b63fb] px-10 py-2 rounded-md mt-10"
+          className="mx-auto bg-[#0b63fb] px-10 py-2 rounded-md mt-20"
         >
           <Text className="text-lg font-semibold text-gray-300 tracking-widest  ">
             Start
           </Text>
         </TouchableOpacity>
       </View>
-      {/* <View className="bottom-nav  w-full h-auto">
-        <TouchableOpacity
-          onPress={() => navigation.navigate("HomeDashboard")}
-          className="h-14 w-14 bg-white rounded-full mx-auto text-center"
-        >
-          <Image
-            source={require("../../StatsPro/assets/ball.png")}
-            className="h-1/2 p-4 w-1/2 mx-auto justify-center flex my-auto rounded-full"
-          />
-        </TouchableOpacity>
-      </View> */}
     </SafeAreaView>
   );
 }
