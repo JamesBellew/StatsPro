@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import {
   SafeAreaView,
   View,
@@ -38,17 +40,11 @@ export default function App() {
     setNames(updatedNames);
   };
   const handleStartGame = () => {
-    console.log("clicked");
-    console.log("====================================");
-    console.log(opponentText);
-    console.log("====================================");
     navigation.navigate("InGame", { opponent: opponentText, venue: venue });
   };
-  const lineoutOptions = [
+  const [lineoutOptions, setLineoutOptions] = useState([
     { label: "Numbers (Default)", value: "numbers" },
-    { label: "lineout 1", value: "lineout1" },
-    { label: "lineout 2", value: "lineout2" },
-  ];
+  ]);
   const handleLogout = () => {
     navigation.dispatch(
       CommonActions.reset({
@@ -65,10 +61,61 @@ export default function App() {
   const [opponentText, onChangeOpponentText] = useState("");
   const [venue, setVenue] = useState("home");
   const [nameCount, setNameCount] = useState(30);
-
-  const [showNewLineupModalComp, setShowNewLineupModal] = useState(true);
+  const [showLineouViewModal, setShowLineupViewModal] = useState(false);
+  const [showNewLineupModalComp, setShowNewLineupModal] = useState(false);
   const [selectedValue, setSelectedValue] = useState("lineout1");
   const [text, onChangeText] = useState("");
+
+  const [allNamesFilled, setAllNamesFilled] = useState(false);
+
+  useEffect(() => {
+    // Check if all names are valid (each name should have at least 2 characters)
+    const allFilled = names.every((name) => name.length >= 2);
+    setAllNamesFilled(allFilled);
+  }, [names]);
+  const saveLineout = async () => {
+    const NewLineOut = {
+      lineoutName: lineoutOverallName,
+      date: new Date().toLocaleDateString(),
+      lineout: names,
+    };
+
+    console.log(NewLineOut);
+
+    const newOptions = [
+      ...lineoutOptions,
+      {
+        label: `Lineout: ${NewLineOut.lineoutName}`,
+        value: NewLineOut.lineoutName,
+      },
+    ];
+
+    setLineoutOptions(newOptions);
+    setSelectedValue(NewLineOut.lineoutName);
+    setShowNewLineupModal(false);
+
+    try {
+      await AsyncStorage.setItem("lineoutOptions", JSON.stringify(newOptions));
+    } catch (error) {
+      console.error("Failed to save the lineout options", error);
+    }
+  };
+  useEffect(() => {
+    const loadLineoutOptions = async () => {
+      try {
+        const savedOptions = await AsyncStorage.getItem("lineoutOptions");
+        if (savedOptions) {
+          setLineoutOptions(JSON.parse(savedOptions));
+        }
+      } catch (error) {
+        console.error("Failed to load the lineout options", error);
+      }
+    };
+
+    loadLineoutOptions();
+  }, []);
+
+  const [lineoutOverallName, setLineoutOverallName] = useState("");
 
   return (
     <SafeAreaView className="flex-1 bg-[#12131A]">
@@ -79,22 +126,28 @@ export default function App() {
         onRequestClose={() => setShowModal(false)}
       >
         <View className="flex-1 justify-center  items-center bg-black/50">
-          <View className="w-4/5 p-5 h-[80%] my-auto top-[5%] bg-[#101010] rounded-lg">
+          <View className="w-[90%] p-5 h-[80%] my-auto top-[5%] bg-[#101010] rounded-lg">
             <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-white text-lg font-semibold">
-                Enter Names
-              </Text>
+              <Text className="text-white text-lg font-semibold">Name</Text>
+              <TextInput
+                className="flex-1 bg-gray-700 text-white px-2 py-1 mx-2 rounded-md"
+                placeholder="Lineout Name"
+                placeholderTextColor="#ccc"
+                value={lineoutOverallName}
+                onChangeText={setLineoutOverallName}
+              />
+
               <View className="flex-row items-center">
                 <TouchableOpacity
                   onPress={decrementCount}
-                  className="bg-gray-700 px-2 py-1 rounded-md mr-2"
+                  className="bg-gray-700 px-2  rounded-md mr-2"
                 >
                   <Text className="text-white text-lg">-</Text>
                 </TouchableOpacity>
                 <Text className="text-white text-lg">{nameCount}</Text>
                 <TouchableOpacity
                   onPress={incrementCount}
-                  className="bg-gray-700 px-2 py-1 rounded-md ml-2"
+                  className="bg-gray-700 px-2  rounded-md ml-2"
                 >
                   <Text className="text-white text-lg">+</Text>
                 </TouchableOpacity>
@@ -149,13 +202,23 @@ export default function App() {
                 </View>
               </View>
             </ScrollView>
-
-            <TouchableOpacity
-              onPress={() => setShowModal(false)}
-              className="bg-[#0b63fb] px-4 py-2 rounded-md mt-4"
-            >
-              <Text className="text-white text-center">Close Modal</Text>
-            </TouchableOpacity>
+            <View className="flex-row w-full mx-auto justify-center space-x-2">
+              <TouchableOpacity
+                onPress={saveLineout}
+                disabled={!allNamesFilled} // Button is disabled if not all names are filled correctly
+                className={`${
+                  allNamesFilled ? "bg-[#0b63fb]/80" : "bg-gray-400"
+                } px-4 py-2 rounded-md mt-4`}
+              >
+                <Text className="text-white text-center">Save Lineout</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setShowNewLineupModal(false)}
+                className="bg-gray-700 px-4 py-2 rounded-md mt-4"
+              >
+                <Text className="text-white text-center">Close</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -252,18 +315,28 @@ export default function App() {
             <Text style={styles.checkboxText}>Away</Text>
           </TouchableOpacity>
         </View>
+        <Text className="px-5 text-white mb-2">Lineout</Text>
         <View className="flex-row w-[90%]  items-center ">
-          <Text className="pl-5 pr-2 text-white">LineOut</Text>
           <TouchableOpacity
             onPress={() => {
               setShowNewLineupModal(!showNewLineupModalComp);
             }}
-            className="bg-[#101010] px-2 py-1 rounded-md"
+            className="bg-blue-500 px-2 py-1 ml-5 rounded-md"
           >
-            <Text className="text-white text-xs">+</Text>
+            <Text className="text-white text-xs">New </Text>
           </TouchableOpacity>
-        </View>
+          <Text className="pl-3  capitalize text-white">{selectedValue}</Text>
+          {/* <View className=" flex-row  w-[90%] mx-auto items-start mt-3  space-x-3 "> */}
 
+          <TouchableOpacity className="bg-yellow-500 px-2 ml-auto py-1 rounded-md w-auto ">
+            <Text className="text-gray-800">Edit</Text>
+          </TouchableOpacity>
+          <TouchableOpacity className="bg-blue-300 ml-auto  px-2 py-1 rounded-md w-auto ">
+            <Text className="text-gray-800">View</Text>
+          </TouchableOpacity>
+          {/* </View> */}
+        </View>
+        <View className="w-[90%] h-[.2px] my-2 bg-gray-300 mx-auto"></View>
         <View className=" h-[10vh] mt-1 justify-center  overflow-hidden">
           <Picker
             selectedValue={selectedValue}
@@ -279,14 +352,7 @@ export default function App() {
             ))}
           </Picker>
         </View>
-        <View className=" flex-row  w-[90%] mx-auto items-start mt-3  space-x-3 ">
-          <TouchableOpacity className="bg-[#101010] px-2 py-1 rounded-sm w-auto ">
-            <Text className="text-white">View</Text>
-          </TouchableOpacity>
-          <TouchableOpacity className="bg-[#101010] px-2 py-1 rounded-sm w-auto ">
-            <Text className="text-white">Edit</Text>
-          </TouchableOpacity>
-        </View>
+
         <TouchableOpacity
           onPress={handleStartGame}
           className="mx-auto bg-[#0b63fb] px-10 py-2 rounded-md mt-20"
