@@ -3,8 +3,10 @@ import {
   SafeAreaView,
   View,
   Text,
+  ScrollView,
   TouchableOpacity,
   Image,
+  Modal,
   TextInput,
   StyleSheet,
   ImageBackground,
@@ -17,6 +19,24 @@ import { CommonActions } from "@react-navigation/native";
 export default function App() {
   const navigation = useNavigation();
   const [showProfileMiniMenu, setShowProfileMiniMenu] = useState(false);
+  const [names, setNames] = useState(Array(30).fill(""));
+  const incrementCount = () => {
+    if (nameCount < 30) {
+      setNameCount(nameCount + 1);
+      setNames((prevNames) => [...prevNames, ""]);
+    }
+  };
+  const decrementCount = () => {
+    if (nameCount > 15) {
+      setNameCount(nameCount - 1);
+      setNames((prevNames) => prevNames.slice(0, -1));
+    }
+  };
+  const handleNameChange = (index, value) => {
+    const updatedNames = [...names];
+    updatedNames[index] = value;
+    setNames(updatedNames);
+  };
   const handleStartGame = () => {
     console.log("clicked");
     console.log("====================================");
@@ -28,9 +48,6 @@ export default function App() {
     { label: "Numbers (Default)", value: "numbers" },
     { label: "lineout 1", value: "lineout1" },
     { label: "lineout 2", value: "lineout2" },
-    { label: "lineout 3", value: "lineout3" },
-    { label: "lineout 4", value: "lineout4" },
-    { label: "lineout 5", value: "lineout5" },
   ];
   const handleLogout = () => {
     navigation.dispatch(
@@ -40,13 +57,108 @@ export default function App() {
       })
     );
   };
+  function NewLineoutModalComp() {
+    return (
+      <View className="absolute w-screen h-screen z-50 bg-zinc-600/50"></View>
+    );
+  }
   const [opponentText, onChangeOpponentText] = useState("");
   const [venue, setVenue] = useState("home");
+  const [nameCount, setNameCount] = useState(30);
+
+  const [showNewLineupModalComp, setShowNewLineupModal] = useState(true);
   const [selectedValue, setSelectedValue] = useState("lineout1");
   const [text, onChangeText] = useState("");
 
   return (
     <SafeAreaView className="flex-1 bg-[#12131A]">
+      <Modal
+        visible={showNewLineupModalComp}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowModal(false)}
+      >
+        <View className="flex-1 justify-center  items-center bg-black/50">
+          <View className="w-4/5 p-5 h-[80%] my-auto top-[5%] bg-[#101010] rounded-lg">
+            <View className="flex-row justify-between items-center mb-4">
+              <Text className="text-white text-lg font-semibold">
+                Enter Names
+              </Text>
+              <View className="flex-row items-center">
+                <TouchableOpacity
+                  onPress={decrementCount}
+                  className="bg-gray-700 px-2 py-1 rounded-md mr-2"
+                >
+                  <Text className="text-white text-lg">-</Text>
+                </TouchableOpacity>
+                <Text className="text-white text-lg">{nameCount}</Text>
+                <TouchableOpacity
+                  onPress={incrementCount}
+                  className="bg-gray-700 px-2 py-1 rounded-md ml-2"
+                >
+                  <Text className="text-white text-lg">+</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <ScrollView className="w-full">
+              <View className="flex-row justify-between">
+                <View className="w-1/2 pr-2">
+                  {Array.from({ length: Math.ceil(nameCount / 2) }).map(
+                    (_, index) => (
+                      <View key={index} className="flex-row items-center mb-3">
+                        <Text className="text-white mr-3">{index + 1}</Text>
+                        <TextInput
+                          className="flex-1 bg-gray-700 text-white px-2 py-1 rounded-md"
+                          placeholder="Name"
+                          placeholderTextColor="#ccc"
+                          value={names[index]}
+                          onChangeText={(value) =>
+                            handleNameChange(index, value)
+                          }
+                        />
+                      </View>
+                    )
+                  )}
+                </View>
+                <View className="w-1/2 pl-2">
+                  {Array.from({
+                    length: Math.floor(nameCount / 2),
+                  }).map((_, index) => (
+                    <View
+                      key={index + Math.ceil(nameCount / 2)}
+                      className="flex-row items-center mb-3"
+                    >
+                      <Text className="text-white mr-3">
+                        {index + Math.ceil(nameCount / 2) + 1}
+                      </Text>
+                      <TextInput
+                        className="flex-1 bg-gray-700 text-white px-2 py-1 rounded-md"
+                        placeholder="Name"
+                        placeholderTextColor="#ccc"
+                        value={names[index + Math.ceil(nameCount / 2)]}
+                        onChangeText={(value) =>
+                          handleNameChange(
+                            index + Math.ceil(nameCount / 2),
+                            value
+                          )
+                        }
+                      />
+                    </View>
+                  ))}
+                </View>
+              </View>
+            </ScrollView>
+
+            <TouchableOpacity
+              onPress={() => setShowModal(false)}
+              className="bg-[#0b63fb] px-4 py-2 rounded-md mt-4"
+            >
+              <Text className="text-white text-center">Close Modal</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       <View className="flex mx-auto h-56 bg-[#101010] rounded-b-3xl w-full relative">
         <ImageBackground
           source={require("../assets/oneil.jpeg")}
@@ -93,12 +205,7 @@ export default function App() {
                 </TouchableOpacity>
               </View>
             )}
-            {/* <View className="bottom-0 mx-auto transform -translate-x-1/2 bg-white w-20 h-20 rounded-full">
-    <Image
-      source={require("../../StatsPro/assets/lu.jpeg")}
-      className="h-full w-full mx-auto justify-center flex my-auto rounded-full"
-    />
-  </View> */}
+
             <View className="absolute bottom-0 left-0 right-0  mb-12 justify-end">
               <Text className="text-center text-white mt-3 text-xl font-semibold">
                 Details For New Game
@@ -146,16 +253,18 @@ export default function App() {
           </TouchableOpacity>
         </View>
         <View className="flex-row w-[90%]  items-center ">
-          <Text className="px-5 text-white">LineOut</Text>
-          <TouchableOpacity className="bg-[#0b63fb12] flex-row justify-center my-auto items-center  py-1 rounded-lg ml-auto">
-            <Text className="pr-1 text-white ml-auto">{selectedValue}</Text>
-            <TouchableOpacity className="bg-[#0b63fb12] px-3 py-1 rounded-lg ml-auto">
-              <Text>View</Text>
-            </TouchableOpacity>
+          <Text className="pl-5 pr-2 text-white">LineOut</Text>
+          <TouchableOpacity
+            onPress={() => {
+              setShowNewLineupModal(!showNewLineupModalComp);
+            }}
+            className="bg-[#101010] px-2 py-1 rounded-md"
+          >
+            <Text className="text-white text-xs">+</Text>
           </TouchableOpacity>
         </View>
 
-        <View className=" h-[10vh] mt-5 justify-center  overflow-hidden">
+        <View className=" h-[10vh] mt-1 justify-center  overflow-hidden">
           <Picker
             selectedValue={selectedValue}
             onValueChange={(itemValue) => setSelectedValue(itemValue)}
@@ -170,7 +279,14 @@ export default function App() {
             ))}
           </Picker>
         </View>
-
+        <View className=" flex-row  w-[90%] mx-auto items-start mt-3  space-x-3 ">
+          <TouchableOpacity className="bg-[#101010] px-2 py-1 rounded-sm w-auto ">
+            <Text className="text-white">View</Text>
+          </TouchableOpacity>
+          <TouchableOpacity className="bg-[#101010] px-2 py-1 rounded-sm w-auto ">
+            <Text className="text-white">Edit</Text>
+          </TouchableOpacity>
+        </View>
         <TouchableOpacity
           onPress={handleStartGame}
           className="mx-auto bg-[#0b63fb] px-10 py-2 rounded-md mt-20"
