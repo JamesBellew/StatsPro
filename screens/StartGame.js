@@ -315,28 +315,34 @@ export default function App() {
             <Text style={styles.checkboxText}>Away</Text>
           </TouchableOpacity>
         </View>
-        <Text className="px-5 text-white mb-2">Lineout</Text>
+        <View className="flex-row">
+          <Text className="pl-5 text-white mb-2">Lineout -</Text>
+          <Text className="pl-1  capitalize text-white">
+            [ {selectedValue} ]
+          </Text>
+        </View>
         <View className="flex-row w-[90%]  items-center ">
           <TouchableOpacity
             onPress={() => {
               setShowNewLineupModal(!showNewLineupModalComp);
             }}
-            className="bg-blue-500 px-2 py-1 ml-5 rounded-md"
+            className="bg-blue-500 px-1 py-1 ml-5 rounded-md"
           >
-            <Text className="text-white text-xs">New </Text>
+            <Text className="text-white  mx-auto text-center text-xs">New</Text>
           </TouchableOpacity>
-          <Text className="pl-3  capitalize text-white">{selectedValue}</Text>
+
           {/* <View className=" flex-row  w-[90%] mx-auto items-start mt-3  space-x-3 "> */}
 
-          <TouchableOpacity className="bg-yellow-500 px-2 ml-auto py-1 rounded-md w-auto ">
-            <Text className="text-gray-800">Edit</Text>
+          <TouchableOpacity className="border border-yellow-500 px-2  py-1 rounded-md w-auto ">
+            <Text className="text-gray-200">Edit</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="bg-blue-300 ml-auto  px-2 py-1 rounded-md w-auto ">
-            <Text className="text-gray-800">View</Text>
+          <TouchableOpacity className="border border-blue-300 ml-auto  px-2 py-1 rounded-md w-auto ">
+            <Text className="text-gray-200">View</Text>
           </TouchableOpacity>
+
           {/* </View> */}
         </View>
-        <View className="w-[90%] h-[.2px] my-2 bg-gray-300 mx-auto"></View>
+        {/* <View className="w-[90%] h-[.2px] my-2 bg-gray-300 mx-auto"></View> */}
         <View className=" h-[10vh] mt-1 justify-center  overflow-hidden">
           <Picker
             selectedValue={selectedValue}
