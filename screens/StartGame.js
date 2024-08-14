@@ -59,6 +59,7 @@ export default function App() {
     );
   }
   const [opponentText, onChangeOpponentText] = useState("");
+  const [minutesHalf, onChangeMinutesHalf] = useState("");
   const [venue, setVenue] = useState("home");
   const [nameCount, setNameCount] = useState(30);
   const [showLineouViewModal, setShowLineupViewModal] = useState(false);
@@ -67,6 +68,31 @@ export default function App() {
   const [text, onChangeText] = useState("");
 
   const [allNamesFilled, setAllNamesFilled] = useState(false);
+  const [actionsBtnsArray, setActionsBtnsArray] = useState([
+    { label: "Score", active: true, action: () => handleAction(1) },
+    { label: "Goal", active: true, action: () => handleAction(2) },
+    { label: "Wide", active: true, action: () => handleAction(3) },
+    { label: "Short", active: true, action: () => handleAction(4) },
+    { label: "45 Score", active: true, action: () => handleAction(5) },
+    { label: "45 Miss", active: true, action: () => handleAction(6) },
+    { label: "Mark +", active: true, action: () => handleAction(7) },
+    { label: "Mark -", active: true, action: () => handleAction(8) },
+    { label: "T/O Won", active: true, action: () => handleAction(9) },
+    { label: "T/O Loss", active: false, action: () => handleAction(10) },
+    { label: "Yellow", active: false, action: () => handleAction(11) },
+    { label: "Red", active: true, action: () => handleAction(12) },
+    { label: "Kickout +", active: true, action: () => handleAction(13) },
+    { label: "Kickout -", active: true, action: () => handleAction(14) },
+    { label: "Break +", active: true, action: () => handleAction(15) },
+    { label: "Break -", active: true, action: () => handleAction(16) },
+  ]);
+  const handleAction = (index) => {
+    setActionsBtnsArray((currentButtons) =>
+      currentButtons.map((btn, idx) =>
+        idx === index ? { ...btn, active: !btn.active } : btn
+      )
+    );
+  };
 
   useEffect(() => {
     // Check if all names are valid (each name should have at least 2 characters)
@@ -222,7 +248,7 @@ export default function App() {
           </View>
         </View>
       </Modal>
-      <View className="flex mx-auto h-56 bg-[#101010] rounded-b-3xl w-full relative">
+      <View className="flex mx-auto h-36 bg-[#101010] rounded-b-3xl w-full relative">
         <ImageBackground
           source={require("../assets/oneil.jpeg")}
           style={{ width: "100%", height: "100%", borderRadius: 9 }}
@@ -279,16 +305,50 @@ export default function App() {
       </View>
 
       <View className="w-3/4 flex-1 align-middle justify-center mx-auto text-center">
-        <Text className="px-5 text-white">Opponent</Text>
-        <TextInput
-          style={styles.input}
-          className="w-72 shadow appearance-none rounded-lg mx-auto bg-[#101010] text-white px-3 leading-tight focus:outline-none focus:shadow-outline mb-5"
-          placeholder="Opponent"
-          placeholderTextColor={"white"}
-          onChangeText={onChangeOpponentText}
-          value={opponentText}
-        />
-        <Text className="px-5 text-white mb-2">Venue</Text>
+        <View className="flex-row space-x-2 w-[90%] mx-auto  h-auto">
+          <View className="w-3/6 h-auto ">
+            <Text className=" text-white underline">Opponent</Text>
+            <TextInput
+              style={styles.input}
+              className="w-full shadow appearance-none rounded-lg mx-auto bg-[#101010] text-white px-3 leading-tight focus:outline-none focus:shadow-outline "
+              placeholder="Opponent"
+              placeholderTextColor={"white"}
+              onChangeText={onChangeOpponentText}
+              value={opponentText}
+            />
+          </View>
+          <View className="w-3/6 h-auto ">
+            <Text className=" text-white underline">Minutes Per Half</Text>
+            <TextInput
+              style={styles.input}
+              className="w-full shadow appearance-none rounded-lg mx-auto bg-[#101010] text-white px-3 leading-tight focus:outline-none focus:shadow-outline "
+              placeholder="Minutes"
+              keyboardType="numeric"
+              placeholderTextColor={"white"}
+              onChangeText={onChangeMinutesHalf}
+              value={minutesHalf}
+            />
+          </View>
+          {/* <Text className=" text-white">Opponent</Text>
+          <TextInput
+            style={styles.input}
+            className="w-3/5 shadow appearance-none rounded-lg mx-auto bg-[#101010] text-white px-3 leading-tight focus:outline-none focus:shadow-outline mb-5"
+            placeholder="Opponent"
+            placeholderTextColor={"white"}
+            onChangeText={onChangeOpponentText}
+            value={opponentText}
+          />
+          <Text className=" text-white">Minutes Per Half</Text>
+          <TextInput
+            style={styles.input}
+            className="w-2/5 shadow appearance-none rounded-lg mx-auto bg-[#101010] text-white px-3 leading-tight focus:outline-none focus:shadow-outline mb-5"
+            placeholder="30"
+            placeholderTextColor={"white"}
+            onChangeText={onChangeMinutesHalf}
+            value={minutesHalf}
+          /> */}
+        </View>
+        <Text className="px-5 text-white mb-2 underline mt-2">Venue</Text>
         <View className="flex flex-row justify-center mb-5">
           <TouchableOpacity
             onPress={() => setVenue("home")}
@@ -316,34 +376,41 @@ export default function App() {
           </TouchableOpacity>
         </View>
         <View className="flex-row">
-          <Text className="pl-5 text-white mb-2">Lineout -</Text>
+          <Text className="pl-5 underline text-white mb-2">Lineout</Text>
           <Text className="pl-1  capitalize text-white">
-            [ {selectedValue} ]
+            - [ {selectedValue} ]
           </Text>
         </View>
-        <View className="flex-row w-[90%]  items-center ">
+        <View className="flex-row w-[90%] space-x-2 mb-2  items-center ">
           <TouchableOpacity
             onPress={() => {
               setShowNewLineupModal(!showNewLineupModalComp);
             }}
-            className="bg-blue-500 px-1 py-1 ml-5 rounded-md"
+            className="bg-blue-500 px-2 py-1 ml-5 rounded-md"
           >
             <Text className="text-white  mx-auto text-center text-xs">New</Text>
           </TouchableOpacity>
 
           {/* <View className=" flex-row  w-[90%] mx-auto items-start mt-3  space-x-3 "> */}
 
-          <TouchableOpacity className="border border-yellow-500 px-2  py-1 rounded-md w-auto ">
-            <Text className="text-gray-200">Edit</Text>
+          <TouchableOpacity
+            onPress={() => {
+              console.log(selectedValue);
+            }}
+            className="px-2 bg-neutral-900  py-1 rounded-md w-auto "
+          >
+            <Text className="text-gray-200 text-xs">Edit</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="border border-blue-300 ml-auto  px-2 py-1 rounded-md w-auto ">
-            <Text className="text-gray-200">View</Text>
+          <TouchableOpacity className="bg-neutral-900   px-2 py-1 rounded-md w-auto ">
+            <Text className="text-gray-200 text-xs">View</Text>
           </TouchableOpacity>
 
           {/* </View> */}
         </View>
+
         {/* <View className="w-[90%] h-[.2px] my-2 bg-gray-300 mx-auto"></View> */}
-        <View className=" h-[10vh] mt-1 justify-center  overflow-hidden">
+
+        <View className=" h-[10vh] mt-1 mb-3 justify-center  overflow-hidden">
           <Picker
             selectedValue={selectedValue}
             onValueChange={(itemValue) => setSelectedValue(itemValue)}
@@ -358,10 +425,38 @@ export default function App() {
             ))}
           </Picker>
         </View>
+        <Text className="px-5 mb-2 underline  text-white">
+          Game Stats Setup
+        </Text>
+        <View
+          style={{
+            height: "auto",
+            width: "90%",
+            alignSelf: "center",
+            flexWrap: "wrap",
+            flexDirection: "row",
+            justifyContent: "center",
+          }}
+        >
+          {actionsBtnsArray.map((btn, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => handleAction(index)}
+              className={`w-[22%] bg-${
+                btn.active ? "blue-500" : "gray-400"
+              } m-1 rounded-md  py-1`}
+              style={{ height: "auto" }} // Adjust button height here
+            >
+              <Text className="text-white text-xs text-center">
+                {btn.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
         <TouchableOpacity
           onPress={handleStartGame}
-          className="mx-auto bg-[#0b63fb] px-10 py-2 rounded-md mt-20"
+          className="mx-auto bg-[#0b63fb] px-10 py-2 rounded-md mt-5"
         >
           <Text className="text-lg font-semibold text-gray-300 tracking-widest  ">
             Start
@@ -408,7 +503,7 @@ const styles = StyleSheet.create({
   },
   checkbox: {
     width: 130,
-    height: 50,
+    height: 35,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#101010",
