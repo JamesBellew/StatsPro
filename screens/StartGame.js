@@ -425,9 +425,7 @@ export default function App() {
             ))}
           </Picker>
         </View>
-        <Text className="px-5 mb-2 underline  text-white">
-          Game Stats Setup
-        </Text>
+        <Text className="px-5 mb-2 underline  text-white">Game Setup</Text>
         <View
           style={{
             height: "auto",
