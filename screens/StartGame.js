@@ -40,7 +40,11 @@ export default function App() {
     setNames(updatedNames);
   };
   const handleStartGame = () => {
-    navigation.navigate("InGame", { opponent: opponentText, venue: venue });
+    navigation.navigate("InGame", {
+      opponent: opponentText,
+      venue: venue,
+      minutes: minutesHalf,
+    });
   };
   const [lineoutOptions, setLineoutOptions] = useState([
     { label: "Numbers (Default)", value: "numbers" },
@@ -142,7 +146,7 @@ export default function App() {
   }, []);
 
   const [lineoutOverallName, setLineoutOverallName] = useState("");
-
+  console.log(minutesHalf + "haiiiiipp");
   return (
     <SafeAreaView className="flex-1 bg-[#12131A]">
       <Modal
@@ -319,7 +323,7 @@ export default function App() {
           </View>
           <View className="w-3/6 h-auto ">
             <Text className=" text-white underline">Minutes Per Half</Text>
-            <TextInput
+            {/* <TextInput
               style={styles.input}
               className="w-full shadow appearance-none rounded-lg mx-auto bg-[#101010] text-white px-3 leading-tight focus:outline-none focus:shadow-outline "
               placeholder="Minutes"
@@ -327,7 +331,26 @@ export default function App() {
               placeholderTextColor={"white"}
               onChangeText={onChangeMinutesHalf}
               value={minutesHalf}
-            />
+            /> */}
+
+            <View className="flex-row mt-2">
+              <TouchableOpacity
+                onPress={() => onChangeMinutesHalf(30)}
+                className={`${
+                  minutesHalf === 30 ? "bg-blue-500" : " bg-black/20"
+                } rounded-md mx-1 h-10 w-1/4 text`}
+              >
+                <Text className="text-center text-white my-auto">30</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => onChangeMinutesHalf(35)}
+                className={`${
+                  minutesHalf === 35 ? "bg-blue-500" : " bg-black/20"
+                } rounded-md mx-1 h-10 w-1/4 text`}
+              >
+                <Text className="text-center text-white my-auto">35</Text>
+              </TouchableOpacity>
+            </View>
           </View>
           {/* <Text className=" text-white">Opponent</Text>
           <TextInput
@@ -429,7 +452,7 @@ export default function App() {
         <View
           style={{
             height: "auto",
-            width: "90%",
+            width: "100%",
             alignSelf: "center",
             flexWrap: "wrap",
             flexDirection: "row",
@@ -440,7 +463,7 @@ export default function App() {
             <TouchableOpacity
               key={index}
               onPress={() => handleAction(index)}
-              className={`w-[30%] bg-${
+              className={`w-[22%] bg-${
                 btn.active ? "blue-500" : "gray-400"
               } m-1 rounded-md  py-1`}
               style={{ height: "auto" }} // Adjust button height here
