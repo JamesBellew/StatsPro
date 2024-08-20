@@ -31,7 +31,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 export default function App() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { opponent, venue, gameData } = route.params; // Access the passed parameters
+  const { opponent, venue, gameData, minutes, gameActions } = route.params; // Access the passed parameters
+  // console.log(gameActions[10].active);
+  const minutesperhalfInSeconds = minutes * 60;
 
   const [showProfileMiniMenu, setShowProfileMiniMenu] = useState(false);
 
@@ -405,12 +407,12 @@ export default function App() {
   };
   useEffect(() => {
     let interval = null;
-    // 2100 is 35 mins
-    if (isActive && seconds < 2100) {
+    // minutesperhalfInSeconds is 35 mins
+    if (isActive && seconds < minutesperhalfInSeconds) {
       interval = setInterval(() => {
         setSeconds((seconds) => seconds + 1);
       }, 1000);
-    } else if (seconds >= 2100) {
+    } else if (seconds >= minutesperhalfInSeconds) {
       setTimerLimitReached(true);
       setIsActive(false);
       clearInterval(interval);
@@ -598,7 +600,9 @@ export default function App() {
       console.log("im here boiiiiii");
       console.log(actionTimeStamp);
       const adjustedTimeStamp =
-        currentHalf === 2 ? actionTimeStamp + 2100 : actionTimeStamp;
+        currentHalf === 2
+          ? actionTimeStamp + minutesperhalfInSeconds
+          : actionTimeStamp;
       setPositions((prev) => [
         ...prev,
         { ...tempPosition, player: selectedNumber, time: adjustedTimeStamp },
@@ -804,7 +808,7 @@ export default function App() {
           {timerLimitReached && showTimerAlert && (
             <>
               <View className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-                <Text className="font-bold">35 minutes reached!</Text>
+                <Text className="font-bold">{minutes} minutes reached!</Text>
                 <Text className="block sm:inline">
                   Click on the highligted whistle Icon to start second half
                 </Text>
@@ -1392,7 +1396,7 @@ export default function App() {
                     onPress={() => {
                       setActionTimeStamp((prevTimeStamp) => {
                         const newTimeStamp = Number(prevTimeStamp);
-                        if (newTimeStamp < 2100) {
+                        if (newTimeStamp < minutesperhalfInSeconds) {
                           return newTimeStamp + 60;
                         }
                         return newTimeStamp;
@@ -1950,7 +1954,7 @@ export default function App() {
                 </Text>
                 <TouchableOpacity
                   onPress={() => {
-                    if (seconds < 2100) {
+                    if (seconds < minutesperhalfInSeconds) {
                       setSeconds(seconds + 60);
                     }
                   }}

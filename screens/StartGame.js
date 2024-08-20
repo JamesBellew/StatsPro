@@ -44,6 +44,7 @@ export default function App() {
       opponent: opponentText,
       venue: venue,
       minutes: minutesHalf,
+      gameActions: actionsBtnsArray,
     });
   };
   const [lineoutOptions, setLineoutOptions] = useState([
@@ -63,7 +64,7 @@ export default function App() {
     );
   }
   const [opponentText, onChangeOpponentText] = useState("");
-  const [minutesHalf, onChangeMinutesHalf] = useState("");
+  const [minutesHalf, onChangeMinutesHalf] = useState(30);
   const [venue, setVenue] = useState("home");
   const [nameCount, setNameCount] = useState(30);
   const [showLineouViewModal, setShowLineupViewModal] = useState(false);
@@ -337,16 +338,16 @@ export default function App() {
               <TouchableOpacity
                 onPress={() => onChangeMinutesHalf(30)}
                 className={`${
-                  minutesHalf === 30 ? "bg-blue-500" : " bg-black/20"
-                } rounded-md mx-1 h-10 w-1/4 text`}
+                  minutesHalf === 30 ? "bg-blue-500" : " bg-[#101010]"
+                } rounded-md mx-1 h-12 w-auto p-4 text`}
               >
                 <Text className="text-center text-white my-auto">30</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => onChangeMinutesHalf(35)}
                 className={`${
-                  minutesHalf === 35 ? "bg-blue-500" : " bg-black/20"
-                } rounded-md mx-1 h-10 w-1/4 text`}
+                  minutesHalf === 35 ? "bg-blue-500" : " bg-[#101010]"
+                } rounded-md mx-1 h-12 w-auto p-4 text`}
               >
                 <Text className="text-center text-white my-auto">35</Text>
               </TouchableOpacity>
@@ -508,7 +509,7 @@ const styles = StyleSheet.create({
   input: {
     height: 50,
     margin: 5,
-    borderWidth: 1,
+
     padding: 10,
   },
   backgroundImage: {
