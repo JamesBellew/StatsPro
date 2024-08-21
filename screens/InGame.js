@@ -32,7 +32,7 @@ export default function App() {
   const navigation = useNavigation();
   const route = useRoute();
   const { opponent, venue, gameData, minutes, gameActions } = route.params; // Access the passed parameters
-  // console.log(gameActions[10].active);
+  // console.log(gameActions[10].active);rr
   const minutesperhalfInSeconds = minutes * 60;
 
   const [showProfileMiniMenu, setShowProfileMiniMenu] = useState(false);
