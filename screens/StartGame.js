@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
 import {
   SafeAreaView,
   View,
@@ -63,7 +62,8 @@ export default function App() {
       <View className="absolute w-screen h-screen z-50 bg-zinc-600/50"></View>
     );
   }
-  const [opponentText, onChangeOpponentText] = useState("");
+  const [opponentText, setOpponentText] = useState("");
+  const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const [minutesHalf, onChangeMinutesHalf] = useState(30);
   const [venue, setVenue] = useState("home");
   const [nameCount, setNameCount] = useState(30);
@@ -91,6 +91,16 @@ export default function App() {
     { label: "Break +", active: true, action: () => handleAction(15) },
     { label: "Break -", active: true, action: () => handleAction(16) },
   ]);
+  const onChangeOpponentText = (text) => {
+    setOpponentText(text);
+    console.log(":)->" + text);
+    if (text.length > 1) {
+      setIsButtonEnabled(true);
+    } else {
+      setIsButtonEnabled(false);
+    }
+    console.log(isButtonEnabled);
+  };
   const handleAction = (index) => {
     setActionsBtnsArray((currentButtons) =>
       currentButtons.map((btn, idx) =>
@@ -315,7 +325,7 @@ export default function App() {
             <Text className=" text-white underline">Opponent</Text>
             <TextInput
               style={styles.input}
-              className="w-full shadow appearance-none rounded-lg mx-auto bg-[#101010] text-white px-3 leading-tight focus:outline-none focus:shadow-outline "
+              className="w-full shadow appearance-none rounded-lg mx-auto bg-[#101010] text-white px-3 leading-tight focus:outline-none focus:shadow-outline"
               placeholder="Opponent"
               placeholderTextColor={"white"}
               onChangeText={onChangeOpponentText}
@@ -353,24 +363,6 @@ export default function App() {
               </TouchableOpacity>
             </View>
           </View>
-          {/* <Text className=" text-white">Opponent</Text>
-          <TextInput
-            style={styles.input}
-            className="w-3/5 shadow appearance-none rounded-lg mx-auto bg-[#101010] text-white px-3 leading-tight focus:outline-none focus:shadow-outline mb-5"
-            placeholder="Opponent"
-            placeholderTextColor={"white"}
-            onChangeText={onChangeOpponentText}
-            value={opponentText}
-          />
-          <Text className=" text-white">Minutes Per Half</Text>
-          <TextInput
-            style={styles.input}
-            className="w-2/5 shadow appearance-none rounded-lg mx-auto bg-[#101010] text-white px-3 leading-tight focus:outline-none focus:shadow-outline mb-5"
-            placeholder="30"
-            placeholderTextColor={"white"}
-            onChangeText={onChangeMinutesHalf}
-            value={minutesHalf}
-          /> */}
         </View>
         <Text className="px-5 text-white mb-2 underline mt-2">Venue</Text>
         <View className="flex flex-row justify-center mb-5">
@@ -406,28 +398,28 @@ export default function App() {
           </Text>
         </View>
         <View className="flex-row w-[90%] space-x-2 mb-2  items-center ">
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => {
               setShowNewLineupModal(!showNewLineupModalComp);
             }}
             className="bg-blue-500 px-2 py-1 ml-5 rounded-md"
           >
             <Text className="text-white  mx-auto text-center text-xs">New</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           {/* <View className=" flex-row  w-[90%] mx-auto items-start mt-3  space-x-3 "> */}
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => {
               console.log(selectedValue);
             }}
             className="px-2 bg-neutral-900  py-1 rounded-md w-auto "
           >
             <Text className="text-gray-200 text-xs">Edit</Text>
-          </TouchableOpacity>
-          <TouchableOpacity className="bg-neutral-900   px-2 py-1 rounded-md w-auto ">
+          </TouchableOpacity> */}
+          {/* <TouchableOpacity className="bg-neutral-900   px-2 py-1 rounded-md w-auto ">
             <Text className="text-gray-200 text-xs">View</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           {/* </View> */}
         </View>
@@ -476,7 +468,13 @@ export default function App() {
 
         <TouchableOpacity
           onPress={handleStartGame}
-          className="mx-auto bg-[#0b63fb] px-10 py-2 rounded-md mt-5"
+          disabled={!isButtonEnabled}
+          // className="mx-auto bg-[#0b63fb] px-10 py-2 rounded-md mt-5"
+          className={`mx-auto mt-2  px-10 py-2 rounded-md mt-5 ${
+            isButtonEnabled
+              ? "bg-[#0b63fb] text-white"
+              : "bg-gray-500 text-gray-300"
+          }`}
         >
           <Text className="text-lg font-semibold text-gray-300 tracking-widest  ">
             Start

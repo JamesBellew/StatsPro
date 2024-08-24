@@ -9,6 +9,7 @@ import {
   FlatList,
   StyleSheet,
   Dimensions,
+  Modal,
 } from "react-native";
 import { Easing } from "react-native-reanimated";
 
@@ -27,7 +28,7 @@ import {
   faFutbol,
   faInfo,
   faShare,
-  faChevronDown,
+  faChartLine,
   faChevronLeft,
   faSliders,
   faDownload,
@@ -39,7 +40,7 @@ export default function App() {
   //!useREfs
   const flatListRef = useRef(null);
   //!usestates
-
+  const [showStatisticsModal, setShowStatisticsModal] = useState(false);
   const [showShotData, setShowShotData] = useState(false);
   const [showTimingsData, setShowTimingsData] = useState(false);
   const [showGameDetailsMenu, setShowGameDetailsMenu] = useState(false);
@@ -428,7 +429,23 @@ export default function App() {
     },
     []
   );
-
+  const testTableData = [
+    {
+      song: "The Sliding ",
+      artist: "Malcolm Lockyer",
+      year: "1961",
+    },
+    {
+      song: "Witchy Woman",
+      artist: "The Eagles",
+      year: "1972",
+    },
+    {
+      song: "Shining Star",
+      artist: "Earth, Wind",
+      year: "1975",
+    },
+  ];
   console.log(summaryTurnoversPositionsFiltered);
   console.log("fuck ya");
   console.log(summaryKickoutsPositionsFiltered);
@@ -1867,6 +1884,36 @@ export default function App() {
           </View>
         </View>
       )}
+      <Modal
+        transparent={true}
+        visible={showStatisticsModal}
+        animationType="slide"
+      >
+        <View className="flex-1 justify-center items-center bg-black bg-opacity-50">
+          <View className="w-full min-h-screen bg-white">
+            <ScrollView
+              contentContainerStyle={{
+                flexGrow: 1,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              className="bg-blue-400"
+            >
+              <View className="w-full max-w-md bg-yellow-300 justify-center items-center p-4">
+                <Text className="text-black text-2xl mb-4">
+                  Scrollable Content
+                </Text>
+                <TouchableOpacity
+                  className="bg-red-500 p-2 rounded"
+                  onPress={() => setShowStatisticsModal(false)}
+                >
+                  <Text className="text-white">Close Modal</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
       <SafeAreaView className="flex-1 bg-[#12131A]">
         <ScrollView
           ref={scrollViewRef}
@@ -1923,16 +1970,27 @@ export default function App() {
               <View className="flex-1   h-full flex-row space-x-2  items-center">
                 <TouchableOpacity
                   onPress={() => navigation.navigate("HomeDashboard")}
-                  className="bg-[#191A22]  h-auto text-center items-center p-3 rounded-full w-1/3 mx-auto"
+                  className="bg-[#191A22]  h-auto text-center items-center p-3 rounded-md w-1/3 mx-auto  mr-1"
                 >
                   <FontAwesomeIcon
                     icon={faChevronLeft}
                     size={15}
                     color="#fff"
+                    className="my-auto justify-center "
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setShowStatisticsModal(true)}
+                  className="bg-[#191A22] h-auto text-center items-center p-3 rounded-md w-1/3 mx-auto"
+                >
+                  <FontAwesomeIcon
+                    icon={faChartLine}
+                    size={15}
+                    color="#fff"
                     className="my-auto justify-center"
                   />
                 </TouchableOpacity>
-                <TouchableOpacity className="bg-[#191A22] h-auto text-center items-center p-3 rounded-full w-1/3 mx-auto">
+                <TouchableOpacity className="bg-[#191A22] h-auto text-center items-center p-3 rounded-md w-1/3 mx-auto">
                   <FontAwesomeIcon
                     icon={faShare}
                     size={15}
@@ -1942,7 +2000,7 @@ export default function App() {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => setShowGameDetailsMenu(true)}
-                  className="bg-[#191A22] h-auto text-center items-center p-3 rounded-full w-1/3 mx-auto"
+                  className="bg-[#191A22] h-auto text-center items-center p-3 rounded-md w-1/3 mx-auto"
                 >
                   <FontAwesomeIcon
                     icon={faInfo}
@@ -1953,70 +2011,46 @@ export default function App() {
                 </TouchableOpacity>
               </View>
             </View>
-            {/* <Text className="text-xl text-white text-center mb-5 mt-2">
-            Stats for game vs {gameData.gameName}
-          </Text> */}
-            {/* <Text className="text-white text-2xl font-bold  ml-3">
-              Shots/Misses
-            </Text> */}
-            {/* <View className="legend h-[3vh] mb-4 px-4  items-center w-full  flex-row">
-              <View className="bg-[#0b63fb] mr-1 h-2 w-2 rounded-full"></View>
-              <Text className="text-zinc-400 pr-2 text-lg">Score</Text>
-              <View className="bg-[#ef233c] mr-1 h-2 w-2 rounded-full"></View>
-              <Text className="text-zinc-400 pr-2 text-lg">Miss</Text>
-       
-            </View> */}
-            {/* <PitchComponent positions={filteredPositions || []} /> */}
-            {/* <Text className="text-white mt-5 text-lg ml-3">Breakdown</Text> */}
-            {/* <ShotChartComponent shotChartDataProp={shotsData} /> */}
           </View>
           {/* <Hr></Hr> */}
-          <View id="page2" className="w-[90%] mx-auto h-auto justify-center">
-            {/* <Text className="text-white mt-5 text-2xl font-bold ml-3 ">
-              Set Plays Breakdown
-            </Text> */}
-            {/* <View className="legend h-[3vh] mb-4 px-4  items-center w-full  flex-row">
-              <View className="bg-[#52b788] mr-1 h-2 w-2 rounded-full"></View>
-              <Text className="text-zinc-400 pr-2 text-lg">Score</Text>
-              <View className="bg-[#ef233c] mr-1 h-2 w-2 rounded-full"></View>
-              <Text className="text-zinc-400 pr-2 text-lg">Miss</Text>
-              <View className="bg-[#ef233c] mr-1 h-2 w-2 rounded-full"></View>
-              <Text className="text-zinc-400 pr-2 text-lg">Short</Text>
-              <View className="bg-[#52b788] mr-1 h-2 w-2 rounded-full"></View>
-              <Text className="text-zinc-400 pr-2 text-lg">Goal</Text>
-              <View className="bg-[#52b788] mr-1 h-2 w-2 rounded-full"></View>
-              <Text className="text-zinc-400 pr-2 text-lg">Free</Text>
-            </View> */}
-
-            {/* <PitchComponent positions={setPlayFilteredPositions || []} /> */}
-
-            {/* <Text className="text-white mt-5 text-lg ml-3">Breakdown</Text> */}
-            {/* <SetPlayChartComponent setplayDataProp={setPlayData1} /> */}
-          </View>
+          <View
+            id="page2"
+            className="w-[90%] mx-auto h-auto justify-center"
+          ></View>
           <ScoresTimingsComponent />
-          {/* <ShotPercentageComponent /> */}
-          {/* <Hr /> */}
-          {/* last thing to put in yadeee */}
-          {/* <View className="bg-[#12131A] my-5  rounded-lg w-[90%] mx-auto items-center">
-            <Text className="text-white text-xl font-semibold text-center my-2 mt-5">
-              Last 3 games %
-            </Text>
+          <View className="w-full h-[60vh]">
+            <ScrollView className="p-4 ">
+              {/* Table Header */}
+              <View className="flex-row border-b border-gray-700 pb-2 mb-2">
+                <Text className="flex-1 text-white font-bold text-lg">
+                  Stat
+                </Text>
+                <Text className="flex-1 text-white font-bold text-lg">
+                  Player
+                </Text>
+                <Text className="flex-1 text-white font-bold text-lg">
+                  Time
+                </Text>
+              </View>
 
-            <ProgressChart
-              className="mx-auto"
-              data={barData}
-              width={Dimensions.get("window").width - 50}
-              height={220}
-              strokeWidth={16}
-              radius={32}
-              chartConfig={barChartConfig}
-              hideLegend={false}
-            />
-          </View> */}
-          {/* <Text style={{ color: "white", textAlign: "center", marginTop: 10 }}>
-            Current Page is: {currentIndex + 1}
-          </Text> */}
-          <View className="  mx-auto w-full">
+              {/* Table Rows */}
+              {testTableData.map((item, index) => (
+                <View
+                  key={index}
+                  className={`flex-row py-2 ${
+                    index % 2 === 0 ? "bg-[#191a22]" : ""
+                  }`}
+                >
+                  <Text className="flex-1 text-gray-300">{item.stat}</Text>
+                  <Text className="flex-1 text-gray-300">{item.player}</Text>
+                  <Text className="flex-1 text-gray-300">{item.time}</Text>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+          <View className="   mx-auto w-full  rounded-md">
+            <Text></Text>
+            <Text></Text>
             <FlatList
               ref={flatListRef}
               data={ListDataTest}
@@ -2031,7 +2065,7 @@ export default function App() {
             />
           </View>
 
-          {/* {summaryShotsPositionsFiltered
+          {summaryShotsPositionsFiltered
             .map((summary) => ({
               ...summary,
               percentage: Math.round(
@@ -2054,58 +2088,7 @@ export default function App() {
               };
               const percentage = summary.percentage;
               const barClassName = getClassNameByPercentage(percentage);
-              // return (
-              //   <View
-              //     key={index}
-              //     className="w-[85%] flex-row bg-[#191A22] mt-2 mx-auto rounded-lg p-1 px-2 justify-between"
-              //   >
-              //     <View className="h-auto flex-row w-full">
-              //       <View className="my-auto h-12 flex-1 flex-row">
-              //         <View className="w-[30%] px-1 my-auto justify-center h-full flex-col">
-              //           <Text className="text-gray-300 text-md font-semibold">
-              //             C Bellew
-              //           </Text>
-              //           <Text className="text-gray-500 text-sm">
-              //             {summary.player}
-              //           </Text>
-              //         </View>
-              //         <View className="justify-center flex-col h-full items-center w-[40%]">
-              //           <View className="px-2 mx-auto items-center justify-center flex-row w-full">
-              //             <View
-              //               className="bg-blue-600 rounded-l-lg h-1"
-              //               style={{
-              //                 width: `${(summary.scores / total) * 100}%`,
-              //               }}
-              //             ></View>
-              //             <View
-              //               className="bg-gray-400 h-1 rounded-r-lg"
-              //               style={{
-              //                 width: `${(summary.misses / total) * 100}%`,
-              //               }}
-              //             ></View>
-              //           </View>
-              //           <View className="flex-row w-full mt-2 px-2">
-              //             <Text className="text-gray-300">
-              //               {summary.scores} Points
-              //             </Text>
-              //             <Text className="ml-auto text-gray-300">
-              //               {summary.misses} Misses
-              //             </Text>
-              //           </View>
-              //         </View>
-              //         <View className="w-[40%] h-full">
-              //           <Text className="text-lg mx-auto my-auto font-bold text-gray-300">
-              //             {percentage}%
-              //           </Text>
-              //           <View
-              //             className={`w-8 mx-auto h-[2px] rounded-lg top-[-1vh] ${barClassName}`}
-              //           ></View>
-              //         </View>
-              //       </View>
-              //     </View>
-              //   </View>
-              // );
-            })} */}
+            })}
 
           <Text></Text>
           <Text></Text>
@@ -2118,12 +2101,6 @@ export default function App() {
           className="w-full  z-50 h-[8vh] relative justify-center items-center rounded-t-3xl"
           style={{ zIndex: 1, position: "absolute", bottom: 5 }}
         >
-          {/* <TouchableOpacity
-          onPress={() => navigation.navigate("HomeDashboard")}
-          className="bg-[#191A22] p-2  justify-center rounded-lg absolute left-5 "
-        >
-          <FontAwesomeIcon icon={faChevronLeft} size={25} color="#0b63fb" />
-        </TouchableOpacity> */}
           <View className="flex-row bg-[#191a229f] rounded-3xl px-10 justify-center items-center">
             <TouchableOpacity
               className="p-4 flex"
