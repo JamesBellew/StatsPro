@@ -323,8 +323,77 @@ export default function App() {
   const filteredPositions = gameData.positions.filter(
     (position) => position.actionCategory === "shot"
   );
-  console.log("boyaka");
-  console.log(filteredPositions);
+
+  function GameDataDisplay({
+    filteredPositions,
+    filteredKickoutPositions,
+    filteredTurnoverPositions,
+  }) {
+    // Function to trim the action name
+    const trimActionName = (action, category) => {
+      if (category === "T/O") {
+        // Handle Turnovers specifically since the category is abbreviated
+        if (action.toLowerCase().startsWith("turnover")) {
+          return action
+            .slice(8)
+            .replace(/([A-Z])/g, " $1")
+            .trim();
+        }
+      } else if (action.toLowerCase().startsWith(category.toLowerCase())) {
+        return action
+          .slice(category.length)
+          .replace(/([A-Z])/g, " $1")
+          .trim();
+      }
+      return action;
+    };
+
+    // Helper function to render a section
+    const renderSection = (title, data, category) => (
+      <View className="w-full h-auto mb-6">
+        <Text className="font-bold text-xl mb-2 text-white">{title}</Text>
+        <ScrollView className="p-4 bg-[#191a22] rounded-lg">
+          <View className="flex-row border-b border-gray-700 pb-2 mb-2">
+            <Text className="flex-1 text-white font-semibold text-md">
+              Stat
+            </Text>
+            <Text className="flex-1 text-white font-semibold text-md">
+              Player
+            </Text>
+            <Text className="flex-1 text-white font-semibold text-md">
+              Time(M)
+            </Text>
+          </View>
+          {data.map((item, index) => (
+            <View
+              key={index}
+              className={`flex-row py-2 ${
+                index % 2 === 0 ? "bg-[#2a2c37]" : ""
+              }`}
+            >
+              <Text className="flex-1 text-gray-300">
+                {trimActionName(item.action, category)}
+              </Text>
+              <Text className="flex-1 text-gray-300"> {item.player}</Text>
+              <Text className="flex-1 text-gray-300">
+                {Math.round(item.time / 60)}
+              </Text>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+    );
+
+    return (
+      <View className="flex-1 bg-[#12131A] p-4">
+        {renderSection("Shots Data", filteredPositions, "shot")}
+        {renderSection("Kickouts Data", filteredKickoutPositions, "kickout")}
+        {renderSection("Turnovers Data", filteredTurnoverPositions, "T/O")}
+      </View>
+    );
+  }
+  console.log("boyakapppapap");
+  console.log(gameData.positions);
   const scoringActions = ["point", "freeScore", "45Score", "goal", "markScore"];
   const missActions = ["miss", "short", "freeMiss", "markMiss", "45Miss"];
 
@@ -430,21 +499,9 @@ export default function App() {
     []
   );
   const testTableData = [
-    {
-      song: "The Sliding ",
-      artist: "Malcolm Lockyer",
-      year: "1961",
-    },
-    {
-      song: "Witchy Woman",
-      artist: "The Eagles",
-      year: "1972",
-    },
-    {
-      song: "Shining Star",
-      artist: "Earth, Wind",
-      year: "1975",
-    },
+    { stat: "Points", player: "John Doe", time: "12:34" },
+    { stat: "Assists", player: "Jane Smith", time: "08:45" },
+    { stat: "Rebounds", player: "Mike Johnson", time: "09:12" },
   ];
   console.log(summaryTurnoversPositionsFiltered);
   console.log("fuck ya");
@@ -2018,35 +2075,12 @@ export default function App() {
             className="w-[90%] mx-auto h-auto justify-center"
           ></View>
           <ScoresTimingsComponent />
-          <View className="w-full h-[60vh]">
-            <ScrollView className="p-4 ">
-              {/* Table Header */}
-              <View className="flex-row border-b border-gray-700 pb-2 mb-2">
-                <Text className="flex-1 text-white font-bold text-lg">
-                  Stat
-                </Text>
-                <Text className="flex-1 text-white font-bold text-lg">
-                  Player
-                </Text>
-                <Text className="flex-1 text-white font-bold text-lg">
-                  Time
-                </Text>
-              </View>
-
-              {/* Table Rows */}
-              {testTableData.map((item, index) => (
-                <View
-                  key={index}
-                  className={`flex-row py-2 ${
-                    index % 2 === 0 ? "bg-[#191a22]" : ""
-                  }`}
-                >
-                  <Text className="flex-1 text-gray-300">{item.stat}</Text>
-                  <Text className="flex-1 text-gray-300">{item.player}</Text>
-                  <Text className="flex-1 text-gray-300">{item.time}</Text>
-                </View>
-              ))}
-            </ScrollView>
+          <View className="w-full h-auto">
+            <GameDataDisplay
+              filteredPositions={filteredPositions}
+              filteredKickoutPositions={filteredKickoutPositions}
+              filteredTurnoverPositions={filteredTurnoverPositions}
+            />
           </View>
           <View className="   mx-auto w-full  rounded-md">
             <Text></Text>
