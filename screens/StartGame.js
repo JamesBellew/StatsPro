@@ -9,6 +9,7 @@ import {
   Image,
   Modal,
   TextInput,
+  TouchableWithoutFeedback,
   StyleSheet,
   ImageBackground,
 } from "react-native";
@@ -20,6 +21,7 @@ import { CommonActions } from "@react-navigation/native";
 export default function App() {
   const navigation = useNavigation();
   const [showProfileMiniMenu, setShowProfileMiniMenu] = useState(false);
+  const [lineoutModalVisible, setLineoutModalVisible] = useState(false);
   const [names, setNames] = useState(Array(30).fill(""));
   const incrementCount = () => {
     if (nameCount < 30) {
@@ -44,6 +46,7 @@ export default function App() {
       venue: venue,
       minutes: minutesHalf,
       gameActions: actionsBtnsArray,
+      lineout: selectedLineout, // Passing the selected lineout
     });
   };
   const [lineoutOptions, setLineoutOptions] = useState([
@@ -71,6 +74,16 @@ export default function App() {
   const [showNewLineupModalComp, setShowNewLineupModal] = useState(false);
   const [selectedValue, setSelectedValue] = useState("lineout1");
   const [text, onChangeText] = useState("");
+  const [selectedLineout, setSelectedLineout] = useState(null);
+
+  // Function to handle lineout selection change
+  const onLineoutChange = (itemValue) => {
+    setSelectedValue(itemValue);
+    const lineoutData = lineoutOptions.find(
+      (option) => option.value === itemValue
+    );
+    setSelectedLineout(lineoutData);
+  };
 
   const [allNamesFilled, setAllNamesFilled] = useState(false);
   const [actionsBtnsArray, setActionsBtnsArray] = useState([
@@ -114,20 +127,46 @@ export default function App() {
     const allFilled = names.every((name) => name.length >= 2);
     setAllNamesFilled(allFilled);
   }, [names]);
+  // const saveLineout = async () => {
+  //   const NewLineOut = {
+  //     lineoutName: lineoutOverallName,
+  //     date: new Date().toLocaleDateString(),
+  //     lineout: names,
+  //   };
+
+  //   console.log(NewLineOut);
+
+  //   const newOptions = [
+  //     ...lineoutOptions,
+  //     {
+  //       label: `Lineout: ${NewLineOut.lineoutName}`,
+  //       value: NewLineOut.lineoutName,
+  //     },
+  //   ];
+
+  //   setLineoutOptions(newOptions);
+  //   setSelectedValue(NewLineOut.lineoutName);
+  //   setShowNewLineupModal(false);
+
+  //   try {
+  //     await AsyncStorage.setItem("lineoutOptions", JSON.stringify(newOptions));
+  //   } catch (error) {
+  //     console.error("Failed to save the lineout options", error);
+  //   }
+  // };
   const saveLineout = async () => {
     const NewLineOut = {
       lineoutName: lineoutOverallName,
       date: new Date().toLocaleDateString(),
-      lineout: names,
+      lineout: names.map((name, index) => ({ number: index + 1, name })), // Convert names array to include numbers
     };
-
-    console.log(NewLineOut);
 
     const newOptions = [
       ...lineoutOptions,
       {
         label: `Lineout: ${NewLineOut.lineoutName}`,
         value: NewLineOut.lineoutName,
+        names: NewLineOut.lineout, // Include the entire lineout data (names with numbers)
       },
     ];
 
@@ -137,10 +176,12 @@ export default function App() {
 
     try {
       await AsyncStorage.setItem("lineoutOptions", JSON.stringify(newOptions));
+      console.log("Lineout saved successfully:", JSON.stringify(NewLineOut)); // Log the detailed lineout information
     } catch (error) {
       console.error("Failed to save the lineout options", error);
     }
   };
+
   useEffect(() => {
     const loadLineoutOptions = async () => {
       try {
@@ -156,8 +197,27 @@ export default function App() {
     loadLineoutOptions();
   }, []);
 
+  useEffect(() => {
+    const fetchLineouts = async () => {
+      try {
+        const savedLineouts = await AsyncStorage.getItem("lineoutOptions");
+        if (savedLineouts !== null) {
+          const lineouts = JSON.parse(savedLineouts);
+          console.log("Saved Lineouts:", lineouts);
+        } else {
+          console.log("No lineouts found");
+        }
+      } catch (error) {
+        console.error("Failed to fetch lineouts:", error);
+      }
+    };
+
+    fetchLineouts();
+  }, []);
+
   const [lineoutOverallName, setLineoutOverallName] = useState("");
-  console.log(minutesHalf + "haiiiiipp");
+  // console.log(AsyncStorage.getItem());
+
   return (
     <SafeAreaView className="flex-1 bg-[#12131A]">
       <Modal
@@ -391,45 +451,27 @@ export default function App() {
             <Text style={styles.checkboxText}>Away</Text>
           </TouchableOpacity>
         </View>
-        <View className="flex-row">
-          <Text className="pl-5 underline text-white mb-2">Lineout</Text>
+        <View className="flex-row items-center ">
+          <TouchableOpacity
+            onPress={() => {
+              setShowNewLineupModal(!showNewLineupModalComp);
+            }}
+            className="px-2 h-6 mr-2 ml-5 bg-blue-500 rounded-md text-center items-center justify-center"
+          >
+            <Text>+</Text>
+          </TouchableOpacity>
+          <Text className="  items-center my-auto text-white ">Lineout</Text>
           <Text className="pl-1  capitalize text-white">
             - [ {selectedValue} ]
           </Text>
         </View>
-        <View className="flex-row w-[90%] space-x-2 mb-2  items-center ">
-          {/* <TouchableOpacity
-            onPress={() => {
-              setShowNewLineupModal(!showNewLineupModalComp);
-            }}
-            className="bg-blue-500 px-2 py-1 ml-5 rounded-md"
-          >
-            <Text className="text-white  mx-auto text-center text-xs">New</Text>
-          </TouchableOpacity> */}
-
-          {/* <View className=" flex-row  w-[90%] mx-auto items-start mt-3  space-x-3 "> */}
-
-          {/* <TouchableOpacity
-            onPress={() => {
-              console.log(selectedValue);
-            }}
-            className="px-2 bg-neutral-900  py-1 rounded-md w-auto "
-          >
-            <Text className="text-gray-200 text-xs">Edit</Text>
-          </TouchableOpacity> */}
-          {/* <TouchableOpacity className="bg-neutral-900   px-2 py-1 rounded-md w-auto ">
-            <Text className="text-gray-200 text-xs">View</Text>
-          </TouchableOpacity> */}
-
-          {/* </View> */}
-        </View>
-
-        {/* <View className="w-[90%] h-[.2px] my-2 bg-gray-300 mx-auto"></View> */}
+        <View className="flex-row w-[90%] space-x-2 mb-2  items-center "></View>
 
         <View className=" h-[10vh] mt-1 mb-3 justify-center  overflow-hidden">
           <Picker
             selectedValue={selectedValue}
-            onValueChange={(itemValue) => setSelectedValue(itemValue)}
+            // onValueChange={(itemValue) => setSelectedValue(itemValue)}
+            onValueChange={onLineoutChange}
             itemStyle={{ color: "white", fontSize: 16, marginHorizontal: 10 }} // Adjust font size and color here
           >
             {lineoutOptions.map((option, index) => (
@@ -440,6 +482,27 @@ export default function App() {
               />
             ))}
           </Picker>
+
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={lineoutModalVisible}
+            onRequestClose={() => setLineoutModalVisible(false)}
+          >
+            <View className="flex-1 justify-center items-center">
+              <View className="bg-white p-4 rounded-lg shadow-xl m-4">
+                <Text className="text-lg text-center mb-4">
+                  You selected: {selectedValue}
+                </Text>
+                <TouchableOpacity
+                  className="bg-blue-500 px-6 py-2 rounded-lg"
+                  onPress={() => setLineoutModalVisible(false)}
+                >
+                  <Text className="text-white text-base">Close</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
         </View>
         <Text className="px-5 mb-2 underline  text-white">Game Setup</Text>
         <View

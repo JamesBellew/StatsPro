@@ -31,8 +31,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 export default function App() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { opponent, venue, gameData, minutes, gameActions } = route.params; // Access the passed parameters
-  // console.log(gameActions[10].active);rr
+  const { opponent, venue, gameData, minutes, gameActions, lineout } =
+    route.params; // Access the passed parameters
+  // console.log(lineout);
   const minutesperhalfInSeconds = minutes * 60;
 
   const [showProfileMiniMenu, setShowProfileMiniMenu] = useState(false);
@@ -591,7 +592,15 @@ export default function App() {
   const uniqueCategories = Array.from(
     new Set(actions.map((item) => item.category))
   );
+  const playerNameLookup = (number, lineout) => {
+    // lineout.names is the array where each player object is stored
+    const player = lineout.names.find((player) => player.number === number);
+    return player ? player.name : "Player not found";
+  };
+
   const handleSavePosition = () => {
+    console.log("hows yur gee below ");
+    console.log(playerNameLookup(selectedNumber, lineout));
     if (tempPosition) {
       setTempPosition((prev) => ({
         ...prev,
@@ -605,7 +614,12 @@ export default function App() {
           : actionTimeStamp;
       setPositions((prev) => [
         ...prev,
-        { ...tempPosition, player: selectedNumber, time: adjustedTimeStamp },
+        {
+          ...tempPosition,
+          player: selectedNumber,
+          time: adjustedTimeStamp,
+          playerName: playerNameLookup(selectedNumber, lineout),
+        },
       ]);
       console.log("====================================");
       console.log(positions);

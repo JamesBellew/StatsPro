@@ -61,6 +61,7 @@ export default function App() {
   };
 
   const { gameData } = route.params; // Access the passed parameters
+
   function Hr() {
     return (
       <>
@@ -323,7 +324,8 @@ export default function App() {
   const filteredPositions = gameData.positions.filter(
     (position) => position.actionCategory === "shot"
   );
-
+  console.log("is doc a pedo ");
+  console.log(filteredPositions);
   function GameDataDisplay({
     filteredPositions,
     filteredKickoutPositions,
@@ -352,8 +354,8 @@ export default function App() {
     const renderSection = (title, data, category) => (
       <View className="w-full h-auto mb-6">
         <Text className="font-bold text-xl mb-2 text-white">{title}</Text>
-        <ScrollView className="p-4 bg-[#191a22] rounded-lg">
-          <View className="flex-row border-b border-gray-700 pb-2 mb-2">
+        <ScrollView className="py-4  bg-[#191a22] rounded-lg">
+          <View className="flex-row border-b px-4 border-gray-700 pb-2 mb-2">
             <Text className="flex-1 text-white font-semibold text-md">
               Stat
             </Text>
@@ -367,14 +369,17 @@ export default function App() {
           {data.map((item, index) => (
             <View
               key={index}
-              className={`flex-row py-2 ${
+              className={`flex-row py-2 px-4 ${
                 index % 2 === 0 ? "bg-[#2a2c37]" : ""
               }`}
             >
               <Text className="flex-1 text-gray-300">
                 {trimActionName(item.action, category)}
               </Text>
-              <Text className="flex-1 text-gray-300"> {item.player}</Text>
+              <Text className="flex-1 text-gray-300">
+                {" "}
+                ({item.player}) {item.playerName}
+              </Text>
               <Text className="flex-1 text-gray-300">
                 {Math.round(item.time / 60)}
               </Text>
