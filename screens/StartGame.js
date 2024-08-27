@@ -21,6 +21,8 @@ import { CommonActions } from "@react-navigation/native";
 export default function App() {
   const navigation = useNavigation();
   const [showProfileMiniMenu, setShowProfileMiniMenu] = useState(false);
+  const [newActionLabel, setNewActionLabel] = useState("");
+  const [showAddNewGameKPI, setShowAddNewGameKPI] = useState(false);
   const [lineoutModalVisible, setLineoutModalVisible] = useState(false);
   const [names, setNames] = useState(Array(30).fill(""));
   const incrementCount = () => {
@@ -38,7 +40,23 @@ export default function App() {
   const handleNameChange = (index, value) => {
     const updatedNames = [...names];
     updatedNames[index] = value;
-    setNames(updatedNames);
+    setNaodales(updatedNames);
+  };
+  const handleAddNewAction = () => {
+    if (newActionLabel.trim()) {
+      setActionsBtnsArray([
+        ...actionsBtnsArray,
+        {
+          label: newActionLabel,
+          active: true,
+          action: () => handleAction(actionsBtnsArray.length + 1),
+        },
+      ]);
+      setNewActionLabel("");
+      setShowAddNewGameKPI(false);
+    } else {
+      alert("Please enter a valid action label.");
+    }
   };
   const handleStartGame = () => {
     navigation.navigate("InGame", {
@@ -87,22 +105,22 @@ export default function App() {
 
   const [allNamesFilled, setAllNamesFilled] = useState(false);
   const [actionsBtnsArray, setActionsBtnsArray] = useState([
-    { label: "Score", active: true, action: () => handleAction(1) },
-    { label: "Goal", active: true, action: () => handleAction(2) },
-    { label: "Wide", active: true, action: () => handleAction(3) },
-    { label: "Short", active: true, action: () => handleAction(4) },
+    { label: "point", active: true, action: () => handleAction(1) },
+    { label: "goal", active: true, action: () => handleAction(2) },
+    { label: "miss", active: true, action: () => handleAction(3) },
+    { label: "short", active: true, action: () => handleAction(4) },
     { label: "45 Score", active: true, action: () => handleAction(5) },
     { label: "45 Miss", active: true, action: () => handleAction(6) },
-    { label: "Mark +", active: true, action: () => handleAction(7) },
-    { label: "Mark -", active: true, action: () => handleAction(8) },
+    { label: "Mark Miss", active: true, action: () => handleAction(7) },
+    { label: "Mark point", active: true, action: () => handleAction(8) },
     { label: "T/O Won", active: true, action: () => handleAction(9) },
     { label: "T/O Loss", active: false, action: () => handleAction(10) },
     { label: "Yellow", active: false, action: () => handleAction(11) },
     { label: "Red", active: true, action: () => handleAction(12) },
-    { label: "Kickout +", active: true, action: () => handleAction(13) },
-    { label: "Kickout -", active: true, action: () => handleAction(14) },
-    { label: "Break +", active: true, action: () => handleAction(15) },
-    { label: "Break -", active: true, action: () => handleAction(16) },
+    { label: "Break Won", active: true, action: () => handleAction(13) },
+    // { label: "Kickout -", active: true, action: () => handleAction(14) },
+    { label: "Opp Break", active: true, action: () => handleAction(15) },
+    { label: "Opp Catch", active: true, action: () => handleAction(16) },
   ]);
   const onChangeOpponentText = (text) => {
     setOpponentText(text);
@@ -127,33 +145,7 @@ export default function App() {
     const allFilled = names.every((name) => name.length >= 2);
     setAllNamesFilled(allFilled);
   }, [names]);
-  // const saveLineout = async () => {
-  //   const NewLineOut = {
-  //     lineoutName: lineoutOverallName,
-  //     date: new Date().toLocaleDateString(),
-  //     lineout: names,
-  //   };
 
-  //   console.log(NewLineOut);
-
-  //   const newOptions = [
-  //     ...lineoutOptions,
-  //     {
-  //       label: `Lineout: ${NewLineOut.lineoutName}`,
-  //       value: NewLineOut.lineoutName,
-  //     },
-  //   ];
-
-  //   setLineoutOptions(newOptions);
-  //   setSelectedValue(NewLineOut.lineoutName);
-  //   setShowNewLineupModal(false);
-
-  //   try {
-  //     await AsyncStorage.setItem("lineoutOptions", JSON.stringify(newOptions));
-  //   } catch (error) {
-  //     console.error("Failed to save the lineout options", error);
-  //   }
-  // };
   const saveLineout = async () => {
     const NewLineOut = {
       lineoutName: lineoutOverallName,
@@ -504,7 +496,60 @@ export default function App() {
             </View>
           </Modal>
         </View>
-        <Text className="px-5 mb-2 underline  text-white">Game Setup</Text>
+        <View className="flex-row px-5 mb-2 items-center">
+          <TouchableOpacity
+            onPress={() => {
+              setShowAddNewGameKPI(true);
+            }}
+            className="bg-blue-500 rounded-md px-2 py-1"
+          >
+            <Text>+</Text>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={showAddNewGameKPI}
+              onRequestClose={() => setLineoutModalVisible(false)}
+            >
+              <View className="flex-1 justify-center items-center">
+                <View className="bg-white p-4 rounded-lg w-2/3 shadow-xl m-4">
+                  <Text className="text-lg text-center mb-4">
+                    Add New Action
+                  </Text>
+
+                  <TextInput
+                    className="border border-gray-300 p-2 rounded-lg mb-4 w-full"
+                    placeholder="Enter action label"
+                    value={newActionLabel}
+                    onChangeText={(text) => setNewActionLabel(text)}
+                  />
+
+                  <View className="w-full flex-row">
+                    <TouchableOpacity
+                      className="bg-blue-500 px-6 py-2 w-28 mx-auto rounded-lg"
+                      onPress={handleAddNewAction}
+                    >
+                      <Text className="text-white text-center text-base">
+                        Save
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      className="bg-blue-500 px-6 py-2 w-28 mx-auto rounded-lg"
+                      onPress={() => setShowAddNewGameKPI(false)}
+                    >
+                      <Text className="text-white text-center text-base">
+                        Close
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+          </TouchableOpacity>
+          <Text className=" px-2 mb-2 items-center my-auto  text-white">
+            Game Setup
+          </Text>
+        </View>
+
         <View
           style={{
             height: "auto",

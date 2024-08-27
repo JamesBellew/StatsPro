@@ -33,6 +33,7 @@ export default function App() {
   const route = useRoute();
   const [teamLineout, setTeamLineout] = useState(null);
   const { opponent, venue, gameData, minutes, gameActions } = route.params; // Access the passed parameters
+  // console.log(gameActions);
 
   //if the ingame game is loaded back from a saved file, the lineout will be blank since it is passed by the params from the setting up of the game , we need to do a check and then set it to the correct lienout for this case.
   // Check if the required parameters are present
@@ -349,6 +350,25 @@ export default function App() {
       label: "T/O Loss",
     },
   ]);
+  useEffect(() => {
+    const mergeCustomActions = () => {
+      const existingLabels = actions.map((action) => action.label);
+
+      const newCustomActions = gameActions
+        .filter((btn) => !existingLabels.includes(btn.label))
+        .map((btn) => ({
+          category: "custom",
+          action: btn.label.toLowerCase().replace(/\s+/g, ""),
+          label: btn.label,
+        }));
+
+      if (newCustomActions.length > 0) {
+        setActions((prevActions) => [...prevActions, ...newCustomActions]);
+      }
+    };
+    console.log(actions);
+    mergeCustomActions();
+  }, [gameActions]);
 
   const initialLineUp = [];
   for (let i = 1; i <= 32; i++) {
@@ -1570,8 +1590,22 @@ export default function App() {
                   >
                     <Text className="text-white text-center">T/O</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity className="bg-[#191A22] w-[50%] p-2 rounded">
-                    <Text className="text-white text-center">Tackle</Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (
+                        actionMenuActionCategory === "custom" &&
+                        showActionMenu === true
+                      ) {
+                        setShowActionMenu(false);
+                      } else {
+                        setShowActionMenu(true);
+                      }
+
+                      setActionMenuActionCategory("custom");
+                    }}
+                    className="bg-[#191A22] w-[50%] p-2 rounded"
+                  >
+                    <Text className="text-white text-center">Custom</Text>
                   </TouchableOpacity>
                 </View>
               </View>
