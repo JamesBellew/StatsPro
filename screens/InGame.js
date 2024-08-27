@@ -31,8 +31,21 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 export default function App() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { opponent, venue, gameData, minutes, gameActions, lineout } =
-    route.params; // Access the passed parameters
+  const [teamLineout, setTeamLineout] = useState(null);
+  const { opponent, venue, gameData, minutes, gameActions } = route.params; // Access the passed parameters
+
+  //if the ingame game is loaded back from a saved file, the lineout will be blank since it is passed by the params from the setting up of the game , we need to do a check and then set it to the correct lienout for this case.
+  // Check if the required parameters are present
+  // Extract parameters from route
+  const { lineout } = route.params; // You can destructure other params similarly if needed
+
+  useEffect(() => {
+    // Check if lineout is provided and set it to state
+    if (lineout) {
+      setTeamLineout(lineout);
+    }
+  }, [lineout]); // Dependency array ensures useEffect runs only when lineout changes
+  // console.log(lineout);
   // console.log(lineout);
   const minutesperhalfInSeconds = minutes * 60;
 
@@ -593,14 +606,24 @@ export default function App() {
     new Set(actions.map((item) => item.category))
   );
   const playerNameLookup = (number, lineout) => {
-    // lineout.names is the array where each player object is stored
-    const player = lineout.names.find((player) => player.number === number);
+    let player;
+
+    if (route.params && lineout) {
+      // If route.params is present and lineout is passed
+      player = lineout.names.find((player) => player.number === number);
+    } else if (gameData && gameData.teamLineout) {
+      // If gameData is present and teamLineout is available
+      player = gameData.teamLineout.names.find(
+        (player) => player.number === number
+      );
+    }
+
     return player ? player.name : "Player not found";
   };
 
   const handleSavePosition = () => {
-    console.log("hows yur gee below ");
-    console.log(playerNameLookup(selectedNumber, lineout));
+    // console.log("hows yur gee below ");
+    // console.log(playerNameLookup(selectedNumber, lineout));
     if (tempPosition) {
       setTempPosition((prev) => ({
         ...prev,
@@ -618,7 +641,7 @@ export default function App() {
           ...tempPosition,
           player: selectedNumber,
           time: adjustedTimeStamp,
-          playerName: playerNameLookup(selectedNumber, lineout),
+          playerName: playerNameLookup(selectedNumber, teamLineout),
         },
       ]);
       console.log("====================================");
@@ -724,6 +747,7 @@ export default function App() {
         direction: shootingDirect,
         score: scoreBoard,
         timer: seconds,
+        teamLineout: teamLineout,
       };
 
       // Load existing data
@@ -1353,43 +1377,59 @@ export default function App() {
           )}
           {tempPosition && (
             <>
-              {/* <Text className="text-white text-center">Select Player</Text> */}
-              <View className="h-auto  border-white/10 p-2 rounded-md w-4full mt-2 mx-auto">
+              <View className="h-auto border-white/10 p-2 rounded-md w-full  mx-auto">
                 <FlatList
                   data={lineUp.filter((player) => player.onPitch)}
                   horizontal
                   keyExtractor={(item) => item.playerNumber.toString()}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity
-                      className="flex my-auto justify-center  items-center mx-2"
-                      style={{ width: width / 8, height: 50 }}
-                      onPress={() => setSelectedNumber(item.playerNumber)}
-                    >
-                      <ImageBackground
-                        source={require("../assets/jersey.png")}
-                        resizeMode="contain"
-                        className={`flex justify-center items-center ${
-                          item.playerNumber === selectedNumber
-                            ? "border-b border-b-1 border-b-[#0b63fb]"
-                            : ""
-                        }`}
-                        style={{ width: "100%", height: "100%" }}
-                      >
-                        <Text
-                          className={`text-base font-bold ${
-                            item.playerNumber === substitution.startingPlayer
-                              ? "text-black"
-                              : "text-black"
-                          }`}
+                  renderItem={({ item }) => {
+                    // Determine which lineout data to use based on route.params.lineout
+                    const playerName = route.params?.lineout
+                      ? route.params.lineout.names.find(
+                          (player) => player.number === item.playerNumber
+                        )?.name
+                      : gameData?.teamLineout?.names.find(
+                          (player) => player.number === item.playerNumber
+                        )?.name;
+
+                    return (
+                      <View className="flex my-auto justify-center items-center mx-2">
+                        <TouchableOpacity
+                          style={{ width: width / 8, height: 50 }}
+                          onPress={() => setSelectedNumber(item.playerNumber)}
+                          className="flex justify-center items-center"
                         >
-                          {item.playerNumber}
+                          <ImageBackground
+                            source={require("../assets/jersey.png")}
+                            resizeMode="contain"
+                            className={`flex justify-center items-center ${
+                              item.playerNumber === selectedNumber
+                                ? "border-b-2 border-b-[#0b63fb]"
+                                : ""
+                            }`}
+                            style={{ width: "100%", height: "100%" }}
+                          >
+                            <Text
+                              className={`text-base font-bold ${
+                                item.playerNumber === selectedNumber
+                                  ? "text-black"
+                                  : "text-black"
+                              }`}
+                            >
+                              {item.playerNumber}
+                            </Text>
+                          </ImageBackground>
+                        </TouchableOpacity>
+                        <Text className="text-sm text-white mt-1">
+                          {playerName || ""}
                         </Text>
-                      </ImageBackground>
-                    </TouchableOpacity>
-                  )}
+                      </View>
+                    );
+                  }}
                   showsHorizontalScrollIndicator={false}
                 />
-                <View className="flex-row justify-center ">
+
+                <View className="flex-row justify-center">
                   <TouchableOpacity
                     onPress={() => {
                       if (actionTimeStamp > 60) {
@@ -1402,7 +1442,7 @@ export default function App() {
                       -
                     </Text>
                   </TouchableOpacity>
-                  <Text className="text-center font-bold items-center my-auto text-lg  text-white">
+                  <Text className="text-center font-bold items-center my-auto text-lg text-white">
                     {Math.floor(actionTimeStamp / 60)} Min
                   </Text>
                   <TouchableOpacity
@@ -1422,16 +1462,10 @@ export default function App() {
                 </View>
               </View>
 
-              <View
-                className="flex flex-row  w-2/4 mx-auto    "
-                // style={styles.saveButtonContainer}
-              >
+              <View className="flex flex-row w-2/4 mx-auto ">
                 <TouchableOpacity
                   onPress={handleCancelPosition}
-                  className={`flex
-
-               flex-1 mx-auto text-center     rounded-md p-3 border bg-[#FD5F5F]`}
-                  // style={styles.saveButton}
+                  className="flex flex-1 mx-auto text-center rounded-md p-3 border bg-[#FD5F5F]"
                 >
                   <Text className="text-center w-auto h-auto rounded-full">
                     <Icon name="ban" width={14} color="#191A22" />
@@ -1439,10 +1473,9 @@ export default function App() {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleSavePosition}
-                  className={`  flex-1  flex     ${
+                  className={`flex flex-1 mx-auto justify-center items-center rounded-md p-3 border bg-[#0b63fb] ${
                     selectedNumber != null ? "" : "hidden"
-                  }  mx-auto justify-center items-center m  rounded-md p-3 border bg-[#0b63fb]  `}
-                  // style={styles.saveButton}
+                  }`}
                 >
                   <Text className="text-center w-auto h-auto rounded-full">
                     <Icon name="check" width={14} color="#191A22" />

@@ -519,9 +519,9 @@ export default function App() {
             <TouchableOpacity
               key={index}
               onPress={() => handleAction(index)}
-              className={`w-[22%] bg-${
+              className={`w-auto bg-${
                 btn.active ? "blue-500" : "gray-400"
-              } m-1 rounded-md  py-1`}
+              } m-[1px] rounded-md  py-1 px-[5px]`}
               style={{ height: "auto" }} // Adjust button height here
             >
               <Text className="text-white px-1 text-center">{btn.label}</Text>

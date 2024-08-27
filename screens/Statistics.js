@@ -12,7 +12,7 @@ import {
   Modal,
 } from "react-native";
 import { Easing } from "react-native-reanimated";
-
+import { captureRef } from "react-native-view-shot";
 import RNHTMLtoPDF from "react-native-html-to-pdf";
 import {
   BarChart,
@@ -36,6 +36,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 export default function App() {
+  const viewRef = useRef();
   const navigation = useNavigation();
   //!useREfs
   const flatListRef = useRef(null);
@@ -50,6 +51,26 @@ export default function App() {
     viewAreaCoveragePercentThreshold: 50,
   }).current;
 
+  const captureAndShareScreenshot = async () => {
+    try {
+      const uri = await captureRef(viewRef, {
+        format: "png",
+        quality: 0.8,
+      });
+
+      const options = {
+        html: `<img src="${uri}" width="100%">`,
+        fileName: "screenshot",
+        directory: "Documents",
+      };
+
+      const file = await RNHTMLtoPDF.convert(options);
+
+      console.log("PDF saved to:", file.filePath);
+    } catch (error) {
+      console.error("Failed to capture screenshot:", error);
+    }
+  };
   const onViewableItemsChanged = useRef(({ viewableItems }) => {
     if (viewableItems && viewableItems.length > 0) {
       setCurrentIndex(viewableItems[0].index);
@@ -349,12 +370,23 @@ export default function App() {
       }
       return action;
     };
+    const percentageMap = {
+      "Shots Data": Math.round(shotPercentage),
+      "Kickouts Data": Math.round(kickoutsPercentage),
+      "Turnovers Data": Math.round(turnoverPercentage),
+      // Add more mappings as needed
+    };
 
     // Helper function to render a section
     const renderSection = (title, data, category) => (
       <View className="w-full h-auto mb-6">
-        <Text className="font-bold text-xl mb-2 text-white">{title}</Text>
-        <ScrollView className="py-4  bg-[#191a22] rounded-lg">
+        <Text className="font-bold text-xl mb-2 text-white">
+          {title} -{" "}
+          <Text className="text-md font-light text-base">
+            {percentageMap[title]}%
+          </Text>
+        </Text>
+        <ScrollView className="py-4 bg-[#191a22] rounded-lg">
           <View className="flex-row border-b px-4 border-gray-700 pb-2 mb-2">
             <Text className="flex-1 text-white font-semibold text-md">
               Stat
@@ -366,34 +398,44 @@ export default function App() {
               Time(M)
             </Text>
           </View>
-          {data.map((item, index) => (
-            <View
-              key={index}
-              className={`flex-row py-2 px-4 ${
-                index % 2 === 0 ? "bg-[#2a2c37]" : ""
-              }`}
-            >
-              <Text className="flex-1 text-gray-300">
-                {trimActionName(item.action, category)}
-              </Text>
-              <Text className="flex-1 text-gray-300">
-                {" "}
-                ({item.player}) {item.playerName}
-              </Text>
-              <Text className="flex-1 text-gray-300">
-                {Math.round(item.time / 60)}
-              </Text>
-            </View>
-          ))}
+          {data.length > 0 ? (
+            data.map((item, index) => (
+              <View
+                key={index}
+                className={`flex-row py-2 px-4 ${
+                  index % 2 === 0 ? "bg-[#2a2c37]" : ""
+                }`}
+              >
+                <Text className="flex-1 text-gray-300">
+                  {trimActionName(item.action, category)}
+                </Text>
+                <Text className="flex-1 text-gray-300">
+                  {/* Conditional rendering based on player number */}
+                  {item.player && item.player !== 0
+                    ? `(${item.player}) ${item.playerName}`
+                    : ""}
+                </Text>
+                <Text className="flex-1 text-gray-300">
+                  {Math.round(item.time / 60)}
+                </Text>
+              </View>
+            ))
+          ) : (
+            <Text className="text-center capitalize text-gray-500">
+              No {category} data Yet
+            </Text>
+          )}
         </ScrollView>
       </View>
     );
 
     return (
-      <View className="flex-1 bg-[#12131A] p-4">
-        {renderSection("Shots Data", filteredPositions, "shot")}
-        {renderSection("Kickouts Data", filteredKickoutPositions, "kickout")}
-        {renderSection("Turnovers Data", filteredTurnoverPositions, "T/O")}
+      <View className="flex-1 bg-[#12131A] p-1 ">
+        <View className=" rounded-md w-full p-3">
+          {renderSection("Shots Data", filteredPositions, "shot")}
+          {renderSection("Kickouts Data", filteredKickoutPositions, "kickout")}
+          {renderSection("Turnovers Data", filteredTurnoverPositions, "T/O")}
+        </View>
       </View>
     );
   }
@@ -1899,7 +1941,10 @@ export default function App() {
             >
               <FontAwesomeIcon icon={faChevronLeft} size={25} color="#fff" />
             </TouchableOpacity> */}
-            <View className=" justify-center mx-auto w-[95%] mx-10 relative">
+            <View
+              ref={viewRef}
+              className=" justify-center mx-auto w-[95%] mx-10 relative"
+            >
               <View className=" w-[95%] mx-auto flex-row h-auto">
                 <View className="w-1/2 h-full ">
                   <Text className="text-xl mx-5 mt-10 font-bold text-gray-200 ">
@@ -1938,7 +1983,10 @@ export default function App() {
                     Share to WhatsApp
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity className="p-4 mb-10 bg-gray-300 w-[90%] items-center  rounded-lg mt-4">
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("Testing")}
+                  className="p-4 mb-10 bg-gray-300 w-[90%] items-center  rounded-lg mt-4"
+                >
                   <Text className="font-bold text-md px-4">Download Game</Text>
                 </TouchableOpacity>
               </View>

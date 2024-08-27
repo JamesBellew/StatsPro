@@ -194,7 +194,7 @@ export default function App({ route }) {
             </LinearGradient>
           </ImageBackground>
           <Text></Text>
-          <ImageBackground
+          {/* <ImageBackground
             source={require("../assets/stats.jpeg")}
             style={{ width: "100%", height: 108, borderRadius: 8 }}
             imageStyle={{ borderRadius: 8 }}
@@ -230,45 +230,8 @@ export default function App({ route }) {
                 </Text>
               </TouchableOpacity>
             </LinearGradient>
-          </ImageBackground>
+          </ImageBackground> */}
           <Text></Text>
-          <ImageBackground
-            source={require("../assets/kerry.webp")}
-            style={{ width: "100%", height: 108, borderRadius: 8 }}
-            imageStyle={{ borderRadius: 8 }}
-          >
-            <LinearGradient
-              colors={["#12131A", "rgba(16,16,16,0.1)"]}
-              start={{ x: 0, y: 1 }}
-              end={{ x: 2, y: 0 }}
-              style={{ flex: 1, borderRadius: 8 }}
-            >
-              <TouchableOpacity
-                onPress={() => navigation.navigate("StartGame")}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  justifyContent: "flex-end",
-                  alignItems: "flex-start",
-                  paddingLeft: 20,
-                  paddingBottom: 20,
-                  borderRadius: 8,
-                }}
-              >
-                <Text
-                  style={{
-                    textAlign: "center",
-                    color: "white",
-                    fontWeight: "600",
-                    fontSize: 20,
-                    textTransform: "capitalize",
-                  }}
-                >
-                  Edit Lineup
-                </Text>
-              </TouchableOpacity>
-            </LinearGradient>
-          </ImageBackground>
         </View>
         <View className=" flex-row mx-5  mt-5 mb-5">
           <View className=" flex-1  flex-row  mt-5 ">
