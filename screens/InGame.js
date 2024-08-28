@@ -32,14 +32,31 @@ export default function App() {
   const navigation = useNavigation();
   const route = useRoute();
   const [teamLineout, setTeamLineout] = useState(null);
-  const { opponent, venue, gameData, minutes, gameActions } = route.params; // Access the passed parameters
+  const {
+    opponent,
+    venue,
+    gameData,
+    minutes,
+    gameActions,
+    gameInProgressFlag,
+  } = route.params; // Access the passed parameters
   // console.log(gameActions);
 
   //if the ingame game is loaded back from a saved file, the lineout will be blank since it is passed by the params from the setting up of the game , we need to do a check and then set it to the correct lienout for this case.
   // Check if the required parameters are present
   // Extract parameters from route
   const { lineout } = route.params; // You can destructure other params similarly if needed
-
+  useEffect(() => {
+    // Check if lineout is provided and set it to state
+    if (gameInProgressFlag) {
+      setIsActive(true);
+      // setSeconds(1600);
+      setTimerIcon("pause");
+      setIsActive(true);
+    } else {
+      console.log("oop");
+    }
+  }, [gameInProgressFlag]);
   useEffect(() => {
     // Check if lineout is provided and set it to state
     if (lineout) {
@@ -227,7 +244,7 @@ export default function App() {
   const [positions, setPositions] = useState([]);
   const [tempPosition, setTempPosition] = useState(null);
   const [actionSelected, setActionSelected] = useState(null);
-  const [actionCategorySelected, setActionCategorySelected] = useState(null);
+  const [actionCategorySelected, setActionCategorySelected] = useState("shot");
   const [showActionAlertError, setActionAlertError] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [isActive, setIsActive] = useState(false);
@@ -248,6 +265,7 @@ export default function App() {
   const [showHalftimeModal, setShowHalftimeModal] = useState(false);
   const [showSaveGameDataModal, setShowSaveGameDataModal] = useState(false);
   const [showActionMenu, setShowActionMenu] = useState(false);
+  const [isGameFinished, setIsGameFinished] = useState(false);
   const [showUnsavedGameModal, setShowUnsavedGameModal] = useState(false);
   const [showActionsOnPitchFilter, setShowActionsOnPitchFilter] =
     useState("all");
@@ -260,6 +278,7 @@ export default function App() {
       subPlayer: null,
     },
   ]);
+  // setIsActive(true);
   const [actions, setActions] = useState([
     {
       category: "shot",
@@ -352,9 +371,11 @@ export default function App() {
   ]);
   useEffect(() => {
     const mergeCustomActions = () => {
+      // Set a default value for gameActions if it's undefined
+      const actionsToMerge = gameActions || [];
       const existingLabels = actions.map((action) => action.label);
 
-      const newCustomActions = gameActions
+      const newCustomActions = actionsToMerge
         .filter((btn) => !existingLabels.includes(btn.label))
         .map((btn) => ({
           category: "custom",
@@ -366,12 +387,25 @@ export default function App() {
         setActions((prevActions) => [...prevActions, ...newCustomActions]);
       }
     };
-    console.log(actions);
+
     mergeCustomActions();
   }, [gameActions]);
 
   const initialLineUp = [];
-  for (let i = 1; i <= 32; i++) {
+  // useEffect(() => {
+  //   const lineoutLength = teamLineout ? teamLineout.length : 0;
+  const lineoutlength = gameData.teamLineout.names.length;
+  // const lineoutLength =
+  //   gameData && gameData.teamLineout && gameData.teamLineout.names
+  //     ? gameData.teamLineout.names.length
+  //     : 16;
+
+  // }, [teamLineout]);
+  // console.log("diggggggaaa :L");
+  // console.log(teamLineout);
+  // const lineoutLength = lineout ? lineout.length : 0;
+
+  for (let i = 1; i <= lineoutlength; i++) {
     initialLineUp.push({
       playerNumber: i,
       onPitch: i <= 15,
@@ -442,11 +476,15 @@ export default function App() {
   useEffect(() => {
     let interval = null;
     // minutesperhalfInSeconds is 35 mins
-    if (isActive && seconds < minutesperhalfInSeconds) {
+    if (
+      isActive &&
+      //! here lies the issue to the timer
+      seconds <= 1800
+    ) {
       interval = setInterval(() => {
         setSeconds((seconds) => seconds + 1);
       }, 1000);
-    } else if (seconds >= minutesperhalfInSeconds) {
+    } else if (seconds >= 1800) {
       setTimerLimitReached(true);
       setIsActive(false);
       clearInterval(interval);
@@ -486,7 +524,15 @@ export default function App() {
       setPositions(gameData.positions);
     }
     if (seconds < 1) {
-      setScoreBaord({ point: gameData.scoreBoard });
+      setScoreBaord({
+        point: gameData.gameScorePoint,
+        goal: gameData.gameScoreGoal,
+      });
+      // setScoreBaord({ point: gameData.gameScorePoint });
+      console.log("gigidi");
+      console.log(scoreBoard);
+      // setScoreBaord({ goal: gameData.gameScoreGoal });
+
       setSeconds(gameData.timer);
       setIsActive(true);
       if (timerIcon == "play") {
@@ -622,6 +668,9 @@ export default function App() {
       }, 2000);
     }
   };
+  const finishGameBtnHandler = () => {
+    saveGameData(positions);
+  };
   const uniqueCategories = Array.from(
     new Set(actions.map((item) => item.category))
   );
@@ -642,15 +691,11 @@ export default function App() {
   };
 
   const handleSavePosition = () => {
-    // console.log("hows yur gee below ");
-    // console.log(playerNameLookup(selectedNumber, lineout));
     if (tempPosition) {
       setTempPosition((prev) => ({
         ...prev,
         player: selectedNumber,
       }));
-      console.log("im here boiiiiii");
-      console.log(actionTimeStamp);
       const adjustedTimeStamp =
         currentHalf === 2
           ? actionTimeStamp + minutesperhalfInSeconds
@@ -664,20 +709,9 @@ export default function App() {
           playerName: playerNameLookup(selectedNumber, teamLineout),
         },
       ]);
-      console.log("====================================");
-      console.log(positions);
-      console.log("====================================");
-      // console.log("=================CHECKING SOMETHING===============");
-      // positions.forEach((position) => {
-      //   console.log(position);
-      //   console.log(""); // Add a blank line
-      // });
-      // console.log("====================================");
-      // clear the selected player number
       setSelectedNumber(null);
       setTempPosition(null);
     }
-
     // Add the score if it's a point to the useState scoreboard
     if (tempPosition.action === "point") {
       setScoreBaord((prevScoreBoard) => ({
@@ -692,6 +726,7 @@ export default function App() {
       }));
     }
   };
+
   const handleCancelPosition = () => {
     setTempPosition(null);
   };
@@ -756,6 +791,9 @@ export default function App() {
       // const gameName = `${opponent} Game ${venue} on ${timestamp}`;
       // const gameName = `${opponent}  ${venue}`;
       const gameName = `${opponent} `;
+      console.log("we are in here now");
+      console.log("This is the score in points");
+      console.log(scoreBoard.point);
       const newGameData = {
         id,
         timestamp,
@@ -765,11 +803,14 @@ export default function App() {
         // positions: gameData.positions, // Assuming positions array is part of gameData
         positions: positions, // Assuming positions array is part of gameData
         direction: shootingDirect,
-        score: scoreBoard,
+        gameScorePoint: scoreBoard.point,
+        gameScoreGoal: scoreBoard.goal,
         timer: seconds,
+        gameFinihsed: isGameFinished,
         teamLineout: teamLineout,
       };
-
+      console.log("daddy chill");
+      console.log(newGameData.gameScorePoint);
       // Load existing data
       const jsonValue = await AsyncStorage.getItem("@game_data");
       let existingData = [];
@@ -801,6 +842,8 @@ export default function App() {
           // existingData[gameIndex].positions = gameData.positions; // Update positions array only
           existingData[gameIndex].positions = positions; // Update positions array only
           existingData[gameIndex].timer = seconds;
+          existingData[gameIndex].gameScorePoint = scoreBoard.point;
+          existingData[gameIndex].gameScoreGoal = scoreBoard.goal;
           existingData[gameIndex].half = currentHalf;
           console.log("we found the game happyface emoji");
         } else {
@@ -851,7 +894,9 @@ export default function App() {
               </Text>
             </View>
             <TouchableOpacity
-              onPress={() => saveGameData(positions)}
+              onPress={() => {
+                saveGameData(positions);
+              }}
               className="text-center mt-5 text-md font-semibold bg-[#191A22] px-5 py-2 rounded-md text-white border-[#0b63fb]/20 border"
             >
               <Text className="text-[#0b63fb] ">Save Game</Text>
@@ -929,7 +974,9 @@ export default function App() {
                 </View>
                 <View className="w-[15%] space-x-1 bg-[#191A22] px-3   py-2 rounded-md ">
                   <TouchableOpacity
-                    onPress={() => setShowSaveGameDataModal(true)}
+                    onPress={() => {
+                      setShowSaveGameDataModal(true);
+                    }}
                     className="w-full flex justify-center items-center"
                   >
                     <FontAwesomeIcon
@@ -1399,6 +1446,7 @@ export default function App() {
             <>
               <View className="h-auto border-white/10 p-2 rounded-md w-full  mx-auto">
                 <FlatList
+                  // inverted={actionCategorySelected === "shot"}
                   data={lineUp.filter((player) => player.onPitch)}
                   horizontal
                   keyExtractor={(item) => item.playerNumber.toString()}
@@ -1857,6 +1905,7 @@ export default function App() {
               </View>
               <View className="flex-1 ">
                 <Text className="ml-2 mx-auto">On Field</Text>
+
                 <FlatList
                   data={lineUp.filter((player) => player.onPitch)}
                   horizontal
@@ -1892,6 +1941,7 @@ export default function App() {
                           {item.playerNumber}
                         </Text>
                       </ImageBackground>
+                      {/* <Text>{item.playerName}</Text> */}
                     </TouchableOpacity>
                   )}
                   showsHorizontalScrollIndicator={false}
@@ -1977,23 +2027,57 @@ export default function App() {
                 {Math.floor(seconds / 60)} Mins{" "}
                 {currentHalf === 1 ? "1st" : "2nd"} half
               </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  // setCurrentHalf(2);
-                  {
-                    currentHalf === 1 ? setCurrentHalf(2) : setCurrentHalf(1);
-                  }
-                  setSeconds(0);
-                  setShowHalftimeModal(false);
-                  setIsActive(true);
-                  setTimerLimitReached(false);
-                }}
-                className="mx-auto my-auto   px-3 bg-white py-2 rounded-md"
-              >
-                <Text className="text-gray-700 font-semibold">
-                  {currentHalf === 1 ? "Start 2nd Half" : "Back to 1st Half"}
-                </Text>
-              </TouchableOpacity>
+              <View className="w-full my-auto px-10 flex-row">
+                <TouchableOpacity
+                  onPress={() => {
+                    // setCurrentHalf(2);
+                    {
+                      currentHalf === 1 ? setCurrentHalf(2) : setCurrentHalf(1);
+                    }
+                    setSeconds(0);
+                    setShowHalftimeModal(false);
+                    setIsActive(true);
+                    setTimerLimitReached(false);
+                  }}
+                  className="mx-auto my-auto   px-3 bg-white py-2 rounded-md"
+                >
+                  <Text className="text-gray-700 font-semibold">
+                    {currentHalf === 1 ? "Start 2nd Half" : "Back to 1st Half"}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    // setCurrentHalf(2);
+                    {
+                      currentHalf === 1 ? setCurrentHalf(2) : setCurrentHalf(1);
+                    }
+                    setSeconds(minutes * 60);
+                    setShowHalftimeModal(false);
+                    setIsActive(true);
+                    setTimerLimitReached(true);
+                    setIsGameFinished(true);
+                    console.log("digga");
+                    console.log(positions);
+                    finishGameBtnHandler();
+                  }}
+                  className="mx-auto my-auto   px-3 bg-blue-600 py-2 rounded-md"
+                >
+                  <Text className="text-gray-200 font-semibold">
+                    Finish Game
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    // setCurrentHalf(2);
+                    setIsActive(false);
+                  }}
+                  className="mx-auto my-auto   px-3 bg-blue-600 py-2 rounded-md"
+                >
+                  <Text className="text-gray-200 font-semibold">
+                    cont clock
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </>
         )}

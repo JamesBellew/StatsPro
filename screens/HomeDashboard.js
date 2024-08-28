@@ -58,7 +58,7 @@ export default function App({ route }) {
       console.error("Error loading data", e);
     }
   };
-
+  // loadGameData();
   const addNewGame = async () => {
     if (newGameName.trim() === "") {
       return; // Do nothing if the new game name is empty
@@ -98,7 +98,10 @@ export default function App({ route }) {
   const handleOpenGame = (game) => {
     console.log("baiiiiii");
     console.log(game);
-    navigation.navigate("InGame", { gameData: game });
+    navigation.navigate("InGame", {
+      gameData: game,
+      gameInProgressFlag: true,
+    });
   };
 
   useEffect(() => {
@@ -298,19 +301,19 @@ export default function App({ route }) {
                       </View>
                       <View className="w-auto px-2 py-1 justify-center">
                         <Text className="text-zinc-400 text-right">
-                          Kilkerley : 2:12
+                          Kilkerley : {game.gameScoreGoal}:{game.gameScorePoint}
                         </Text>
                         <Text className="text-zinc-400 mt-2 text-right">
-                          {game.opponent} : 2:08
+                          {game.opponent} : 0:0
                         </Text>
                       </View>
                       <View className="w-[15%] right-0 flex-1 justify-center items-end px-2 py-1">
                         <Text className="text-gray-200 text-center">
-                          {game.timer >= 2100 && game.timer <= 2160
-                            ? "HT"
+                          {game.timer >= 1800 && game.timer <= 2160
+                            ? "FT"
                             : Math.floor(game.timer / 60)}
                         </Text>
-                        {game.timer < 2100 ? (
+                        {game.timer < 1800 ? (
                           <Text className="text-gray-200 text-center">Min</Text>
                         ) : (
                           ""

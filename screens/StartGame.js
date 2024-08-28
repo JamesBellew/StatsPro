@@ -40,7 +40,7 @@ export default function App() {
   const handleNameChange = (index, value) => {
     const updatedNames = [...names];
     updatedNames[index] = value;
-    setNaodales(updatedNames);
+    setNames(updatedNames);
   };
   const handleAddNewAction = () => {
     if (newActionLabel.trim()) {

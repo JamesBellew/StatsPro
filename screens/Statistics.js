@@ -338,6 +338,10 @@ export default function App() {
   const filteredKickoutPositions = gameData.positions.filter(
     (position) => position.actionCategory === "kickout"
   );
+  const filteredCustomPositions = gameData.positions.filter(
+    (position) => position.actionCategory === "custom"
+  );
+
   const filteredTurnoverPositions = gameData.positions.filter(
     (position) => position.actionCategory === "T/O"
   );
@@ -351,6 +355,7 @@ export default function App() {
     filteredPositions,
     filteredKickoutPositions,
     filteredTurnoverPositions,
+    filteredCustomPositions,
   }) {
     // Function to trim the action name
     const trimActionName = (action, category) => {
@@ -374,6 +379,7 @@ export default function App() {
       "Shots Data": Math.round(shotPercentage),
       "Kickouts Data": Math.round(kickoutsPercentage),
       "Turnovers Data": Math.round(turnoverPercentage),
+      "Custom Data": Math.round(turnoverPercentage),
       // Add more mappings as needed
     };
 
@@ -435,6 +441,9 @@ export default function App() {
           {renderSection("Shots Data", filteredPositions, "shot")}
           {renderSection("Kickouts Data", filteredKickoutPositions, "kickout")}
           {renderSection("Turnovers Data", filteredTurnoverPositions, "T/O")}
+
+          {filteredCustomPositions.length > 0 &&
+            renderSection("User Data", filteredCustomPositions, "custom")}
         </View>
       </View>
     );
@@ -452,6 +461,7 @@ export default function App() {
       if (playerIndex === -1) {
         acc.push({
           player: position.player,
+          playerName: position.playerName,
           scores: scoringActions.includes(position.action) ? 1 : 0,
           misses: missActions.includes(position.action) ? 1 : 0,
         });
@@ -1058,7 +1068,7 @@ export default function App() {
                   <View className="w-[30%] px-1 my-auto justify-center h-full flex-col">
                     {summaryType === "shot" && (
                       <Text className="text-gray-300 text-md font-semibold">
-                        C Bellew
+                        {summary.playerName}
                       </Text>
                     )}
                     {summaryType === "turnover" && (
@@ -2133,6 +2143,7 @@ export default function App() {
               filteredPositions={filteredPositions}
               filteredKickoutPositions={filteredKickoutPositions}
               filteredTurnoverPositions={filteredTurnoverPositions}
+              filteredCustomPositions={filteredCustomPositions}
             />
           </View>
           <View className="   mx-auto w-full  rounded-md">
