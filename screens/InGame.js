@@ -394,18 +394,18 @@ export default function App() {
   const initialLineUp = [];
   // useEffect(() => {
   //   const lineoutLength = teamLineout ? teamLineout.length : 0;
-  const lineoutlength = gameData.teamLineout.names.length;
-  // const lineoutLength =
-  //   gameData && gameData.teamLineout && gameData.teamLineout.names
-  //     ? gameData.teamLineout.names.length
-  //     : 16;
+  // const lineoutlength = gameData.teamLineout.names.length;
+  const lineoutLength =
+    gameData && gameData.teamLineout && gameData.teamLineout.names
+      ? gameData.teamLineout.names.length
+      : 16;
 
   // }, [teamLineout]);
   // console.log("diggggggaaa :L");
   // console.log(teamLineout);
   // const lineoutLength = lineout ? lineout.length : 0;
 
-  for (let i = 1; i <= lineoutlength; i++) {
+  for (let i = 1; i <= lineoutLength; i++) {
     initialLineUp.push({
       playerNumber: i,
       onPitch: i <= 15,

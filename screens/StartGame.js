@@ -13,16 +13,28 @@ import {
   StyleSheet,
   ImageBackground,
 } from "react-native";
+import {
+  faPeopleGroup,
+  faEye,
+  faStopwatch,
+  faChevronLeft,
+  faFloppyDisk,
+  faTrashAlt,
+  faChartSimple,
+} from "@fortawesome/free-solid-svg-icons";
 import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { CommonActions } from "@react-navigation/native";
-
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 export default function App() {
   const navigation = useNavigation();
   const [showProfileMiniMenu, setShowProfileMiniMenu] = useState(false);
   const [newActionLabel, setNewActionLabel] = useState("");
   const [showAddNewGameKPI, setShowAddNewGameKPI] = useState(false);
+  const [showEditLineoutModal, setShowEditLineoutModal] = useState(false);
+  const [newPlayerName, setNewPlayerName] = useState("");
+
   const [lineoutModalVisible, setLineoutModalVisible] = useState(false);
   const [names, setNames] = useState(Array(30).fill(""));
   const incrementCount = () => {
@@ -146,29 +158,38 @@ export default function App() {
     setAllNamesFilled(allFilled);
   }, [names]);
 
-  const saveLineout = async () => {
-    const NewLineOut = {
-      lineoutName: lineoutOverallName,
-      date: new Date().toLocaleDateString(),
-      lineout: names.map((name, index) => ({ number: index + 1, name })), // Convert names array to include numbers
-    };
-
-    const newOptions = [
-      ...lineoutOptions,
-      {
-        label: `Lineout: ${NewLineOut.lineoutName}`,
-        value: NewLineOut.lineoutName,
-        names: NewLineOut.lineout, // Include the entire lineout data (names with numbers)
-      },
-    ];
-
-    setLineoutOptions(newOptions);
-    setSelectedValue(NewLineOut.lineoutName);
-    setShowNewLineupModal(false);
-
+  const saveLineout = async (updatedLineout) => {
     try {
+      const savedOptions = await AsyncStorage.getItem("lineoutOptions");
+      let newOptions = [];
+
+      if (savedOptions) {
+        newOptions = JSON.parse(savedOptions);
+
+        // Check if the lineout already exists
+        const existingLineoutIndex = newOptions.findIndex(
+          (option) => option.value === updatedLineout.value
+        );
+
+        if (existingLineoutIndex >= 0) {
+          // Update the existing lineout
+          newOptions[existingLineoutIndex].names = updatedLineout.names;
+        } else {
+          // If not found, add a new lineout
+          newOptions.push(updatedLineout);
+        }
+      } else {
+        // If no existing lineouts, create a new array with the updated lineout
+        newOptions.push(updatedLineout);
+      }
+
+      // Save the updated options back to AsyncStorage
       await AsyncStorage.setItem("lineoutOptions", JSON.stringify(newOptions));
-      console.log("Lineout saved successfully:", JSON.stringify(NewLineOut)); // Log the detailed lineout information
+      setLineoutOptions(newOptions);
+      console.log(
+        "Lineout saved successfully:",
+        JSON.stringify(updatedLineout)
+      );
     } catch (error) {
       console.error("Failed to save the lineout options", error);
     }
@@ -400,7 +421,7 @@ export default function App() {
               <TouchableOpacity
                 onPress={() => onChangeMinutesHalf(30)}
                 className={`${
-                  minutesHalf === 30 ? "bg-blue-500" : " bg-[#101010]"
+                  minutesHalf === 30 ? "bg-[#0b63fb]" : " bg-[#101010]"
                 } rounded-md mx-1 h-12 w-auto p-4 text`}
               >
                 <Text className="text-center text-white my-auto">30</Text>
@@ -408,7 +429,7 @@ export default function App() {
               <TouchableOpacity
                 onPress={() => onChangeMinutesHalf(35)}
                 className={`${
-                  minutesHalf === 35 ? "bg-blue-500" : " bg-[#101010]"
+                  minutesHalf === 35 ? "bg-[#0b63fb]" : " bg-[#101010]"
                 } rounded-md mx-1 h-12 w-auto p-4 text`}
               >
                 <Text className="text-center text-white my-auto">35</Text>
@@ -448,11 +469,167 @@ export default function App() {
             onPress={() => {
               setShowNewLineupModal(!showNewLineupModalComp);
             }}
-            className="px-2 h-6 mr-2 ml-5 bg-blue-500 rounded-md text-center items-center justify-center"
+            className="px-2 h-6 mr-2 ml-5 bg-[#0b63fb] rounded-md text-center items-center justify-center"
           >
             <Text>+</Text>
           </TouchableOpacity>
-          <Text className="  items-center my-auto text-white ">Lineout</Text>
+          <TouchableOpacity
+            onPress={() => {
+              setShowEditLineoutModal(true);
+              // console.log(lineoutOptions[4].names);
+              // console.log("b LOOWWW");
+              // console.log(selectedLineout);
+            }}
+            className="px-2 h-6 mr-2  bg-[#0b63fb] rounded-md text-center items-center justify-center"
+          >
+            <Modal
+              visible={showEditLineoutModal}
+              transparent={true}
+              animationType="slide"
+              onRequestClose={() => setShowEditLineoutModal(false)}
+            >
+              <View className="w-full h-full bg-[#101010]/90 flex justify-center items-center">
+                <View className="bg-[#12131A] w-11/12 md:w-3/4 lg:w-1/2 mx-auto h-auto rounded-md py-6 px-4">
+                  <View className="flex-row mx-auto">
+                    <Text className="text-lg text-gray-100 mb-4 text-center">
+                      Team Lineout
+                    </Text>
+                    <TouchableOpacity className="bg-[#0b63fb] rounded-md h-8 ml-2 w-20 ">
+                      <Text className="text-md my-auto px-3 text-center tracking-widest font-regular text-gray-200 ">
+                        + New
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                  {selectedLineout ? (
+                    <ScrollView className="max-h-[55vh]">
+                      {selectedLineout.names
+                        .reduce((result, player, index) => {
+                          if (index % 2 === 0) {
+                            result.push([player]);
+                          } else {
+                            result[result.length - 1].push(player);
+                          }
+                          return result;
+                        }, [])
+                        .map((pair, pairIndex) => (
+                          <View
+                            key={pairIndex}
+                            className={` flex-row items-start justify-between px-2 py-1  ${
+                              pairIndex % 2 === 0
+                                ? "bg-[#12131A]"
+                                : "bg-[#12131A]"
+                            }`}
+                          >
+                            {pair.map((player, playerIndex) => (
+                              <Text
+                                key={playerIndex}
+                                className="text-lg font-medium text-gray-200 w-1/2 "
+                              >
+                                <Text className="text-blue-600 space-x-2 right px-2">
+                                  {player.number}.<Text> </Text>
+                                </Text>
+                                {player.name}
+                              </Text>
+                            ))}
+                          </View>
+                        ))}
+
+                      {/* Text Input for New Player */}
+                      <View className="mt-4 w-2/4 px-2">
+                        <TextInput
+                          className="flex-1 bg-gray-700 text-white px-2 py-1 rounded-md"
+                          placeholder="Enter new player name"
+                          placeholderTextColor="#ccc"
+                          value={newPlayerName}
+                          onChangeText={setNewPlayerName}
+                        />
+                      </View>
+                    </ScrollView>
+                  ) : (
+                    <View className="flex items-center justify-center h-[10vh]">
+                      <Text className="text-lg text-gray-600">
+                        😔 No players found
+                      </Text>
+                    </View>
+                  )}
+
+                  <View className="flex-row space-x-3 w-3/4 mx-auto">
+                    <TouchableOpacity
+                      onPress={() => setShowEditLineoutModal(false)}
+                      className="mt-4 flex-1 bg-gray-700 py-1 rounded-lg flex-row justify-center items-center shadow-lg"
+                    >
+                      <FontAwesomeIcon
+                        icon={faChevronLeft}
+                        size={16}
+                        color="#fff"
+                        className="mr-2"
+                      />
+                      <Text className="text-center text-white text-lg font-regular">
+                        Close
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        if (newPlayerName.trim()) {
+                          const newPlayer = {
+                            number: selectedLineout.names.length + 1,
+                            name: newPlayerName,
+                          };
+
+                          const updatedLineout = {
+                            ...selectedLineout,
+                            names: [...selectedLineout.names, newPlayer],
+                          };
+
+                          // Update the state
+                          setSelectedLineout(updatedLineout);
+
+                          // Update the lineout in AsyncStorage
+                          saveLineout({
+                            label: selectedLineout.label,
+                            value: selectedLineout.value,
+                            names: updatedLineout.names,
+                          });
+
+                          // Clear the input field
+                          setNewPlayerName("");
+                        }
+
+                        setShowEditLineoutModal(false);
+                      }}
+                      className="mt-4 flex-1 bg-[#0b63fb] py-1 rounded-lg flex-row justify-center items-center shadow-lg"
+                    >
+                      <FontAwesomeIcon
+                        icon={faFloppyDisk}
+                        size={16}
+                        color="#fff"
+                        className="mr-2"
+                      />
+                      <Text className="text-center text-white text-lg font-regular">
+                        Save
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={() => setShowEditLineoutModal(false)}
+                      className="mt-4 w-10  bg-red-600 py-1 rounded-lg flex-row justify-center items-center shadow-lg"
+                    >
+                      <FontAwesomeIcon
+                        icon={faTrashAlt}
+                        size={16}
+                        color="#fff"
+                        className="mr-2"
+                      />
+                      <Text className="text-center text-white text-lg font-semibold"></Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+
+            <Text>Edit</Text>
+          </TouchableOpacity>
+          <Text className="  items-center my-auto text-white "></Text>
           <Text className="pl-1  capitalize text-white">
             - [ {selectedValue} ]
           </Text>
@@ -487,7 +664,7 @@ export default function App() {
                   You selected: {selectedValue}
                 </Text>
                 <TouchableOpacity
-                  className="bg-blue-500 px-6 py-2 rounded-lg"
+                  className="bg-[#0b63fb] px-6 py-2 rounded-lg"
                   onPress={() => setLineoutModalVisible(false)}
                 >
                   <Text className="text-white text-base">Close</Text>
@@ -501,7 +678,7 @@ export default function App() {
             onPress={() => {
               setShowAddNewGameKPI(true);
             }}
-            className="bg-blue-500 rounded-md px-2 py-1"
+            className="bg-[#0b63fb] rounded-md px-2 py-1"
           >
             <Text>+</Text>
             <Modal
@@ -525,7 +702,7 @@ export default function App() {
 
                   <View className="w-full flex-row">
                     <TouchableOpacity
-                      className="bg-blue-500 px-6 py-2 w-28 mx-auto rounded-lg"
+                      className="bg-[#0b63fb] px-6 py-2 w-28 mx-auto rounded-lg"
                       onPress={handleAddNewAction}
                     >
                       <Text className="text-white text-center text-base">
@@ -533,7 +710,7 @@ export default function App() {
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      className="bg-blue-500 px-6 py-2 w-28 mx-auto rounded-lg"
+                      className="bg-[#0b63fb] px-6 py-2 w-28 mx-auto rounded-lg"
                       onPress={() => setShowAddNewGameKPI(false)}
                     >
                       <Text className="text-white text-center text-base">
