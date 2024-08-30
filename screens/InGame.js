@@ -2119,7 +2119,7 @@ export default function App() {
                 </Text>
                 <TouchableOpacity
                   onPress={() => {
-                    if (seconds < minutesperhalfInSeconds) {
+                    if (seconds < 1800) {
                       setSeconds(seconds + 60);
                     }
                   }}

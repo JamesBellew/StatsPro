@@ -20,7 +20,11 @@ import {
   faChevronLeft,
   faFloppyDisk,
   faTrashAlt,
-  faChartSimple,
+  faXmark,
+  faPlus,
+  faUserPlus,
+  faWindowMinimize,
+  faCircleXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
@@ -527,6 +531,19 @@ export default function App() {
             >
               <View className="w-full h-full bg-[#101010]/90 flex justify-center items-center">
                 <View className="bg-[#12131A] w-11/12 md:w-3/4 lg:w-1/2 mx-auto h-auto rounded-md py-6 px-4">
+                  <View className="absolute left-5 top-5 w-auto h-auto ">
+                    <TouchableOpacity
+                      onPress={() => setShowEditLineoutModal(false)}
+                      className=" px-2 bg-gray-700 h-8 rounded-full  my-auto flex-row justify-center items-center shadow-lg"
+                    >
+                      <FontAwesomeIcon
+                        icon={faXmark}
+                        size={16}
+                        color="#fff"
+                        className="mr-2 my-auto "
+                      />
+                    </TouchableOpacity>
+                  </View>
                   <View className="flex-row mx-auto">
                     <Text className="text-lg text-gray-100 mb-4 text-center">
                       Team Lineout
@@ -572,7 +589,7 @@ export default function App() {
                             ))}
                           </View>
                         ))}
-
+                      {/* <View className="bg-red-600"> */}
                       {/* Text Input for New Player */}
                       {showNewPlayerTextInput && (
                         <>
@@ -620,27 +637,30 @@ export default function App() {
                                   setNewPlayerName("");
                                 }
                               }}
-                              className="w-1/4 bg-[#0b63fb] py-1 rounded-lg flex-row justify-center items-center shadow-lg"
+                              className="px-3  bg-[#0b63fb] py-1 rounded-full flex-row justify-center items-center shadow-lg"
                             >
                               <FontAwesomeIcon
-                                icon={faFloppyDisk}
+                                icon={faUserPlus}
                                 size={16}
                                 color="#fff"
                                 className="mr-2"
                               />
-                              <Text className="text-center text-white text-lg font-regular">
+                              {/* <Text className="text-center text-white text-lg font-regular">
                                 Save
-                              </Text>
+                              </Text> */}
                             </TouchableOpacity>
                             <TouchableOpacity
                               onPress={() => {
                                 setShowNewPlayerTextInput(false);
                               }}
-                              className="w-10 bg-[#0b63fb] bg-blue-400 py-1 rounded-lg flex-row justify-center items-center shadow-lg"
+                              className="w-10 bg-[#0b63fb] bg-gray-500 py-1 rounded-full flex-row justify-center items-center shadow-lg"
                             >
-                              <Text className="text-lg font-bold mx-auto text-center">
-                                X
-                              </Text>
+                              <FontAwesomeIcon
+                                icon={faXmark}
+                                size={16}
+                                color="#fff"
+                                className="mr-2"
+                              />
                             </TouchableOpacity>
                           </View>
                         </>
@@ -670,22 +690,22 @@ export default function App() {
                             />
                             <TouchableOpacity
                               onPress={handleSaveEditedPlayer}
-                              className="w-1/4 bg-[#0b63fb] py-1 rounded-lg flex-row justify-center items-center shadow-lg"
+                              className="px-3  bg-[#0b63fb] py-1 rounded-full flex-row justify-center items-center shadow-lg"
                             >
                               <FontAwesomeIcon
-                                icon={faFloppyDisk}
+                                icon={faUserPlus}
                                 size={16}
                                 color="#fff"
                                 className="mr-2"
                               />
-                              <Text className="text-center text-white text-lg font-regular">
+                              {/* <Text className="text-center text-white text-lg font-regular">
                                 Save
-                              </Text>
+                              </Text> */}
                             </TouchableOpacity>
                             {selectedLineout.names.length > 15 && (
                               <TouchableOpacity
                                 onPress={handleDeletePlayer}
-                                className="w-10 bg-red-600 py-1 rounded-lg flex-row justify-center items-center shadow-lg"
+                                className="w-10 bg-gray-800 py-1 rounded-full flex-row justify-center items-center shadow-lg"
                               >
                                 <FontAwesomeIcon
                                   icon={faTrashAlt}
@@ -707,37 +727,28 @@ export default function App() {
                     </View>
                   )}
 
-                  <View className="flex-row space-x-3 px-3 w-full mx-auto">
+                  <View className="flex-row justify-between px-3 w-full mx-auto">
                     <TouchableOpacity
                       onPress={() => {
                         setShowNewPlayerTextInput(!showNewPlayerTextInput);
-                        // setShowEditLineoutModal(false);
                         setShowEditView(false);
                       }}
-                      className="mt-4 flex-1 bg-[#0b63fb] py-1 rounded-lg flex-row justify-center items-center shadow-lg"
-                    >
-                      <Text className="text-md my-auto px-3 text-center tracking-widest font-regular text-gray-200 ">
-                        + Player
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => setShowEditLineoutModal(false)}
-                      className="mt-4 flex-1 bg-gray-700 py-1 rounded-lg flex-row justify-center items-center shadow-lg"
+                      className="mt-4 px-3 py-2 bg-blue-600 rounded-full flex-row justify-center items-center shadow-lg"
                     >
                       <FontAwesomeIcon
-                        icon={faChevronLeft}
+                        icon={faPlus}
                         size={16}
                         color="#fff"
                         className="mr-2"
                       />
-                      <Text className="text-center text-white text-lg font-regular">
-                        Close
+                      <Text className="text-white px-2 font-semibold">
+                        Player
                       </Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                       onPress={() => setShowEditLineoutModal(false)}
-                      className="mt-4 w-10  bg-red-600 py-1 rounded-lg flex-row justify-center items-center shadow-lg"
+                      className="mt-4 px-4 py-1 bg-red-600 rounded-full flex-row justify-center items-center shadow-lg"
                     >
                       <FontAwesomeIcon
                         icon={faTrashAlt}
@@ -745,6 +756,9 @@ export default function App() {
                         color="#fff"
                         className="mr-2"
                       />
+                      <Text className="text-white px-2 font-semibold">
+                        Lineout
+                      </Text>
                     </TouchableOpacity>
                   </View>
                 </View>

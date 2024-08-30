@@ -1237,15 +1237,15 @@ export default function App() {
       pitchType: "shot",
       firstChartPercentage: (successfulAttempts / totalAttempts) * 100,
       firstPitchDataLegend: [
-        { title: "Score", color: "0b63fb" },
-        { title: "Miss", color: "ef233c" },
+        { title: "Score", color: "bg-blue-600" },
+        { title: "Miss", color: "bg-red-600" },
       ],
       secondPitchDataLegend: [
-        { title: "Score", color: "0b63fb" },
-        { title: "Miss", color: "ef233c" },
-        { title: "Short", color: "ef233c" },
-        { title: "Goal", color: "0b63fb" },
-        { title: "Free", color: "0b63fb" },
+        { title: "Score", color: "bg-blue-600" },
+        { title: "Miss", color: "bg-red-600" },
+        { title: "Short", color: "bg-red-300" },
+        { title: "Goal", color: "bg-cyan-600" },
+        { title: "Free", color: "bg-blue-800" },
       ],
       lineChartData: {
         labels: ["Q1", "Q2", "Q3", "Q4"],
@@ -1266,8 +1266,8 @@ export default function App() {
       shotDataChart: shotsData,
       summaryDataPercentage: summaryShotsPositionsFiltered,
       summaryDataLegend: [
-        { title: "score", color: "#0b63fb" },
-        { title: "miss", color: "#c9c9c9" },
+        { title: "score", color: "bg-blue-600" },
+        { title: "miss", color: "bg-gray-400" },
       ],
       dataType: "shot",
     },
@@ -1401,7 +1401,7 @@ export default function App() {
             {item.firstPitchDataLegend.map((legend, index) => (
               <React.Fragment key={index}>
                 <View
-                  className={`bg-[#${legend.color}] w-3 h-3 mr-2 rounded-full`}
+                  className={`${legend.color} w-3 h-3 mr-2 rounded-full`}
                 ></View>
                 <Text className="text-white capitalize mr-2">
                   {legend.title}
@@ -1442,7 +1442,7 @@ export default function App() {
               <React.Fragment key={index}>
                 <View
                   key={index}
-                  className={`bg-[${legend.color}] w-3 h-3 mr-2 rounded-full`}
+                  className={`${legend.color} w-3 h-3 mr-2 rounded-full`}
                 ></View>
                 <Text className="text-white capitalize mr-2">
                   {legend.title}
@@ -1527,7 +1527,7 @@ export default function App() {
             item.summaryDataLegend.map((legend) => (
               <>
                 <View
-                  className={`rounded-2xl w-10 bg-[${legend.color}] h-1 my-auto mr-2`}
+                  className={`rounded-2xl w-10 ${legend.color} h-1 my-auto mr-2`}
                 ></View>
                 <Text className="text-white mr-4">{legend.title}</Text>
               </>
