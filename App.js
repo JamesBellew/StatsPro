@@ -180,7 +180,11 @@ export default function App() {
             component={Testing}
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="StartGame" component={StartGame} />
+          <Stack.Screen
+            options={{ headerShown: false }}
+            name="StartGame"
+            component={StartGame}
+          />
           <Stack.Screen
             name="Statistics"
             component={Statistics}

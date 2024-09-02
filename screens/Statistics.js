@@ -864,7 +864,7 @@ export default function App() {
     fillShadowGradientTo: "#0964FB", // Make sure the gradient goes to the same color
     barRadius: 8,
   };
-  const PitchComponent = ({ positions, type }) => {
+  const PitchComponent = ({ positions, type, showSections }) => {
     const pitchWidth = Dimensions.get("window").width * 0.9; // 90% of the screen width
     const pitchHeight = Dimensions.get("window").height * 0.75; // Assuming 63% of the screen height for the pitch
 
@@ -1012,6 +1012,34 @@ export default function App() {
       >
         <View className="bg-[#191A22] rounded-3xl h-full">
           <View className="h-full">
+            {showSections && (
+              //display square section
+              <>
+                <View className="w-1/3 h-[20%] border border-gray-300 absolute border-[#0b63fb]"></View>
+                <View className="w-1/3 h-[20%] top-[20%] border border-gray-300 absolute border-[#0b63fb]"></View>
+                <View className="w-1/3 h-[20%] top-[40%] border border-gray-300 absolute border-[#0b63fb]"></View>
+                <View className="w-1/3 h-[20%] top-[60%] border border-gray-300 absolute border-[#0b63fb]"></View>
+                <View className="w-1/3 h-[20%] top-[80%] border border-gray-300 absolute border-[#0b63fb]"></View>
+                <View className="w-1/3 h-[20%] border border-gray-300 absolute border-[#0b63fb] left-1/3"></View>
+                <View className="w-1/3 h-[20%] top-[20%] border border-gray-300 absolute border-[#0b63fb] left-1/3"></View>
+                <View className="w-1/3 h-[20%] top-[40%] border border-gray-300 absolute border-[#0b63fb] left-1/3"></View>
+                <View className="w-1/3 h-[20%] top-[60%] border border-gray-300 absolute border-[#0b63fb] left-1/3"></View>
+                <View className="w-1/3 h-[20%] top-[80%] border border-gray-300 absolute border-[#0b63fb] left-1/3"></View>
+                <View className="w-1/3 h-[20%] border border-gray-300 absolute border-[#0b63fb] left-2/3"></View>
+                <View className="w-1/3 h-[20%] top-[20%] border border-gray-300 absolute border-[#0b63fb] left-2/3"></View>
+                <View className="w-1/3 h-[20%] top-[40%] border border-gray-300 absolute border-[#0b63fb] left-2/3"></View>
+                <View className="w-1/3 h-[20%] top-[60%] border border-gray-300 absolute border-[#0b63fb] left-2/3"></View>
+                <View className="w-1/3 h-[20%] top-[80%] border border-gray-300 absolute border-[#0b63fb]  left-2/3"></View>
+                {/* <View className="w-1/3 h-[12.5%] left-1/3 border border-gray-300 absolute"></View>
+                <View className="w-1/3 h-[12.5%] left-2/3 border border-gray-300 absolute"></View>
+                <View className="w-1/3 h-[12.5%] top-[12.5%] border border-gray-300 absolute"></View>
+                <View className="w-1/3 h-[12.5%] top-[12.5%] left-1/3 border border-gray-300 absolute"></View>
+                <View className="w-1/3 h-[12.5%] top-[12.5%] left-2/3 border border-gray-300 absolute"></View>
+                <View className="w-1/3 h-[12.5%] top-[25%] border border-gray-300 absolute"></View>
+                <View className="w-1/3 h-[12.5%] top-[25%] left-1/3 border border-gray-300 absolute"></View>
+                <View className="w-1/3 h-[12.5%] top-[25%] left-2/3 border border-gray-300 absolute"></View> */}
+              </>
+            )}
             {/* Pitch markings */}
             <View style={styles.pitchMarkings}>
               <View className="w-[15%] absolute left-[42.5%] h-6 border border-b-zinc-600 border-l-zinc-600 border-r-zinc-600"></View>
@@ -1518,6 +1546,14 @@ export default function App() {
       )}
       {/* enter new shot data table here hai  */}
       <Hr />
+
+      <View className="w-full">
+        <PitchComponent
+          positions={item.pitchData}
+          type={item.pitchType}
+          showSections={true}
+        />
+      </View>
       <View className="ml-10 mb-2 justify-start items-start w-full px-2">
         <Text className="text-white w-auto text-2xl font-bold ">
           {item.firstPitchTitle} Data
