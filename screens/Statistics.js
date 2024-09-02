@@ -82,7 +82,42 @@ export default function App() {
   };
 
   const { gameData } = route.params; // Access the passed parameters
+  const [sectionData, setSectionData] = useState({});
+  // Function to determine the grid section based on x, y coordinates
+  const determineSection = (x, y, width, height) => {
+    const sectionX = Math.floor(x / (width / 3));
+    const sectionY = Math.floor(y / (height / 5));
 
+    // Ensure that sectionX and sectionY are within bounds
+    const validSectionX = Math.max(0, Math.min(sectionX, 2));
+    const validSectionY = Math.max(0, Math.min(sectionY, 4));
+
+    return `${validSectionX}-${validSectionY}`;
+  };
+
+  useEffect(() => {
+    const sections = {};
+
+    gameData.positions.forEach((position) => {
+      const { x, y, action } = position;
+
+      // Assuming the pitch dimensions are 360x600 (width x height)
+      // Adjust these based on your actual view dimensions
+      const section = determineSection(x, y, 360, 600);
+
+      if (!sections[section]) {
+        sections[section] = { scores: 0, misses: 0 };
+      }
+
+      if (action === "point" || action === "goal" || action.includes("Score")) {
+        sections[section].scores += 1;
+      } else if (action === "miss" || action.includes("Miss")) {
+        sections[section].misses += 1;
+      }
+    });
+
+    setSectionData(sections);
+  }, [gameData]);
   function Hr() {
     return (
       <>
@@ -101,6 +136,7 @@ export default function App() {
     console.log(file.filePath);
     alert(`PDF saved to ${file.filePath}`);
   };
+
   const renderBarLabel = ({ value }) => {
     if (value === 0) {
       return null;
@@ -349,8 +385,7 @@ export default function App() {
   const filteredPositions = gameData.positions.filter(
     (position) => position.actionCategory === "shot"
   );
-  console.log("is doc a pedo ");
-  console.log(filteredPositions);
+
   function GameDataDisplay({
     filteredPositions,
     filteredKickoutPositions,
@@ -1008,8 +1043,11 @@ export default function App() {
       <View
         className={`w-full ${
           type === "kickout" ? "h-[63vh]" : "h-[63vh]"
-        } border-gray-400 border-1 rounded-2xl overflow-hidden`}
+        } border-gray-400 border-1 rounded-xl overflow-hidden`}
       >
+        <Text className="text-white mb-5  text-lg font-semibold">
+          Pitch Section Stats
+        </Text>
         <View className="bg-[#191A22] rounded-3xl h-full">
           <View className="h-full">
             {showSections && (
@@ -1030,14 +1068,6 @@ export default function App() {
                 <View className="w-1/3 h-[20%] top-[40%] border border-gray-300 absolute border-[#0b63fb] left-2/3"></View>
                 <View className="w-1/3 h-[20%] top-[60%] border border-gray-300 absolute border-[#0b63fb] left-2/3"></View>
                 <View className="w-1/3 h-[20%] top-[80%] border border-gray-300 absolute border-[#0b63fb]  left-2/3"></View>
-                {/* <View className="w-1/3 h-[12.5%] left-1/3 border border-gray-300 absolute"></View>
-                <View className="w-1/3 h-[12.5%] left-2/3 border border-gray-300 absolute"></View>
-                <View className="w-1/3 h-[12.5%] top-[12.5%] border border-gray-300 absolute"></View>
-                <View className="w-1/3 h-[12.5%] top-[12.5%] left-1/3 border border-gray-300 absolute"></View>
-                <View className="w-1/3 h-[12.5%] top-[12.5%] left-2/3 border border-gray-300 absolute"></View>
-                <View className="w-1/3 h-[12.5%] top-[25%] border border-gray-300 absolute"></View>
-                <View className="w-1/3 h-[12.5%] top-[25%] left-1/3 border border-gray-300 absolute"></View>
-                <View className="w-1/3 h-[12.5%] top-[25%] left-2/3 border border-gray-300 absolute"></View> */}
               </>
             )}
             {/* Pitch markings */}
@@ -1547,7 +1577,7 @@ export default function App() {
       {/* enter new shot data table here hai  */}
       <Hr />
 
-      <View className="w-full">
+      <View className="w-full mb-5">
         <PitchComponent
           positions={item.pitchData}
           type={item.pitchType}
