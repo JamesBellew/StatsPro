@@ -483,8 +483,7 @@ export default function App() {
       </View>
     );
   }
-  console.log("boyakapppapap");
-  console.log(gameData.positions);
+
   const scoringActions = ["point", "freeScore", "45Score", "goal", "markScore"];
   const missActions = ["miss", "short", "freeMiss", "markMiss", "45Miss"];
 
@@ -549,7 +548,80 @@ export default function App() {
   );
   const windowHeight = Dimensions.get("window").height;
   const pitchHeight = windowHeight * 0.63; // Convert 63vh to pixels
+  const windowWidth = Dimensions.get("window").width;
+  const pitchWidth = windowWidth * 0.9; // Convert 90vw to pixels
 
+  function getPitchSectionData(filteredPositions, screenWidth, screenHeight) {
+    // Calculate the pitch dimensions
+    const pitchWidth = screenWidth * 0.9; // 90% of screen width
+    const pitchHeight = screenHeight * 0.63; // 63% of screen height
+
+    const sections = {};
+
+    // Helper function to initialize a section if it doesn't exist
+    function initializeSection(sectionKey) {
+      if (!sections[sectionKey]) {
+        sections[sectionKey] = {
+          section: sectionKey,
+          won: 0,
+          loss: 0,
+        };
+      }
+    }
+
+    // Iterate over each filtered position and determine the section
+    filteredPositions.forEach((position) => {
+      const { x, y, actionCategory, action } = position;
+
+      // Determine section based on x and y coordinates
+      const column = Math.floor((x / pitchWidth) * 3); // 3 columns across
+      const row = Math.floor((y / pitchHeight) * 5); // 5 rows down
+
+      const sectionKey = `w${column + 1}l${row + 1}`;
+
+      initializeSection(sectionKey);
+
+      // Handling won and loss based on action
+      if (
+        action.toLowerCase().includes("score") ||
+        action.toLowerCase() === "point" ||
+        action.toLowerCase() === "goal" ||
+        action.toLowerCase().includes("won")
+      ) {
+        sections[sectionKey].won += 1;
+      } else if (
+        action.toLowerCase().includes("miss") ||
+        action.toLowerCase() === "miss" ||
+        action.toLowerCase().includes("loss")
+      ) {
+        sections[sectionKey].loss += 1;
+      }
+    });
+
+    // Convert the sections object to an array
+    const sectionArray = Object.keys(sections).map((key) => sections[key]);
+
+    // Ensure all sections (15 sections) are represented
+    for (let row = 1; row <= 5; row++) {
+      for (let column = 1; column <= 3; column++) {
+        const sectionKey = `w${column}l${row}`;
+        if (!sections[sectionKey]) {
+          sectionArray.push({
+            section: sectionKey,
+            won: 0,
+            loss: 0,
+          });
+        }
+      }
+    }
+
+    // Log the final section data array
+    console.log("Final Section Data:", sectionArray);
+
+    return sectionArray;
+  }
+
+  getPitchSectionData(filteredTurnoverPositions, pitchWidth, screenHeight);
   const summaryTurnoversPositionsFiltered = filteredTurnoverPositions.reduce(
     (acc, position) => {
       const third = Math.floor((position.y / pitchHeight) * 3);
@@ -903,38 +975,70 @@ export default function App() {
     const pitchWidth = Dimensions.get("window").width * 0.9; // 90% of the screen width
     const pitchHeight = Dimensions.get("window").height * 0.75; // Assuming 63% of the screen height for the pitch
 
-    // Center of the top red box
-    const centerOfTopGoal = {
-      x: pitchWidth / 2,
-      y: 0, // Adjust if the red box is not at the absolute top
-    };
+    // Calculate the section data dynamically based on the type prop
+    const sectionData = positions.reduce((acc, position) => {
+      const column = Math.floor((position.x / pitchWidth) * 3); // 3 columns
+      const row = Math.floor((position.y / pitchHeight) * 5); // 5 rows
+      const sectionKey = `w${column + 1}l${row + 1}`;
 
-    // Separate positions into points and others
-    const points = useMemo(() => {
-      return positions
-        .filter((position) => position.action === "point")
-        .sort((a, b) => a.time - b.time);
-    }, [positions]);
+      if (!acc[sectionKey]) {
+        acc[sectionKey] = { won: 0, loss: 0 };
+      }
 
-    const others = useMemo(() => {
-      return positions.filter((position) => position.action !== "point");
-    }, [positions]);
+      if (type === "shot") {
+        if (
+          position.action.toLowerCase().includes("score") ||
+          position.action.toLowerCase() === "point" ||
+          position.action.toLowerCase() === "goal"
+        ) {
+          acc[sectionKey].won += 1;
+        } else if (
+          position.action.toLowerCase().includes("miss") ||
+          position.action.toLowerCase() === "miss"
+        ) {
+          acc[sectionKey].loss += 1;
+        }
+      } else if (type === "turnover") {
+        if (position.action.toLowerCase().includes("won")) {
+          acc[sectionKey].won += 1;
+        } else if (position.action.toLowerCase().includes("loss")) {
+          acc[sectionKey].loss += 1;
+        }
+      } else if (type === "kickout") {
+        if (
+          position.action.toLowerCase().includes("won") ||
+          position.action.toLowerCase().includes("catch")
+        ) {
+          acc[sectionKey].won += 1;
+        } else if (
+          position.action.toLowerCase().includes("loss") ||
+          position.action.toLowerCase().includes("break") ||
+          position.action.toLowerCase().includes("out")
+        ) {
+          acc[sectionKey].loss += 1;
+        }
+      }
+
+      return acc;
+    }, {});
 
     const [visiblePaths, setVisiblePaths] = useState([]);
 
     useEffect(() => {
-      points.forEach((position, index) => {
-        setTimeout(() => {
-          setVisiblePaths((prevVisiblePaths) => [
-            ...prevVisiblePaths,
-            { ...position, animatedValue: new Animated.Value(0) },
-          ]);
-        }, index * 300); // Adjust the delay as needed
-      });
-    }, [points]);
+      positions
+        .filter((position) => position.action === "point")
+        .forEach((position, index) => {
+          setTimeout(() => {
+            setVisiblePaths((prevVisiblePaths) => [
+              ...prevVisiblePaths,
+              { ...position, animatedValue: new Animated.Value(0) },
+            ]);
+          }, index * 300); // Adjust the delay as needed
+        });
+    }, [positions]);
 
     useEffect(() => {
-      visiblePaths.forEach(({ animatedValue }, index) => {
+      visiblePaths.forEach(({ animatedValue }) => {
         Animated.timing(animatedValue, {
           toValue: 1,
           duration: 500,
@@ -944,9 +1048,10 @@ export default function App() {
     }, [visiblePaths]);
 
     const mappedActions = useMemo(() => {
-      const allPositions = [...visiblePaths, ...others]; // Combine staggered points and other actions
-
-      return allPositions.map((position, index) => {
+      return [
+        ...visiblePaths,
+        ...positions.filter((p) => p.action !== "point"),
+      ].map((position, index) => {
         const actionStyle = actionStyles[position.action];
 
         if (actionStyle) {
@@ -972,17 +1077,19 @@ export default function App() {
             );
           }
 
-          const dx = centerOfTopGoal.x - position.x;
-          const dy = centerOfTopGoal.y - position.y;
-          const controlPointX = (position.x + centerOfTopGoal.x) / 2;
-          const controlPointY = position.y - 50; // Adjust this value to control the curve
+          const dx = pitchWidth / 2 - position.x;
+          const dy = 0 - position.y;
+          const controlPointX = (position.x + pitchWidth / 2) / 2;
+          const controlPointY = position.y - 50;
 
-          const pathData = `M${position.x},${position.y} Q${controlPointX},${controlPointY} ${centerOfTopGoal.x},${centerOfTopGoal.y}`;
+          const pathData = `M${position.x},${
+            position.y
+          } Q${controlPointX},${controlPointY} ${pitchWidth / 2},0`;
 
           const strokeDasharray = position.animatedValue
             ? position.animatedValue.interpolate({
                 inputRange: [0, 1],
-                outputRange: [0, pitchHeight], // Adjust the output range as needed
+                outputRange: [0, pitchHeight],
               })
             : pitchHeight;
 
@@ -1037,7 +1144,44 @@ export default function App() {
           />
         );
       });
-    }, [visiblePaths, others]);
+    }, [visiblePaths, positions]);
+
+    const renderSections = () => {
+      const sections = [];
+
+      for (let row = 1; row <= 5; row++) {
+        for (let col = 1; col <= 3; col++) {
+          const sectionKey = `w${col}l${row}`;
+          const data = sectionData[sectionKey] || { won: 0, loss: 0 };
+          const borderStyle =
+            data.won === 0 && data.loss === 0
+              ? "border-gray-600 bg-gray-600/10" // If both won and loss are 0, use gray-500
+              : data.won === data.loss
+              ? "border-zinc-400 bg-zinc-400/20" // If won and loss are equal (but not zero), use gray-200
+              : data.won > data.loss
+              ? "border-[#0b63fb] bg-[#0b63fb]/20" // If won is greater than loss, use blue-600
+              : "border-[#d62839] bg-[#d62839]/20"; // If loss is greater than won, use red-600
+          sections.push(
+            <View
+              key={sectionKey}
+              className={`w-1/3 h-[20%] absolute border border-gray-300 justify-center
+              
+              ${borderStyle} `}
+              style={{
+                top: `${(row - 1) * 20}%`,
+                left: `${(col - 1) * 33.33}%`,
+              }}
+            >
+              <Text className="text-white text-lg font-bold text-center z-50">
+                {data.won}/{data.loss}
+              </Text>
+            </View>
+          );
+        }
+      }
+
+      return sections;
+    };
 
     return (
       <View
@@ -1045,31 +1189,9 @@ export default function App() {
           type === "kickout" ? "h-[63vh]" : "h-[63vh]"
         } border-gray-400 border-1 rounded-xl overflow-hidden`}
       >
-        <Text className="text-white mb-5  text-lg font-semibold">
-          Pitch Section Stats
-        </Text>
-        <View className="bg-[#191A22] rounded-3xl h-full">
-          <View className="h-full">
-            {showSections && (
-              //display square section
-              <>
-                <View className="w-1/3 h-[20%] border border-gray-300 absolute border-[#0b63fb]"></View>
-                <View className="w-1/3 h-[20%] top-[20%] border border-gray-300 absolute border-[#0b63fb]"></View>
-                <View className="w-1/3 h-[20%] top-[40%] border border-gray-300 absolute border-[#0b63fb]"></View>
-                <View className="w-1/3 h-[20%] top-[60%] border border-gray-300 absolute border-[#0b63fb]"></View>
-                <View className="w-1/3 h-[20%] top-[80%] border border-gray-300 absolute border-[#0b63fb]"></View>
-                <View className="w-1/3 h-[20%] border border-gray-300 absolute border-[#0b63fb] left-1/3"></View>
-                <View className="w-1/3 h-[20%] top-[20%] border border-gray-300 absolute border-[#0b63fb] left-1/3"></View>
-                <View className="w-1/3 h-[20%] top-[40%] border border-gray-300 absolute border-[#0b63fb] left-1/3"></View>
-                <View className="w-1/3 h-[20%] top-[60%] border border-gray-300 absolute border-[#0b63fb] left-1/3"></View>
-                <View className="w-1/3 h-[20%] top-[80%] border border-gray-300 absolute border-[#0b63fb] left-1/3"></View>
-                <View className="w-1/3 h-[20%] border border-gray-300 absolute border-[#0b63fb] left-2/3"></View>
-                <View className="w-1/3 h-[20%] top-[20%] border border-gray-300 absolute border-[#0b63fb] left-2/3"></View>
-                <View className="w-1/3 h-[20%] top-[40%] border border-gray-300 absolute border-[#0b63fb] left-2/3"></View>
-                <View className="w-1/3 h-[20%] top-[60%] border border-gray-300 absolute border-[#0b63fb] left-2/3"></View>
-                <View className="w-1/3 h-[20%] top-[80%] border border-gray-300 absolute border-[#0b63fb]  left-2/3"></View>
-              </>
-            )}
+        <View className="bg-[#191A22] rounded-3xl h-full relative">
+          <View className="h-full relative">
+            {showSections && renderSections()}
             {/* Pitch markings */}
             <View style={styles.pitchMarkings}>
               <View className="w-[15%] absolute left-[42.5%] h-6 border border-b-zinc-600 border-l-zinc-600 border-r-zinc-600"></View>
@@ -1082,12 +1204,21 @@ export default function App() {
               <View style={[styles.line, { top: "83.6%" }]}></View>
               <View style={[styles.line, { top: "89.5%" }]}></View>
             </View>
-            {mappedActions}
+
+            {!showSections && mappedActions}
           </View>
         </View>
       </View>
     );
   };
+
+  // Example usage
+  // <PitchComponent
+  //   positions={filteredPositions}
+  //   type={"kickout"}
+  //   showSections={true}
+  // />;
+
   const SummaryDataPercentageComponent = ({
     summaryPositions,
     summaryType,
@@ -1578,6 +1709,9 @@ export default function App() {
       <Hr />
 
       <View className="w-full mb-5">
+        <Text className="text-white mb-5 text-lg font-semibold">
+          {item.firstPitchTitle} HeatMap
+        </Text>
         <PitchComponent
           positions={item.pitchData}
           type={item.pitchType}
