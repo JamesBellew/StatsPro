@@ -33,6 +33,7 @@ import {
   faSliders,
   faDownload,
   faChartSimple,
+  faEye,
 } from "@fortawesome/free-solid-svg-icons";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 export default function App() {
@@ -47,6 +48,7 @@ export default function App() {
   const [showGameDetailsMenu, setShowGameDetailsMenu] = useState(false);
   const route = useRoute();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showHeatMapActions, setShowHeatMapActions] = useState(false);
   const viewabilityConfig = useRef({
     viewAreaCoveragePercentThreshold: 50,
   }).current;
@@ -1006,13 +1008,13 @@ export default function App() {
         }
       } else if (type === "kickout") {
         if (
-          position.action.toLowerCase().includes("won") ||
-          position.action.toLowerCase().includes("catch")
+          position.action.toLowerCase().includes("kickoutcatchwon") ||
+          position.action.toLowerCase().includes("kickoutbreakwon")
         ) {
           acc[sectionKey].won += 1;
         } else if (
-          position.action.toLowerCase().includes("loss") ||
-          position.action.toLowerCase().includes("break") ||
+          position.action.toLowerCase().includes("kickoutoppbreak") ||
+          position.action.toLowerCase().includes("kickoppcatch") ||
           position.action.toLowerCase().includes("out")
         ) {
           acc[sectionKey].loss += 1;
@@ -1153,9 +1155,12 @@ export default function App() {
         for (let col = 1; col <= 3; col++) {
           const sectionKey = `w${col}l${row}`;
           const data = sectionData[sectionKey] || { won: 0, loss: 0 };
+          const wonWidth = Math.floor(
+            (data.won / (data.won + data.loss)) * 100
+          );
           const borderStyle =
             data.won === 0 && data.loss === 0
-              ? "border-gray-600 bg-gray-600/10" // If both won and loss are 0, use gray-500
+              ? "border-gray-700 bg-gray-700/20" // If both won and loss are 0, use gray-500
               : data.won === data.loss
               ? "border-zinc-400 bg-zinc-400/20" // If won and loss are equal (but not zero), use gray-200
               : data.won > data.loss
@@ -1172,9 +1177,26 @@ export default function App() {
                 left: `${(col - 1) * 33.33}%`,
               }}
             >
-              <Text className="text-white text-lg font-bold text-center z-50">
-                {data.won}/{data.loss}
-              </Text>
+              {(data.won > 0 || data.loss > 0) && (
+                <View>
+                  <Text className="text-white text-lg font-bold text-center z-50">
+                    {data.won}/{data.loss}
+                  </Text>
+                  <View className="flex-row w-2/4 mx-auto ">
+                    <View
+                      className={`w-[${wonWidth}%]
+                      
+                      bg-[#0b63fb] h-1 rounded-s-xl mx-auto`}
+                    ></View>
+
+                    <View
+                      className={`w-[${100 - wonWidth}%]
+                      
+                      bg-red-600 h-1 rounded-e-xl mx-auto`}
+                    ></View>
+                  </View>
+                </View>
+              )}
             </View>
           );
         }
@@ -1709,9 +1731,34 @@ export default function App() {
       <Hr />
 
       <View className="w-full mb-5">
-        <Text className="text-white mb-5 text-lg font-semibold">
-          {item.firstPitchTitle} HeatMap
-        </Text>
+        <View className="flex-row  items-center mb-5">
+          <Text className="text-white   h-full  text-lg font-semibold">
+            {item.firstPitchTitle} HeatMap
+          </Text>
+          {/* Not sure if there needs to be this function here, */}
+          {/* should the user */}
+          {/* be able to see the actions printed out since all the actions will be
+          available in the chart above this pitch compoenent. Will come back to
+          this but for now I will keep this commented out since I don't think
+          it's needed for POC1 */}
+          {/* <TouchableOpacity
+            onPress={() => {
+              setShowHeatMapActions(!showHeatMapActions);
+            }}
+            className="bg-[#0b63fb] px-3 py-1 rounded-md ml-2 h-auto"
+          >
+            <Text className="text-gray-200">
+              {" "}
+              <FontAwesomeIcon
+                icon={faEye}
+                size={15}
+                color="#fff"
+                className="my-auto justify-center"
+              />{" "}
+            </Text>
+          </TouchableOpacity> */}
+        </View>
+
         <PitchComponent
           positions={item.pitchData}
           type={item.pitchType}

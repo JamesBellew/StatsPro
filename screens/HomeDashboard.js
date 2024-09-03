@@ -309,11 +309,11 @@ export default function App({ route }) {
                       </View>
                       <View className="w-[15%] right-0 flex-1 justify-center items-end px-2 py-1">
                         <Text className="text-gray-200 text-center">
-                          {game.timer >= 1800 && game.timer <= 2160
+                          {game.timer >= 3600 && game.timer <= 3700
                             ? "FT"
                             : Math.floor(game.timer / 60)}
                         </Text>
-                        {game.timer < 1800 ? (
+                        {game.timer < 3600 ? (
                           <Text className="text-gray-200 text-center">Min</Text>
                         ) : (
                           ""

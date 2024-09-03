@@ -120,14 +120,21 @@ export default function App() {
     }
   };
   const handleStartGame = () => {
+    // Extract only the serializable data from actionsBtnsArray
+    const serializableActions = actionsBtnsArray.map((btn) => ({
+      label: btn.label,
+      active: btn.active,
+    }));
+
     navigation.navigate("InGame", {
       opponent: opponentText,
       venue: venue,
       minutes: minutesHalf,
-      gameActions: actionsBtnsArray,
+      gameActions: serializableActions, // Pass only serializable data
       lineout: selectedLineout, // Passing the selected lineout
     });
   };
+
   const [lineoutOptions, setLineoutOptions] = useState([
     { label: "Numbers (Default)", value: "numbers" },
   ]);

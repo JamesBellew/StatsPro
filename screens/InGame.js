@@ -479,12 +479,12 @@ export default function App() {
     if (
       isActive &&
       //! here lies the issue to the timer
-      seconds <= 1800
+      seconds <= 3600
     ) {
       interval = setInterval(() => {
         setSeconds((seconds) => seconds + 1);
       }, 1000);
-    } else if (seconds >= 1800) {
+    } else if (seconds >= 3600) {
       setTimerLimitReached(true);
       setIsActive(false);
       clearInterval(interval);
@@ -1729,11 +1729,11 @@ export default function App() {
             >
               {/* Content for the top view */}
             </TouchableOpacity>
-            <View className="w-full pt-5 bg-gray-400 h-auto  absolute bottom-0 z-[50] rounded-t-3xl pb-5 mx-auto">
-              <View className="w-full absolute right-0 z-50 flex-row  h-auto">
+            <View className="w-full pt-5 bg-gray-400 h-auto absolute bottom-0 z-[50] rounded-t-3xl pb-5 mx-auto">
+              <View className="w-full absolute right-0 z-50 flex-row h-auto">
                 <TouchableOpacity
                   onPress={() => setShowIngameStatModal(false)}
-                  className=" ml-5 p-2 right-2 top-1 absolute "
+                  className="ml-5 p-2 right-2 top-1 absolute"
                 >
                   <Text className="text-xl text-black rounded-full w-full">
                     <FontAwesomeIcon
@@ -1744,8 +1744,8 @@ export default function App() {
                   </Text>
                 </TouchableOpacity>
               </View>
-              <View className="w-full  mb-5  p-2 mx-auto text-center justify-center">
-                <View className="h-10  w-full z-[-1]   flex-row items-center justify-between">
+              <View className="w-full mb-5 p-2 mx-auto text-center justify-center">
+                <View className="h-10 w-full z-[-1] flex-row items-center justify-between">
                   {/* Left buttons */}
                   <View className="flex-row space-x-1 mx-auto">
                     <TouchableOpacity
@@ -1754,7 +1754,7 @@ export default function App() {
                         ingameStatModalFilter === "shot"
                           ? "border border-[#0b63fb]"
                           : ""
-                      }  w-16 p-2 rounded`}
+                      } w-16 p-2 rounded`}
                     >
                       <Text className="text-white text-center">Shots</Text>
                     </TouchableOpacity>
@@ -1764,7 +1764,7 @@ export default function App() {
                         ingameStatModalFilter === "kickout"
                           ? "border border-[#0b63fb]"
                           : ""
-                      }  w-auto p-2 rounded`}
+                      } w-auto p-2 rounded`}
                     >
                       <Text className="text-white text-center">Kickouts</Text>
                     </TouchableOpacity>
@@ -1774,7 +1774,7 @@ export default function App() {
                         ingameStatModalFilter === "T/O"
                           ? "border-2 border-[#0b63fb]"
                           : ""
-                      }  w-16 p-2 rounded`}
+                      } w-16 p-2 rounded`}
                     >
                       <Text className="text-white text-center">T/O's</Text>
                     </TouchableOpacity>
@@ -1784,7 +1784,7 @@ export default function App() {
                         ingameStatModalFilter === "All"
                           ? "border border-[#0b63fb]"
                           : ""
-                      }  w-16 p-2 rounded`}
+                      } w-16 p-2 rounded`}
                     >
                       <Text className="text-white text-center">All</Text>
                     </TouchableOpacity>
@@ -1794,79 +1794,84 @@ export default function App() {
                   <View className="flex-row"></View>
                 </View>
                 <View className="flex-row mt-2">
-                  <Text className="w-1/4 p-1  text-center">Min</Text>
-                  <Text className="w-1/4 p-1  text-center">Action</Text>
-                  <Text className="w-1/4 p-1  text-center">Player</Text>
-                  <Text className="w-1/4 p-1  text-center">Score</Text>
+                  <Text className="w-1/4 p-1 text-center">Min</Text>
+                  <Text className="w-1/4 p-1 text-center">Action</Text>
+                  <Text className="w-1/4 p-1 text-center">Player</Text>
+                  <Text className="w-1/4 p-1 text-center">Score</Text>
                 </View>
-                {filteredPositions.length === 0 ? (
-                  <Text className="text-center text-md mt-5 py-2">
-                    No data yet,
-                  </Text>
-                ) : (
-                  filteredPositions.map((position, index) => (
-                    <TouchableOpacity
-                      onLongPress={() => {
-                        setLongPressedId(position.id);
-                        console.log("longpressed");
-                      }}
-                      onPress={() => {
-                        setLongPressedId(null);
-                        console.log("pressed");
-                      }}
-                      key={index}
-                      className={`flex-row justify-center py-1 rounded-md mx-1 text-white ${
-                        index % 2 === 0 ? "bg-white/50" : ""
-                      } `}
-                    >
-                      {longPressedId === position.id ? (
-                        <>
-                          <TouchableOpacity
-                            onPress={() =>
-                              deletePositionById(position.id, position.action)
-                            }
-                            className=" bg-red-500 w-auto px-5 py-1 rounded-md justify-center items-center"
-                          >
-                            <Text>Delete</Text>
-                          </TouchableOpacity>
-                          <TouchableOpacity
-                            onPress={() => setLongPressedId(null)}
-                            className="ml-2 bg-[#0b63fb] w-auto px-5 py-1 rounded-md justify-center items-center"
-                          >
-                            <Text>Cancel</Text>
-                          </TouchableOpacity>
-                        </>
-                      ) : (
-                        <>
-                          <Text className="w-1/4 p-1 text-gray-700 text-center">
-                            {formatTime(position.time)}
-                          </Text>
-                          <Text className="w-1/4 p-1 text-gray-700 text-center">
-                            {position.action}
-                          </Text>
-                          <Text className="w-1/4 p-1 text-gray-700 text-center">
-                            {position.player}
-                          </Text>
-                          <Text className="w-1/4 p-1 text-gray-700 text-center">
-                            0:{position.score}
-                          </Text>
-                        </>
-                      )}
-                    </TouchableOpacity>
-                  ))
-                )}
-                {/* <View className="w-auto justify-end flex flex-row  bg-blue-600 items-end">
-                <View className="bg-red-600 h-5 w-auto right-5 mx-2">
-                  <Text>Edit</Text>
-                </View>
-                <View className="bg-red-600 h-5 w-auto right-5">
-                  <Text>Edit</Text>
-                </View>
-              </View> */}
+
+                {/* Scrollable content */}
+                <ScrollView className="h-96">
+                  {filteredPositions.length === 0 ? (
+                    <Text className="text-center text-md mt-5 py-2">
+                      No data yet,
+                    </Text>
+                  ) : (
+                    filteredPositions.map((position, index) => (
+                      <TouchableOpacity
+                        onLongPress={() => {
+                          setLongPressedId(position.id);
+                          console.log("longpressed");
+                        }}
+                        onPress={() => {
+                          setLongPressedId(null);
+                          console.log("pressed");
+                        }}
+                        key={index}
+                        className={`flex-row justify-center py-1 rounded-md mx-1 text-white ${
+                          index % 2 === 0 ? "bg-white/50" : ""
+                        } `}
+                      >
+                        {longPressedId === position.id ? (
+                          <>
+                            <TouchableOpacity
+                              onPress={() =>
+                                deletePositionById(position.id, position.action)
+                              }
+                              className="bg-red-500 w-auto px-5 py-1 rounded-md justify-center items-center"
+                            >
+                              <Text>Delete</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              onPress={() => setLongPressedId(null)}
+                              className="ml-2 bg-[#0b63fb] w-auto px-5 py-1 rounded-md justify-center items-center"
+                            >
+                              <Text>Cancel</Text>
+                            </TouchableOpacity>
+                          </>
+                        ) : (
+                          <>
+                            <Text className="w-1/4 p-1 text-gray-700 text-center">
+                              {formatTime(position.time)}
+                            </Text>
+                            <Text className="w-1/4 p-1 text-gray-700 text-center">
+                              {position.action}
+                            </Text>
+                            <Text className="w-1/4 p-1 text-gray-700 text-center">
+                              {position.player}
+                            </Text>
+                            <Text className="w-1/4 p-1 text-gray-700 text-center">
+                              0:{position.score}
+                            </Text>
+                          </>
+                        )}
+                      </TouchableOpacity>
+                    ))
+                  )}
+                </ScrollView>
+                {/* <View className="w-auto justify-end flex flex-row bg-blue-600 items-end">
+          <View className="bg-red-600 h-5 w-auto right-5 mx-2">
+            <Text>Edit</Text>
+          </View>
+          <View className="bg-red-600 h-5 w-auto right-5">
+            <Text>Edit</Text>
+          </View>
+        </View> */}
               </View>
             </View>
           </View>
         )}
+
         {showEditLineupModal && (
           <>
             <TouchableOpacity
@@ -2119,7 +2124,7 @@ export default function App() {
                 </Text>
                 <TouchableOpacity
                   onPress={() => {
-                    if (seconds < 1800) {
+                    if (seconds < 3600) {
                       setSeconds(seconds + 60);
                     }
                   }}
