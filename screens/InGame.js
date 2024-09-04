@@ -479,15 +479,24 @@ export default function App() {
     if (
       isActive &&
       //! here lies the issue to the timer
-      seconds <= 3600
+      seconds <= 1799
     ) {
       interval = setInterval(() => {
         setSeconds((seconds) => seconds + 1);
       }, 1000);
     } else if (seconds >= 3600) {
+      console.log("End of Game Reached");
       setTimerLimitReached(true);
       setIsActive(false);
       clearInterval(interval);
+    } else if (seconds === 1800 && currentHalf === 1) {
+      console.log("we hit the first half");
+      setTimerIcon("play");
+    } else if (currentHalf === 2 && seconds < 3600) {
+      setIsActive(true);
+      interval = setInterval(() => {
+        setSeconds((seconds) => seconds + 1);
+      }, 1000);
     }
     return () => clearInterval(interval);
   }, [isActive, seconds]);
@@ -2039,7 +2048,8 @@ export default function App() {
                     {
                       currentHalf === 1 ? setCurrentHalf(2) : setCurrentHalf(1);
                     }
-                    setSeconds(0);
+
+                    setSeconds(1802);
                     setShowHalftimeModal(false);
                     setIsActive(true);
                     setTimerLimitReached(false);
@@ -2107,11 +2117,19 @@ export default function App() {
                 </View>
                 <TouchableOpacity
                   onPress={() => {
-                    if (seconds > 60) {
-                      setSeconds(seconds - 60);
-                    } else {
-                      setSeconds(0);
-                      setIsActive(true);
+                    if (currentHalf === 1) {
+                      if (seconds > 60) {
+                        setSeconds(seconds - 60);
+                      } else {
+                        setSeconds(0);
+                        setIsActive(true);
+                      }
+                    } else if (currentHalf === 2) {
+                      if (seconds > 1860) {
+                        setSeconds(seconds - 60);
+                      } else {
+                        setSeconds(1800);
+                      }
                     }
                   }}
                   className="bg-white mx-auto my-auto mr-5 justify-center p-2 rounded-full w-10 h-10"

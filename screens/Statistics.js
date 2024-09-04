@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { Easing } from "react-native-reanimated";
 import { captureRef } from "react-native-view-shot";
-import RNHTMLtoPDF from "react-native-html-to-pdf";
+// import RNHTMLtoPDF from "react-native-html-to-pdf";
 import {
   BarChart,
   LineChart,
@@ -53,26 +53,26 @@ export default function App() {
     viewAreaCoveragePercentThreshold: 50,
   }).current;
 
-  const captureAndShareScreenshot = async () => {
-    try {
-      const uri = await captureRef(viewRef, {
-        format: "png",
-        quality: 0.8,
-      });
+  // const captureAndShareScreenshot = async () => {
+  //   try {
+  //     const uri = await captureRef(viewRef, {
+  //       format: "png",
+  //       quality: 0.8,
+  //     });
 
-      const options = {
-        html: `<img src="${uri}" width="100%">`,
-        fileName: "screenshot",
-        directory: "Documents",
-      };
+  //     const options = {
+  //       html: `<img src="${uri}" width="100%">`,
+  //       fileName: "screenshot",
+  //       directory: "Documents",
+  //     };
 
-      const file = await RNHTMLtoPDF.convert(options);
+  //     const file = await RNHTMLtoPDF.convert(options);
 
-      console.log("PDF saved to:", file.filePath);
-    } catch (error) {
-      console.error("Failed to capture screenshot:", error);
-    }
-  };
+  //     console.log("PDF saved to:", file.filePath);
+  //   } catch (error) {
+  //     console.error("Failed to capture screenshot:", error);
+  //   }
+  // };
   const onViewableItemsChanged = useRef(({ viewableItems }) => {
     if (viewableItems && viewableItems.length > 0) {
       setCurrentIndex(viewableItems[0].index);
@@ -84,6 +84,8 @@ export default function App() {
   };
 
   const { gameData } = route.params; // Access the passed parameters
+  console.log("this is what you came for below");
+  console.log(gameData);
   const [sectionData, setSectionData] = useState({});
   // Function to determine the grid section based on x, y coordinates
   const determineSection = (x, y, width, height) => {
@@ -127,17 +129,17 @@ export default function App() {
       </>
     );
   }
-  const createPDF = async () => {
-    let options = {
-      html: "<h1>PDF Content</h1><p>This is a sample PDF</p>",
-      fileName: "sample",
-      directory: "Documents",
-    };
+  // const createPDF = async () => {
+  //   let options = {
+  //     html: "<h1>PDF Content</h1><p>This is a sample PDF</p>",
+  //     fileName: "sample",
+  //     directory: "Documents",
+  //   };
 
-    let file = await RNHTMLtoPDF.convert(options);
-    console.log(file.filePath);
-    alert(`PDF saved to ${file.filePath}`);
-  };
+  //   let file = await RNHTMLtoPDF.convert(options);
+  //   console.log(file.filePath);
+  //   alert(`PDF saved to ${file.filePath}`);
+  // };
 
   const renderBarLabel = ({ value }) => {
     if (value === 0) {
@@ -2221,16 +2223,14 @@ export default function App() {
                   <Text className="text-xl mx-5 mt-10 font-bold text-gray-200 ">
                     Score
                   </Text>
-                  <Text className="text-xl mx-5    text-gray-500 ">FT</Text>
+                  <Text className="text-xl mx-5    text-gray-500 "> {}</Text>
                   {/* <Text className="text-md mx-10 font-semibold capitalize mt-3 text-[#191A22] ">
                 {gameData.timestamp}
               </Text> */}
                   <Text className="text-2xl mx-5 font-bold capitalize mt-3 text-[#0b63fb] ">
-                    2:10 - 3:09
+                    {gameData.gameScoreGoal}:{gameData.gameScorePoint}
                   </Text>
-                  <Text className="text-xl mx-5  capitalize  text-gray-500 ">
-                    Win
-                  </Text>
+                  <Text className="text-xl mx-5    text-gray-500 ">FT</Text>
                 </View>
               </View>
 
@@ -2242,7 +2242,7 @@ export default function App() {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => navigation.navigate("Testing")}
-                  className="p-4 mb-10 bg-gray-300 w-[90%] items-center  rounded-lg mt-4"
+                  className="p-4 mb-10 bg-gray-300 w-[90%] items-center  rounded-3xl mt-4"
                 >
                   <Text className="font-bold text-md px-4">Download Game</Text>
                 </TouchableOpacity>
