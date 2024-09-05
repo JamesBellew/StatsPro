@@ -135,10 +135,10 @@ function LoginScreen({ navigation }) {
         onPress={() => navigation.navigate("Login")}
         className="bg-[#D9D9D9] my-5 rounded-md py-1 px-10"
       >
-        <Image
+        {/* <Image
           source={require("../StatsPro/assets/google.webp")}
           className="h-7 mx-auto text-center flex align-middle self-center justify-center w-7 my-auto"
-        />
+        /> */}
       </TouchableOpacity>
       <View className="flex justify-center items-center h-10 w-full">
         <Text className="text-[#D9D9D9]">

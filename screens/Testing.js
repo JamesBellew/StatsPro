@@ -1,64 +1,87 @@
-import { StatusBar } from "expo-status-bar";
-import { Button, StyleSheet, Text, View, Image } from "react-native";
+import React, { useRef } from "react";
+import { View, Text, TouchableOpacity, Alert, ScrollView } from "react-native";
+import * as Print from "expo-print";
+import * as Sharing from "expo-sharing";
 import { captureRef } from "react-native-view-shot";
-import React, { useRef, useState } from "react";
-
-// npx expo install react-native-view-shot
 
 export default function App() {
-  const viewToSnapshotRef = useRef();
-  const [snapshotImg, setSnapshotImg] = useState(null);
+  // Reference to the ScrollView that will be captured
+  const scrollViewRef = useRef();
 
-  const snapshot = async () => {
+  const generatePdf = async () => {
     try {
-      const result = await captureRef(viewToSnapshotRef, {
-        result: "data-uri",
+      // Capture the entire content of the ScrollView
+      const uri = await captureRef(scrollViewRef, {
+        format: "png",
+        quality: 1,
+        // Set `result` to `data-uri` to handle larger content if needed
+        snapshotContentContainer: true, // This ensures the full scrollable content is captured
       });
-      console.log(result); // This logs the Base64-encoded image string to the console
-      setSnapshotImg(result); // Save the Base64 image string to state for rendering
+
+      // Convert the captured image into HTML content for the PDF
+      const htmlContent = `
+        <html>
+          <body>
+            <img src="${uri}" style="width: 100%; height: auto;" />
+          </body>
+        </html>
+      `;
+
+      // Generate PDF from the captured image
+      const { uri: pdfUri } = await Print.printToFileAsync({
+        html: htmlContent,
+      });
+
+      console.log("PDF generated at:", pdfUri);
+      Alert.alert("PDF generated at:", pdfUri);
+
+      // Share the PDF
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(pdfUri);
+      } else {
+        Alert.alert("Sharing is not available on this device");
+      }
     } catch (error) {
-      console.error("Failed to capture screenshot:", error);
+      console.error("Error generating PDF:", error);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <View ref={viewToSnapshotRef} style={styles.snapshot}>
-        <Text>Contact Details boiiiiii</Text>
-        <Text>Names: James Smith</Text>
-        <Text>Phone: 555-5555</Text>
-      </View>
-      <Button title="Take Snapshot" onPress={snapshot} />
-      {snapshotImg && <Text>Snapshot Preview:</Text>}
-      {snapshotImg && (
-        <Image
-          resizeMode="contain"
-          style={styles.snapshotImg}
-          source={{ uri: snapshotImg }} // Display the captured screenshot
-        />
-      )}
-      <StatusBar style="auto" />
-    </View>
+    <>
+      <ScrollView ref={scrollViewRef} contentContainerStyle={{ padding: 20 }}>
+        <View
+          className="h-80"
+          style={{
+            backgroundColor: "red",
+
+            padding: 20,
+            marginBottom: 20,
+          }}
+        >
+          <Text style={{ color: "white" }}>This is a test</Text>
+        </View>
+
+        <View
+          className="h-80"
+          style={{ backgroundColor: "blue", padding: 20, marginBottom: 20 }}
+        >
+          <Text style={{ color: "yellow" }}>Another View</Text>
+        </View>
+
+        <View
+          className="h-80"
+          style={{ backgroundColor: "green", padding: 20, marginBottom: 20 }}
+        >
+          <Text style={{ color: "black" }}>Another View</Text>
+        </View>
+
+        <TouchableOpacity
+          onPress={generatePdf}
+          style={{ padding: 10, backgroundColor: "#007bff", borderRadius: 5 }}
+        >
+          <Text style={{ color: "#fff" }}>Generate PDF</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  snapshot: {
-    borderColor: "#000000",
-    borderWidth: 2,
-    backgroundColor: "#00ffff",
-    margin: 16,
-    padding: 16,
-  },
-  snapshotImg: {
-    width: 400,
-    height: 200,
-    margin: 16,
-  },
-});
