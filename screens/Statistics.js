@@ -8,11 +8,15 @@ import {
   Animated,
   FlatList,
   StyleSheet,
+  Alert,
   Dimensions,
   Modal,
 } from "react-native";
 import { Easing } from "react-native-reanimated";
 import { captureRef } from "react-native-view-shot";
+import * as Print from "expo-print";
+import * as Sharing from "expo-sharing";
+
 // import RNHTMLtoPDF from "react-native-html-to-pdf";
 import {
   BarChart,
@@ -39,6 +43,7 @@ import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 export default function App() {
   const viewRef = useRef();
   const navigation = useNavigation();
+  const testRef = useRef();
   //!useREfs
   const flatListRef = useRef(null);
   //!usestates
@@ -52,7 +57,43 @@ export default function App() {
   const viewabilityConfig = useRef({
     viewAreaCoveragePercentThreshold: 50,
   }).current;
+  const generatePdf = async () => {
+    try {
+      // Capture the entire content of the ScrollView
+      const uri = await captureRef(testRef, {
+        format: "png",
+        quality: 1,
+        // Set `result` to `data-uri` to handle larger content if needed
+        snapshotContentContainer: true, // This ensures the full scrollable content is captured
+      });
 
+      // Convert the captured image into HTML content for the PDF
+      const htmlContent = `
+        <html>
+          <body>
+            <img src="${uri}" style="width: 100%; height: auto;" />
+          </body>
+        </html>
+      `;
+
+      // Generate PDF from the captured image
+      const { uri: pdfUri } = await Print.printToFileAsync({
+        html: htmlContent,
+      });
+
+      console.log("PDF generated at:", pdfUri);
+      Alert.alert("PDF generated at:", pdfUri);
+
+      // Share the PDF
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(pdfUri);
+      } else {
+        Alert.alert("Sharing is not available on this device");
+      }
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+    }
+  };
   // const captureAndShareScreenshot = async () => {
   //   try {
   //     const uri = await captureRef(viewRef, {
@@ -2235,7 +2276,10 @@ export default function App() {
               </View>
 
               <View className="justify-center mx-auto w-full  items-center">
-                <TouchableOpacity className="p-4 bg-[#0b63fb] w-[90%] items-center  rounded-3xl mt-16">
+                <TouchableOpacity
+                  onPress={generatePdf}
+                  className="p-4 bg-[#0b63fb] w-[90%] items-center  rounded-3xl mt-16"
+                >
                   <Text className="font-bold text-white text-md px-4">
                     Share to WhatsApp
                   </Text>

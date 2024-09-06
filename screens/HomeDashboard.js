@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import {
@@ -9,9 +9,13 @@ import {
   TouchableWithoutFeedback,
   Image,
   ScrollView,
+  Alert,
   StyleSheet,
   ImageBackground,
 } from "react-native";
+import * as Print from "expo-print";
+import * as Sharing from "expo-sharing";
+import { captureRef } from "react-native-view-shot";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faHeart, faEye, faCloud } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation, useIsFocused } from "@react-navigation/native";
@@ -25,9 +29,46 @@ export default function App({ route }) {
   const [savedGameCount, setSavedGameCount] = useState(0);
   const [longPressedGame, setLongPressedGame] = useState(null);
   const [gameIndexClicked, setGameIndexClicked] = useState(null);
-
+  const scrollViewRef = useRef();
   const handleStartGame = () => {
     console.log("clicked");
+  };
+  const generatePdf = async () => {
+    try {
+      // Capture the entire content of the ScrollView
+      const uri = await captureRef(scrollViewRef, {
+        format: "png",
+        quality: 1,
+        // Set `result` to `data-uri` to handle larger content if needed
+        snapshotContentContainer: true, // This ensures the full scrollable content is captured
+      });
+
+      // Convert the captured image into HTML content for the PDF
+      const htmlContent = `
+        <html>
+          <body>
+            <img src="${uri}" style="width: 100%; height: auto;" />
+          </body>
+        </html>
+      `;
+
+      // Generate PDF from the captured image
+      const { uri: pdfUri } = await Print.printToFileAsync({
+        html: htmlContent,
+      });
+
+      console.log("PDF generated at:", pdfUri);
+      Alert.alert("PDF generated at:", pdfUri);
+
+      // Share the PDF
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(pdfUri);
+      } else {
+        Alert.alert("Sharing is not available on this device");
+      }
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+    }
   };
   const handleLogout = () => {
     navigation.dispatch(
@@ -115,7 +156,7 @@ export default function App({ route }) {
   const recentSavedGamesArray = savedGames.slice().reverse();
   return (
     <SafeAreaView className="flex-1 bg-[#12131A]">
-      <ScrollView>
+      <ScrollView ref={scrollViewRef}>
         {showSavedGamesComp && <SavedGamesComponent />}
         <View className="flex flex-row justify-end  h-10  items-center">
           <View className="w-auto m-2 flex-row h-10  items-center justify-center">
@@ -236,6 +277,12 @@ export default function App({ route }) {
           </ImageBackground> */}
           <Text></Text>
         </View>
+        <TouchableOpacity
+          onPress={generatePdf}
+          className="px-5 w-32 rounded-md py-4 mx-auto bg-blue-600"
+        >
+          <Text>Test</Text>
+        </TouchableOpacity>
         <View className=" flex-row mx-5  mt-5 mb-5">
           <View className=" flex-1  flex-row  mt-5 ">
             <Text className="text-[#444A4F] text-gray-200 text-2xl  capitalize font-semibold">
