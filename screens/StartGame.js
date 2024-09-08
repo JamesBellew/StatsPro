@@ -43,6 +43,7 @@ export default function App() {
   const [showEditLineoutModal, setShowEditLineoutModal] = useState(false);
   const [newPlayerName, setNewPlayerName] = useState("");
   const [showNewPlayerTextInput, setShowNewPlayerTextInput] = useState(false);
+
   const [playerToBeEdited, setPlayerToBeEdited] = useState(null); // Track player to be edited
   const [showEditView, setShowEditView] = useState(false); // Show edit view
   const [lineoutModalVisible, setLineoutModalVisible] = useState(false);
@@ -135,8 +136,16 @@ export default function App() {
     });
   };
 
+  // Default lineout options
   const [lineoutOptions, setLineoutOptions] = useState([
-    { label: "Numbers (Default)", value: "numbers" },
+    {
+      label: "Numbers (Default)",
+      value: "numbers",
+      names: Array.from({ length: 15 }, (_, index) => ({
+        number: index + 1,
+        name: (index + 1).toString(),
+      })),
+    },
   ]);
   const handleLogout = () => {
     navigation.dispatch(
@@ -158,9 +167,11 @@ export default function App() {
   const [nameCount, setNameCount] = useState(30);
   const [showLineouViewModal, setShowLineupViewModal] = useState(false);
   const [showNewLineupModalComp, setShowNewLineupModal] = useState(false);
-  const [selectedValue, setSelectedValue] = useState("lineout1");
+  // const [selectedValue, setSelectedValue] = useState("lineout1");
   const [text, onChangeText] = useState("");
-  const [selectedLineout, setSelectedLineout] = useState(null);
+  // Set initial selected lineout and value to "Numbers (Default)"
+  const [selectedValue, setSelectedValue] = useState("numbers");
+  const [selectedLineout, setSelectedLineout] = useState(lineoutOptions[0]);
 
   // Function to handle lineout selection change
   const onLineoutChange = (itemValue) => {
@@ -170,7 +181,6 @@ export default function App() {
     );
     setSelectedLineout(lineoutData);
   };
-
   const [allNamesFilled, setAllNamesFilled] = useState(false);
   const [actionsBtnsArray, setActionsBtnsArray] = useState([
     { label: "point", active: true, action: () => handleAction(1) },
@@ -213,6 +223,16 @@ export default function App() {
     const allFilled = names.every((name) => name.length >= 2);
     setAllNamesFilled(allFilled);
   }, [names]);
+  const handleSaveLineout = () => {
+    const updatedLineout = {
+      label: lineoutOverallName, // Get the correct label
+      value: lineoutOverallName.toLowerCase().replace(/ /g, "-"), // Example of creating a value
+      names: names.slice(0, nameCount), // Use the current list of names, trimmed to the nameCount
+    };
+
+    // Call saveLineout with the updated lineout, NOT with the event
+    saveLineout(updatedLineout);
+  };
 
   const saveLineout = async (updatedLineout) => {
     try {
@@ -229,7 +249,7 @@ export default function App() {
 
         if (existingLineoutIndex >= 0) {
           // Update the existing lineout
-          newOptions[existingLineoutIndex].names = updatedLineout.names;
+          newOptions[existingLineoutIndex] = updatedLineout;
         } else {
           // If not found, add a new lineout
           newOptions.push(updatedLineout);
@@ -242,10 +262,8 @@ export default function App() {
       // Save the updated options back to AsyncStorage
       await AsyncStorage.setItem("lineoutOptions", JSON.stringify(newOptions));
       setLineoutOptions(newOptions);
-      console.log(
-        "Lineout saved successfully:",
-        JSON.stringify(updatedLineout)
-      );
+
+      console.log("Lineout saved successfully:", updatedLineout);
     } catch (error) {
       console.error("Failed to save the lineout options", error);
     }
@@ -427,7 +445,7 @@ export default function App() {
             </ScrollView>
             <View className="flex-row w-full mx-auto justify-center space-x-2">
               <TouchableOpacity
-                onPress={saveLineout}
+                onPress={handleSaveLineout} // This should call your save function, not pass the event
                 disabled={!allNamesFilled} // Button is disabled if not all names are filled correctly
                 className={`${
                   allNamesFilled ? "bg-[#0b63fb]/80" : "bg-gray-700"
@@ -435,6 +453,7 @@ export default function App() {
               >
                 <Text className="text-white text-center">Save Lineout</Text>
               </TouchableOpacity>
+
               <TouchableOpacity
                 onPress={() => setShowNewLineupModal(false)}
                 className="bg-gray-700 px-4 py-2 rounded-md mt-4"
@@ -850,13 +869,12 @@ export default function App() {
           >
             {lineoutOptions.map((option, index) => (
               <Picker.Item
-                key={index} // This line should include a unique key
+                key={index} // Unique key for each item
                 label={option.label}
                 value={option.value}
               />
             ))}
           </Picker>
-
           <Modal
             animationType="slide"
             transparent={true}
