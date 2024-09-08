@@ -1,7 +1,7 @@
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./App.{js,jsx,ts,tsx}",
-    "./screens/HomeDashboard.{js,jsx,ts,tsx}",
+    "./App.{js,jsx,ts,tsx}", // Adjust this depending on your file structure
     "./screens/**/*.{js,jsx,ts,tsx}",
     "./components/**/*.{js,jsx,ts,tsx}",
   ],

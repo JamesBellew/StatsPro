@@ -8,6 +8,8 @@ import StartGame from "./screens/StartGame";
 import Statistics from "./screens/Statistics";
 import EditLineup from "./screens/EditLineup";
 import InGame from "./screens/InGame";
+import { styled } from "nativewind";
+
 import Testing from "./screens/Testing";
 import { CommonActions } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";

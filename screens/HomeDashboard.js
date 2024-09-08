@@ -277,12 +277,12 @@ export default function App({ route }) {
           </ImageBackground> */}
           <Text></Text>
         </View>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={generatePdf}
           className="px-5 w-32 rounded-md py-4 mx-auto bg-blue-600"
         >
           <Text>Test</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <View className=" flex-row mx-5  mt-5 mb-5">
           <View className=" flex-1  flex-row  mt-5 ">
             <Text className="text-[#444A4F] text-gray-200 text-2xl  capitalize font-semibold">
