@@ -51,18 +51,27 @@ export default function App() {
   const incrementCount = () => {
     if (nameCount < 30) {
       setNameCount(nameCount + 1);
-      setNames((prevNames) => [...prevNames, ""]);
+      setNames((prevNames) => [
+        ...prevNames,
+        { number: prevNames.length + 1, name: "" }, // Adding a new player object
+      ]);
     }
   };
+
   const decrementCount = () => {
     if (nameCount > 15) {
       setNameCount(nameCount - 1);
-      setNames((prevNames) => prevNames.slice(0, -1));
+      setNames((prevNames) => prevNames.slice(0, -1)); // Remove the last player
     }
   };
+
   const handleNameChange = (index, value) => {
     const updatedNames = [...names];
-    updatedNames[index].name = value;
+    if (!updatedNames[index]) {
+      updatedNames[index] = { number: index + 1, name: value }; // Initialize if undefined
+    } else {
+      updatedNames[index].name = value; // Update name if object exists
+    }
     setNames(updatedNames);
   };
 
@@ -183,7 +192,7 @@ export default function App() {
     }
   };
 
-  const [allNamesFilled, setAllNamesFilled] = useState(false);
+  const [allNamesFilled, setAllNamesFilled] = useState(true);
   const [actionsBtnsArray, setActionsBtnsArray] = useState([
     { label: "point", active: true, action: () => handleAction(1) },
     { label: "goal", active: true, action: () => handleAction(2) },
@@ -219,10 +228,10 @@ export default function App() {
     );
   };
 
-  useEffect(() => {
-    const allFilled = names.every((name) => name.length >= 2);
-    setAllNamesFilled(allFilled);
-  }, [names]);
+  // useEffect(() => {
+  //   const allFilled = names.every((name) => name.length >= 1);
+  //   setAllNamesFilled(allFilled);
+  // }, [names]);
 
   const handleSaveLineout = () => {
     const updatedLineout = {
@@ -709,9 +718,12 @@ export default function App() {
                           {showEditView && (
                             <>
                               <Text className="text-white text-lg px-2 mt-4">
-                                Edit Player <Text> </Text>
+                                Edit Player
+                                <Text> </Text>
                                 <Text className="text-[#0b63fb]">
-                                  {playerToBeEdited}
+                                  {playerToBeEdited
+                                    ? `${playerToBeEdited.number}. ${playerToBeEdited.name}`
+                                    : "No player selected"}
                                 </Text>
                               </Text>
                               <View className="mt-2 h-10 flex-row w-4/4 space-x-4 px-2">
@@ -719,16 +731,17 @@ export default function App() {
                                   className="flex-1 bg-gray-700 text-white px-2 py-1 rounded-md"
                                   placeholder="Edit player name"
                                   placeholderTextColor="#ccc"
-                                  value={playerToBeEdited}
-                                  onChangeText={(value) =>
-                                    setPlayerToBeEdited(value)
+                                  value={
+                                    playerToBeEdited
+                                      ? playerToBeEdited.name
+                                      : ""
                                   }
-                                  // onChangeText={(value) =>
-                                  //   setPlayerToBeEdited({
-                                  //     ...playerToBeEdited,
-                                  //     name: "resttt",
-                                  //   })
-                                  // }
+                                  onChangeText={(value) =>
+                                    setPlayerToBeEdited({
+                                      ...playerToBeEdited,
+                                      name: value,
+                                    })
+                                  }
                                 />
                                 <TouchableOpacity
                                   onPress={handleSaveEditedPlayer}
