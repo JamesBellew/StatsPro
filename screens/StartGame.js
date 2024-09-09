@@ -43,11 +43,11 @@ export default function App() {
   const [showEditLineoutModal, setShowEditLineoutModal] = useState(false);
   const [newPlayerName, setNewPlayerName] = useState("");
   const [showNewPlayerTextInput, setShowNewPlayerTextInput] = useState(false);
-
   const [playerToBeEdited, setPlayerToBeEdited] = useState(null); // Track player to be edited
   const [showEditView, setShowEditView] = useState(false); // Show edit view
   const [lineoutModalVisible, setLineoutModalVisible] = useState(false);
-  const [names, setNames] = useState(Array(30).fill(""));
+  const [names, setNames] = useState(Array(15).fill({ number: "", name: "" }));
+
   const incrementCount = () => {
     if (nameCount < 30) {
       setNameCount(nameCount + 1);
@@ -62,9 +62,10 @@ export default function App() {
   };
   const handleNameChange = (index, value) => {
     const updatedNames = [...names];
-    updatedNames[index] = value;
+    updatedNames[index].name = value;
     setNames(updatedNames);
   };
+
   const handleDeleteLineout = () => {
     Alert.alert(
       "Delete Lineout",
@@ -167,9 +168,6 @@ export default function App() {
   const [nameCount, setNameCount] = useState(30);
   const [showLineouViewModal, setShowLineupViewModal] = useState(false);
   const [showNewLineupModalComp, setShowNewLineupModal] = useState(false);
-  // const [selectedValue, setSelectedValue] = useState("lineout1");
-  const [text, onChangeText] = useState("");
-  // Set initial selected lineout and value to "Numbers (Default)"
   const [selectedValue, setSelectedValue] = useState("numbers");
   const [selectedLineout, setSelectedLineout] = useState(lineoutOptions[0]);
 
@@ -179,8 +177,12 @@ export default function App() {
     const lineoutData = lineoutOptions.find(
       (option) => option.value === itemValue
     );
-    setSelectedLineout(lineoutData);
+    if (lineoutData) {
+      console.log("Selected Lineout:", lineoutData); // Log the selected lineout
+      setSelectedLineout(lineoutData); // Update selected lineout state
+    }
   };
+
   const [allNamesFilled, setAllNamesFilled] = useState(false);
   const [actionsBtnsArray, setActionsBtnsArray] = useState([
     { label: "point", active: true, action: () => handleAction(1) },
@@ -196,20 +198,19 @@ export default function App() {
     { label: "Yellow", active: true, action: () => handleAction(11) },
     { label: "Red", active: true, action: () => handleAction(12) },
     { label: "Break Won", active: true, action: () => handleAction(13) },
-    // { label: "Kickout -", active: true, action: () => handleAction(14) },
     { label: "Opp Break", active: true, action: () => handleAction(15) },
     { label: "Opp Catch", active: true, action: () => handleAction(16) },
   ]);
+
   const onChangeOpponentText = (text) => {
     setOpponentText(text);
-    console.log(":)->" + text);
     if (text.length > 1) {
       setIsButtonEnabled(true);
     } else {
       setIsButtonEnabled(false);
     }
-    console.log(isButtonEnabled);
   };
+
   const handleAction = (index) => {
     setActionsBtnsArray((currentButtons) =>
       currentButtons.map((btn, idx) =>
@@ -219,18 +220,20 @@ export default function App() {
   };
 
   useEffect(() => {
-    // Check if all names are valid (each name should have at least 2 characters)
     const allFilled = names.every((name) => name.length >= 2);
     setAllNamesFilled(allFilled);
   }, [names]);
+
   const handleSaveLineout = () => {
     const updatedLineout = {
-      label: lineoutOverallName, // Get the correct label
-      value: lineoutOverallName.toLowerCase().replace(/ /g, "-"), // Example of creating a value
-      names: names.slice(0, nameCount), // Use the current list of names, trimmed to the nameCount
+      label: lineoutOverallName,
+      value: lineoutOverallName.toLowerCase().replace(/ /g, "-"),
+      names: names.map((player, index) => ({
+        number: index + 1, // Assign number to each player
+        name: player.name, // Store the name for each player
+      })),
     };
 
-    // Call saveLineout with the updated lineout, NOT with the event
     saveLineout(updatedLineout);
   };
 
@@ -241,29 +244,22 @@ export default function App() {
 
       if (savedOptions) {
         newOptions = JSON.parse(savedOptions);
-
-        // Check if the lineout already exists
         const existingLineoutIndex = newOptions.findIndex(
           (option) => option.value === updatedLineout.value
         );
 
         if (existingLineoutIndex >= 0) {
-          // Update the existing lineout
           newOptions[existingLineoutIndex] = updatedLineout;
         } else {
-          // If not found, add a new lineout
           newOptions.push(updatedLineout);
         }
       } else {
-        // If no existing lineouts, create a new array with the updated lineout
         newOptions.push(updatedLineout);
       }
 
-      // Save the updated options back to AsyncStorage
       await AsyncStorage.setItem("lineoutOptions", JSON.stringify(newOptions));
       setLineoutOptions(newOptions);
-
-      console.log("Lineout saved successfully:", updatedLineout);
+      setShowNewLineupModal(false);
     } catch (error) {
       console.error("Failed to save the lineout options", error);
     }
@@ -274,7 +270,9 @@ export default function App() {
       try {
         const savedOptions = await AsyncStorage.getItem("lineoutOptions");
         if (savedOptions) {
-          setLineoutOptions(JSON.parse(savedOptions));
+          const parsedOptions = JSON.parse(savedOptions);
+          console.log("Loaded Lineout Options:", parsedOptions);
+          setLineoutOptions(parsedOptions);
         }
       } catch (error) {
         console.error("Failed to load the lineout options", error);
@@ -282,24 +280,6 @@ export default function App() {
     };
 
     loadLineoutOptions();
-  }, []);
-
-  useEffect(() => {
-    const fetchLineouts = async () => {
-      try {
-        const savedLineouts = await AsyncStorage.getItem("lineoutOptions");
-        if (savedLineouts !== null) {
-          const lineouts = JSON.parse(savedLineouts);
-          console.log("Saved Lineouts:", lineouts);
-        } else {
-          console.log("No lineouts found");
-        }
-      } catch (error) {
-        console.error("Failed to fetch lineouts:", error);
-      }
-    };
-
-    fetchLineouts();
   }, []);
 
   const [lineoutOverallName, setLineoutOverallName] = useState("");
@@ -317,15 +297,8 @@ export default function App() {
         names: updatedNames,
       };
 
-      // Update the state and save to storage
       setSelectedLineout(updatedLineout);
-      saveLineout({
-        label: selectedLineout.label,
-        value: selectedLineout.value,
-        names: updatedLineout.names,
-      });
-
-      // Clear the edit view
+      saveLineout(updatedLineout);
       setShowEditView(false);
       setPlayerToBeEdited(null);
     }
@@ -342,7 +315,6 @@ export default function App() {
         names: updatedNames,
       };
 
-      // Update the state and save to storage
       setSelectedLineout(updatedLineout);
       saveLineout({
         label: selectedLineout.label,
@@ -350,7 +322,6 @@ export default function App() {
         names: updatedLineout.names,
       });
 
-      // Clear the edit view
       setShowEditView(false);
       setPlayerToBeEdited(null);
     } else {
@@ -445,8 +416,8 @@ export default function App() {
             </ScrollView>
             <View className="flex-row w-full mx-auto justify-center space-x-2">
               <TouchableOpacity
-                onPress={handleSaveLineout} // This should call your save function, not pass the event
-                disabled={!allNamesFilled} // Button is disabled if not all names are filled correctly
+                onPress={handleSaveLineout}
+                disabled={!allNamesFilled}
                 className={`${
                   allNamesFilled ? "bg-[#0b63fb]/80" : "bg-gray-700"
                 } px-4 py-2 rounded-md mt-4`}
@@ -490,42 +461,9 @@ export default function App() {
                     color="#fff"
                     className="mr-2 my-auto"
                   />
-                  {/* <Text className="text-gray-300 px-5">Home</Text> */}
                 </TouchableOpacity>
               </View>
-              {/* <View className="w-auto m-2 flex-row h-10 items-center">
-                <Text className="text-white mr-2">James</Text>
-                <TouchableOpacity
-                  onPress={() => setShowProfileMiniMenu(!showProfileMiniMenu)}
-                  className="bg-white h-10 cursor-pointer w-10 rounded-md justify-center items-center"
-                >
-                  {!showProfileMiniMenu ? (
-                    <Image
-                      source={require("../assets/pp.jpeg")}
-                      className="h-7 w-7 rounded-md"
-                    />
-                  ) : (
-                    <Text>x</Text>
-                  )}
-                </TouchableOpacity>
-              </View> */}
             </View>
-            {showProfileMiniMenu && (
-              <View className="flex justify-end items-end absolute right-0 top-16">
-                <TouchableOpacity
-                  onPress={handleLogout}
-                  className="mr-2 mb-2 h-auto bg-white/80 top-0 z-50 w-auto p-2 rounded-md mr-3"
-                >
-                  <Text className="">Edit Profile</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleLogout}
-                  className="mr-2 h-auto bg-white/20 top-0 z-50 w-auto p-2 rounded-md mr-3"
-                >
-                  <Text className="text-[#00E471]">Logout</Text>
-                </TouchableOpacity>
-              </View>
-            )}
 
             <View className="absolute bottom-0 left-0 right-0  mb-12 justify-end">
               <Text className="text-center text-white mt-3 text-xl font-semibold">
@@ -604,6 +542,8 @@ export default function App() {
           <TouchableOpacity
             onPress={() => {
               setShowEditLineoutModal(true);
+              console.log("coicked here boiii");
+              console.log(selectedLineout.names);
             }}
             className="px-2 h-6 mr-2  bg-[#0b63fb] rounded-md text-center items-center justify-center"
           >
@@ -637,9 +577,27 @@ export default function App() {
                           Team Lineout
                         </Text>
                       </View>
+
                       {selectedLineout ? (
                         <ScrollView className="max-h-[55vh]">
-                          {selectedLineout.names
+                          <View className="w-full flex-row flex-wrap justify-between">
+                            {selectedLineout.names.map((player, index) => (
+                              <TouchableOpacity
+                                key={index}
+                                className="w-[48%] bg-blue-600 p-2 mb-2 rounded-md"
+                                onPress={() => {
+                                  setPlayerToBeEdited(player);
+                                  setShowEditView(true);
+                                }}
+                              >
+                                <Text className="text-white">
+                                  {player.number}. {player.name}
+                                </Text>
+                              </TouchableOpacity>
+                            ))}
+                          </View>
+
+                          {/* {selectedLineout.names
                             .reduce((result, player, index) => {
                               if (index % 2 === 0) {
                                 result.push([player]);
@@ -659,7 +617,7 @@ export default function App() {
                               >
                                 {pair.map((player, playerIndex) => (
                                   <TouchableOpacity
-                                    key={playerIndex} // This line should include a unique key
+                                    key={playerIndex}
                                     onPress={() => {
                                       setPlayerToBeEdited(player);
                                       setShowEditView(true);
@@ -676,7 +634,7 @@ export default function App() {
                                   </TouchableOpacity>
                                 ))}
                               </View>
-                            ))}
+                            ))} */}
                           {showNewPlayerTextInput && (
                             <>
                               <View className="mt-4 py-4 rounded-md">
@@ -753,7 +711,7 @@ export default function App() {
                               <Text className="text-white text-lg px-2 mt-4">
                                 Edit Player <Text> </Text>
                                 <Text className="text-[#0b63fb]">
-                                  {playerToBeEdited.number}
+                                  {playerToBeEdited}
                                 </Text>
                               </Text>
                               <View className="mt-2 h-10 flex-row w-4/4 space-x-4 px-2">
@@ -761,13 +719,16 @@ export default function App() {
                                   className="flex-1 bg-gray-700 text-white px-2 py-1 rounded-md"
                                   placeholder="Edit player name"
                                   placeholderTextColor="#ccc"
-                                  value={playerToBeEdited.name}
+                                  value={playerToBeEdited}
                                   onChangeText={(value) =>
-                                    setPlayerToBeEdited({
-                                      ...playerToBeEdited,
-                                      name: value,
-                                    })
+                                    setPlayerToBeEdited(value)
                                   }
+                                  // onChangeText={(value) =>
+                                  //   setPlayerToBeEdited({
+                                  //     ...playerToBeEdited,
+                                  //     name: "resttt",
+                                  //   })
+                                  // }
                                 />
                                 <TouchableOpacity
                                   onPress={handleSaveEditedPlayer}
@@ -844,9 +805,6 @@ export default function App() {
                 </View>
               </TouchableWithoutFeedback>
             </Modal>
-
-            {/* <Text className>Edit</Text>
-             */}
             <FontAwesomeIcon
               icon={faPen}
               size={12}
@@ -869,32 +827,12 @@ export default function App() {
           >
             {lineoutOptions.map((option, index) => (
               <Picker.Item
-                key={index} // Unique key for each item
+                key={index}
                 label={option.label}
                 value={option.value}
               />
             ))}
           </Picker>
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={lineoutModalVisible}
-            onRequestClose={() => setLineoutModalVisible(false)}
-          >
-            <View className="flex-1 justify-center items-center">
-              <View className="bg-white p-4 rounded-md shadow-xl m-4">
-                <Text className="text-lg text-center mb-4">
-                  You selected: {selectedValue}
-                </Text>
-                <TouchableOpacity
-                  className="bg-[#0b63fb] px-6 py-2 rounded-md"
-                  onPress={() => setLineoutModalVisible(false)}
-                >
-                  <Text className="text-white text-base">Close</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </Modal>
         </View>
         <View className="flex-row px-5 mb-2 items-center">
           <TouchableOpacity
@@ -983,7 +921,7 @@ export default function App() {
               : "bg-gray-700 text-gray-300"
           }`}
         >
-          <Text className="text-lg font-semibold text-gray-300 tracking-widest  ">
+          <Text className="text-lg font-semibold text-gray-300 tracking-widest">
             Start
           </Text>
         </TouchableOpacity>
