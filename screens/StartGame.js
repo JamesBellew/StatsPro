@@ -13,6 +13,8 @@ import {
   StyleSheet,
   ImageBackground,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import {
   faPeopleGroup,
@@ -565,48 +567,52 @@ export default function App() {
               <TouchableWithoutFeedback
                 onPress={() => setShowEditLineoutModal(false)}
               >
-                <View className="w-full h-full bg-[#101010]/90 flex justify-center items-center">
-                  <TouchableWithoutFeedback>
-                    <View className="bg-[#12131A] w-11/12 md:w-3/4 lg:w-1/2 mx-auto h-auto rounded-md py-6 px-4">
-                      <View className="absolute left-5 top-5 w-auto h-auto">
-                        <TouchableOpacity
-                          onPress={() => setShowEditLineoutModal(false)}
-                          className="px-2 h-8 rounded-md my-auto flex-row justify-center items-center shadow-lg"
-                        >
-                          <FontAwesomeIcon
-                            icon={faChevronLeft}
-                            size={16}
-                            color="#fff"
-                            className="mr-2 my-auto"
-                          />
-                        </TouchableOpacity>
-                      </View>
-                      <View className="flex-row mx-auto">
-                        <Text className="text-lg text-gray-100 mb-4 text-center">
-                          Team Lineout
-                        </Text>
-                      </View>
+                <KeyboardAvoidingView
+                  behavior={Platform.OS === "ios" ? "padding" : "height"}
+                  // className=" w-full h-full"
+                >
+                  <View className="w-full h-full bg-[#101010]/90 flex justify-center items-center">
+                    <TouchableWithoutFeedback>
+                      <View className="bg-[#12131A] w-11/12 md:w-3/4 lg:w-1/2 mx-auto h-auto rounded-md py-6 px-4">
+                        <View className="absolute left-5 top-5 w-auto h-auto">
+                          <TouchableOpacity
+                            onPress={() => setShowEditLineoutModal(false)}
+                            className="px-2 h-8 rounded-md my-auto flex-row justify-center items-center shadow-lg"
+                          >
+                            <FontAwesomeIcon
+                              icon={faChevronLeft}
+                              size={16}
+                              color="#fff"
+                              className="mr-2 my-auto"
+                            />
+                          </TouchableOpacity>
+                        </View>
+                        <View className="flex-row mx-auto">
+                          <Text className="text-lg text-gray-100 mb-4 text-center">
+                            Team Lineout
+                          </Text>
+                        </View>
 
-                      {selectedLineout ? (
-                        <ScrollView className="max-h-[55vh]">
-                          <View className="w-full flex-row flex-wrap justify-between">
-                            {selectedLineout.names.map((player, index) => (
-                              <TouchableOpacity
-                                key={index}
-                                className="w-[48%] bg-blue-600 p-2 mb-2 rounded-md"
-                                onPress={() => {
-                                  setPlayerToBeEdited(player);
-                                  setShowEditView(true);
-                                }}
-                              >
-                                <Text className="text-white">
-                                  {player.number}. {player.name}
-                                </Text>
-                              </TouchableOpacity>
-                            ))}
-                          </View>
+                        {selectedLineout ? (
+                          <ScrollView className="max-h-[55vh]">
+                            <View className="w-full flex-row flex-wrap justify-between">
+                              {selectedLineout.names.map((player, index) => (
+                                <TouchableOpacity
+                                  key={index}
+                                  className="w-[48%] bg-blue-600 p-2 mb-2 rounded-md"
+                                  onPress={() => {
+                                    setPlayerToBeEdited(player);
+                                    setShowEditView(true);
+                                  }}
+                                >
+                                  <Text className="text-white">
+                                    {player.number}. {player.name}
+                                  </Text>
+                                </TouchableOpacity>
+                              ))}
+                            </View>
 
-                          {/* {selectedLineout.names
+                            {/* {selectedLineout.names
                             .reduce((result, player, index) => {
                               if (index % 2 === 0) {
                                 result.push([player]);
@@ -644,51 +650,107 @@ export default function App() {
                                 ))}
                               </View>
                             ))} */}
-                          {showNewPlayerTextInput && (
-                            <>
-                              <View className="mt-4 py-4 rounded-md">
-                                <Text className="text-white text-lg px-2">
-                                  New Player <Text> </Text>
+                            {showNewPlayerTextInput && (
+                              <>
+                                <View className="mt-4 py-4 rounded-md">
+                                  <Text className="text-white text-lg px-2">
+                                    New Player <Text> </Text>
+                                    <Text className="text-[#0b63fb]">
+                                      {selectedLineout.names.length + 1}
+                                    </Text>
+                                  </Text>
+                                  <View className="mt-2 h-10 flex-row w-4/4 space-x-4 px-2">
+                                    <TextInput
+                                      className="flex-1 bg-gray-700 text-white px-2 py-1 rounded-md"
+                                      placeholder="Enter new player name"
+                                      placeholderTextColor="#ccc"
+                                      value={newPlayerName}
+                                      onChangeText={setNewPlayerName}
+                                    />
+                                    <TouchableOpacity
+                                      onPress={() => {
+                                        if (newPlayerName.trim()) {
+                                          const newPlayer = {
+                                            number:
+                                              selectedLineout.names.length + 1,
+                                            name: newPlayerName,
+                                          };
+
+                                          const updatedLineout = {
+                                            ...selectedLineout,
+                                            names: [
+                                              ...selectedLineout.names,
+                                              newPlayer,
+                                            ],
+                                          };
+
+                                          setSelectedLineout(updatedLineout);
+
+                                          saveLineout({
+                                            label: selectedLineout.label,
+                                            value: selectedLineout.value,
+                                            names: updatedLineout.names,
+                                          });
+
+                                          setNewPlayerName("");
+                                        }
+                                      }}
+                                      className="px-3 bg-[#0b63fb] py-1 rounded-md flex-row justify-center items-center shadow-lg"
+                                    >
+                                      <FontAwesomeIcon
+                                        icon={faUserPlus}
+                                        size={16}
+                                        color="#fff"
+                                        className="mr-2"
+                                      />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                      onPress={() => {
+                                        setShowNewPlayerTextInput(false);
+                                      }}
+                                      className="w-10 bg-gray-700 py-1 rounded-md flex-row justify-center items-center shadow-lg"
+                                    >
+                                      <FontAwesomeIcon
+                                        icon={faXmark}
+                                        size={16}
+                                        color="#fff"
+                                        className="mr-2"
+                                      />
+                                    </TouchableOpacity>
+                                  </View>
+                                </View>
+                              </>
+                            )}
+                            {showEditView && (
+                              <>
+                                <Text className="text-white text-lg px-2 mt-4">
+                                  Edit Player
+                                  <Text> </Text>
                                   <Text className="text-[#0b63fb]">
-                                    {selectedLineout.names.length + 1}
+                                    {playerToBeEdited
+                                      ? `${playerToBeEdited.number}. ${playerToBeEdited.name}`
+                                      : "No player selected"}
                                   </Text>
                                 </Text>
                                 <View className="mt-2 h-10 flex-row w-4/4 space-x-4 px-2">
                                   <TextInput
                                     className="flex-1 bg-gray-700 text-white px-2 py-1 rounded-md"
-                                    placeholder="Enter new player name"
+                                    placeholder="Edit player name"
                                     placeholderTextColor="#ccc"
-                                    value={newPlayerName}
-                                    onChangeText={setNewPlayerName}
+                                    value={
+                                      playerToBeEdited
+                                        ? playerToBeEdited.name
+                                        : ""
+                                    }
+                                    onChangeText={(value) =>
+                                      setPlayerToBeEdited({
+                                        ...playerToBeEdited,
+                                        name: value,
+                                      })
+                                    }
                                   />
                                   <TouchableOpacity
-                                    onPress={() => {
-                                      if (newPlayerName.trim()) {
-                                        const newPlayer = {
-                                          number:
-                                            selectedLineout.names.length + 1,
-                                          name: newPlayerName,
-                                        };
-
-                                        const updatedLineout = {
-                                          ...selectedLineout,
-                                          names: [
-                                            ...selectedLineout.names,
-                                            newPlayer,
-                                          ],
-                                        };
-
-                                        setSelectedLineout(updatedLineout);
-
-                                        saveLineout({
-                                          label: selectedLineout.label,
-                                          value: selectedLineout.value,
-                                          names: updatedLineout.names,
-                                        });
-
-                                        setNewPlayerName("");
-                                      }
-                                    }}
+                                    onPress={handleSaveEditedPlayer}
                                     className="px-3 bg-[#0b63fb] py-1 rounded-md flex-row justify-center items-center shadow-lg"
                                   >
                                     <FontAwesomeIcon
@@ -698,124 +760,71 @@ export default function App() {
                                       className="mr-2"
                                     />
                                   </TouchableOpacity>
-                                  <TouchableOpacity
-                                    onPress={() => {
-                                      setShowNewPlayerTextInput(false);
-                                    }}
-                                    className="w-10 bg-gray-700 py-1 rounded-md flex-row justify-center items-center shadow-lg"
-                                  >
-                                    <FontAwesomeIcon
-                                      icon={faXmark}
-                                      size={16}
-                                      color="#fff"
-                                      className="mr-2"
-                                    />
-                                  </TouchableOpacity>
+                                  {selectedLineout.names.length > 15 && (
+                                    <TouchableOpacity
+                                      onPress={handleDeletePlayer}
+                                      className="w-10 bg-gray-800 py-1 rounded-md flex-row justify-center items-center shadow-lg"
+                                    >
+                                      <FontAwesomeIcon
+                                        icon={faTrashAlt}
+                                        size={16}
+                                        color="#fff"
+                                        className="mr-2"
+                                      />
+                                    </TouchableOpacity>
+                                  )}
                                 </View>
-                              </View>
-                            </>
-                          )}
-                          {showEditView && (
-                            <>
-                              <Text className="text-white text-lg px-2 mt-4">
-                                Edit Player
-                                <Text> </Text>
-                                <Text className="text-[#0b63fb]">
-                                  {playerToBeEdited
-                                    ? `${playerToBeEdited.number}. ${playerToBeEdited.name}`
-                                    : "No player selected"}
-                                </Text>
-                              </Text>
-                              <View className="mt-2 h-10 flex-row w-4/4 space-x-4 px-2">
-                                <TextInput
-                                  className="flex-1 bg-gray-700 text-white px-2 py-1 rounded-md"
-                                  placeholder="Edit player name"
-                                  placeholderTextColor="#ccc"
-                                  value={
-                                    playerToBeEdited
-                                      ? playerToBeEdited.name
-                                      : ""
-                                  }
-                                  onChangeText={(value) =>
-                                    setPlayerToBeEdited({
-                                      ...playerToBeEdited,
-                                      name: value,
-                                    })
-                                  }
-                                />
-                                <TouchableOpacity
-                                  onPress={handleSaveEditedPlayer}
-                                  className="px-3 bg-[#0b63fb] py-1 rounded-md flex-row justify-center items-center shadow-lg"
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faUserPlus}
-                                    size={16}
-                                    color="#fff"
-                                    className="mr-2"
-                                  />
-                                </TouchableOpacity>
-                                {selectedLineout.names.length > 15 && (
-                                  <TouchableOpacity
-                                    onPress={handleDeletePlayer}
-                                    className="w-10 bg-gray-800 py-1 rounded-md flex-row justify-center items-center shadow-lg"
-                                  >
-                                    <FontAwesomeIcon
-                                      icon={faTrashAlt}
-                                      size={16}
-                                      color="#fff"
-                                      className="mr-2"
-                                    />
-                                  </TouchableOpacity>
-                                )}
-                              </View>
-                            </>
-                          )}
-                        </ScrollView>
-                      ) : (
-                        <View className="flex items-center justify-center h-[10vh]">
-                          <Text className="text-lg text-gray-600">
-                            😔 No players found
-                          </Text>
+                              </>
+                            )}
+                          </ScrollView>
+                        ) : (
+                          <View className="flex items-center justify-center h-[10vh]">
+                            <Text className="text-lg text-gray-600">
+                              😔 No players found
+                            </Text>
+                          </View>
+                        )}
+
+                        <View className="flex-row justify-between px-2 w-full mx-auto">
+                          <TouchableOpacity
+                            onPress={() => {
+                              setShowNewPlayerTextInput(
+                                !showNewPlayerTextInput
+                              );
+                              setShowEditView(false);
+                            }}
+                            className="mt-4 px-3 py-2 bg-[#0b63fb] rounded-md flex-row justify-center items-center shadow-lg"
+                          >
+                            <FontAwesomeIcon
+                              icon={faPlus}
+                              size={12}
+                              color="#fff"
+                              className="mr-2"
+                            />
+                            <Text className="text-white px-2 font-regular">
+                              Player
+                            </Text>
+                          </TouchableOpacity>
+
+                          <TouchableOpacity
+                            onPress={handleDeleteLineout}
+                            className="mt-4 px-4 py-1 bg-gray-700 rounded-md flex-row justify-center items-center shadow-lg"
+                          >
+                            <FontAwesomeIcon
+                              icon={faTrashAlt}
+                              size={12}
+                              color="#fff"
+                              className="mr-2"
+                            />
+                            <Text className="text-white px-2 font-regular">
+                              Lineout
+                            </Text>
+                          </TouchableOpacity>
                         </View>
-                      )}
-
-                      <View className="flex-row justify-between px-2 w-full mx-auto">
-                        <TouchableOpacity
-                          onPress={() => {
-                            setShowNewPlayerTextInput(!showNewPlayerTextInput);
-                            setShowEditView(false);
-                          }}
-                          className="mt-4 px-3 py-2 bg-[#0b63fb] rounded-md flex-row justify-center items-center shadow-lg"
-                        >
-                          <FontAwesomeIcon
-                            icon={faPlus}
-                            size={12}
-                            color="#fff"
-                            className="mr-2"
-                          />
-                          <Text className="text-white px-2 font-regular">
-                            Player
-                          </Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                          onPress={handleDeleteLineout}
-                          className="mt-4 px-4 py-1 bg-gray-700 rounded-md flex-row justify-center items-center shadow-lg"
-                        >
-                          <FontAwesomeIcon
-                            icon={faTrashAlt}
-                            size={12}
-                            color="#fff"
-                            className="mr-2"
-                          />
-                          <Text className="text-white px-2 font-regular">
-                            Lineout
-                          </Text>
-                        </TouchableOpacity>
                       </View>
-                    </View>
-                  </TouchableWithoutFeedback>
-                </View>
+                    </TouchableWithoutFeedback>
+                  </View>
+                </KeyboardAvoidingView>
               </TouchableWithoutFeedback>
             </Modal>
             <FontAwesomeIcon

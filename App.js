@@ -19,6 +19,8 @@ import {
   ImageBackground,
   TextInput,
   Image,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 
 import "react-native-gesture-handler";
@@ -91,69 +93,78 @@ function LoginScreen({ navigation }) {
   }, [{ password, text }]);
   return (
     <SafeAreaView style={styles.container} className="bg-[#12131A]">
-      <View className="flex w-auto  h-auto justify-start left-10 absolute top-32">
-        <Text className="text-3xl text-[#D9D9D9] font-semibold tracking-wider">
-          Let's Sign you in
-        </Text>
-        <Text className="text-base text-[#D9D9D9] font-medium tracking-wider">
-          Welcome Back.
-        </Text>
-      </View>
-      <TextInput
-        style={styles.input}
-        className="w-72 shadow appearance-none rounded-lg   bg-[#191A22] text-white px-3  leading-tight focus:outline-none focus:shadow-outline"
-        placeholder="Username"
-        placeholderTextColor={"white"}
-        onChangeText={onChangeText}
-        value={text}
-      />
-      <TextInput
-        style={styles.input}
-        className="w-72 shadow appearance-none rounded-lg   bg-[#191A22] text-white px-3  leading-tight focus:outline-none focus:shadow-outline"
-        placeholder="Password"
-        placeholderTextColor={"white"}
-        onChangeText={onChangePassword}
-        value={password}
-      />
-      <Text className="w-72 flex text-right text-[#fafafa] text-xs">
-        Forgot Password
-      </Text>
-      <View className="flex flex-row items-center justify-center  h-20 w-full space-x-4">
-        <TouchableOpacity
-          disabled={!isLoginFormValid}
-          onPress={handleLogin}
-          style={
-            isLoginFormValid ? styles.buttonEnabled : styles.buttonDisabled
-          }
-          className="bg-[#0b63fb] rounded-md py-1 px-10"
-        >
-          <Text className="text-[#181818] text-md w-52 py-1 font-bold text-lg text-center">
-            Login
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <Text className="text-[#D9D9D9]">Or sign in with</Text>
-      <TouchableOpacity
-        onPress={() => navigation.navigate("Login")}
-        className="bg-[#D9D9D9] my-5 rounded-md py-1 px-10"
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className=" w-full h-full"
       >
-        {/* <Image
+        <View className="flex w-full justify-center  h-1/2 justify-start">
+          <View className=" my-auto px-10">
+            <Text className="text-3xl text-[#D9D9D9] font-semibold tracking-wider">
+              Let's Sign you in
+            </Text>
+            <Text className="text-base text-[#D9D9D9] font-medium tracking-wider">
+              Welcome Back.
+            </Text>
+          </View>
+        </View>
+        <View className=" flex items-center">
+          <TextInput
+            style={styles.input}
+            className="w-72 shadow appearance-none rounded-lg   bg-[#191A22] text-white px-3  leading-tight focus:outline-none focus:shadow-outline"
+            placeholder="Username"
+            placeholderTextColor={"white"}
+            onChangeText={onChangeText}
+            value={text}
+          />
+          <TextInput
+            style={styles.input}
+            className="w-72 shadow appearance-none rounded-lg   bg-[#191A22] text-white px-3  leading-tight focus:outline-none focus:shadow-outline"
+            placeholder="Password"
+            placeholderTextColor={"white"}
+            onChangeText={onChangePassword}
+            value={password}
+          />
+          <Text className="w-72 flex text-right text-[#fafafa] text-xs">
+            Forgot Password
+          </Text>
+          <View className="flex flex-row items-center justify-center  h-20 w-full space-x-4">
+            <TouchableOpacity
+              disabled={!isLoginFormValid}
+              onPress={handleLogin}
+              style={
+                isLoginFormValid ? styles.buttonEnabled : styles.buttonDisabled
+              }
+              className="bg-[#0b63fb] rounded-md py-1 px-10"
+            >
+              <Text className="text-[#181818] text-md w-52 py-1 font-bold text-lg text-center">
+                Login
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <Text className="text-[#D9D9D9]">Or sign in with</Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Login")}
+            className="bg-[#D9D9D9] my-5 rounded-md py-1 px-10"
+          >
+            {/* <Image
           source={require("../StatsPro/assets/google.webp")}
           className="h-7 mx-auto text-center flex align-middle self-center justify-center w-7 my-auto"
         /> */}
-      </TouchableOpacity>
-      <View className="flex justify-center items-center h-10 w-full">
-        <Text className="text-[#D9D9D9]">
-          Need an Account?
-          <TouchableOpacity
-            onPress={() => navigation.navigate("SignUp")}
-            className="justify-center align-middle my-auto translate-y-[4px]"
-          >
-            <Text className="text-[#0b63fb]"> Register here</Text>
           </TouchableOpacity>
-        </Text>
-      </View>
-      <StatusBar style="auto" />
+          <View className="flex justify-center items-center h-10 w-full">
+            <Text className="text-[#D9D9D9]">
+              Need an Account?
+              <TouchableOpacity
+                onPress={() => navigation.navigate("SignUp")}
+                className="justify-center align-middle my-auto translate-y-[4px]"
+              >
+                <Text className="text-[#0b63fb]"> Register here</Text>
+              </TouchableOpacity>
+            </Text>
+          </View>
+        </View>
+        <StatusBar style="auto" />
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

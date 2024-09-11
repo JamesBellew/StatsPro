@@ -13,7 +13,7 @@ import {
   Modal,
 } from "react-native";
 import { Easing } from "react-native-reanimated";
-import { captureRef } from "react-native-view-shot";
+import ViewShot, { captureRef } from "react-native-view-shot";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 
@@ -44,6 +44,8 @@ export default function App() {
   const viewRef = useRef();
   const navigation = useNavigation();
   const testRef = useRef();
+  const pdfRef = useRef();
+  const anotherRef = useRef();
   //!useREfs
   const flatListRef = useRef(null);
   //!usestates
@@ -60,7 +62,7 @@ export default function App() {
   const generatePdf = async () => {
     try {
       // Capture the entire content of the ScrollView
-      const uri = await captureRef(testRef, {
+      const uri = await captureRef(anotherRef, {
         format: "png",
         quality: 1,
         // Set `result` to `data-uri` to handle larger content if needed
@@ -1616,6 +1618,7 @@ export default function App() {
   const renderItem = ({ item }) => (
     <View style={styles.page} className="px-5  top-0  h-auto ">
       {/* <View className="bg-red-600"> */}
+
       <View className="w-[95%] flex-row mb-3">
         <View className="w-3/5 ">
           <Text className="" style={styles.title}>
@@ -1648,6 +1651,7 @@ export default function App() {
           </View>
         </View>
       </View>
+
       {/* </View> */}
       <View className="w-full  top- h-auto ">
         {item.firstPitchDataLegend && (
@@ -2391,7 +2395,8 @@ export default function App() {
                   />
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => setShowStatisticsModal(true)}
+                  // onPress={() => setShowStatisticsModal(true)}
+                  onPress={generatePdf}
                   className="bg-[#191A22] h-auto text-center items-center p-3 rounded-md w-1/3 mx-auto"
                 >
                   <FontAwesomeIcon
@@ -2429,31 +2434,44 @@ export default function App() {
             className="w-[90%] mx-auto h-auto justify-center"
           ></View>
           <ScoresTimingsComponent />
-          <View className="w-full h-auto">
-            <GameDataDisplay
-              filteredPositions={filteredPositions}
-              filteredKickoutPositions={filteredKickoutPositions}
-              filteredTurnoverPositions={filteredTurnoverPositions}
-              filteredCustomPositions={filteredCustomPositions}
-            />
-          </View>
-          <View className="   mx-auto w-full  rounded-md">
-            <Text></Text>
-            <Text></Text>
-            <FlatList
-              ref={flatListRef}
-              data={ListDataTest}
-              renderItem={renderItem}
-              // keyExtractor={(item) => item.id}
-              keyExtractor={(item) => item.id.toString()}
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              onViewableItemsChanged={onViewableItemsChanged}
-              viewabilityConfig={viewabilityConfig}
-            />
-          </View>
+          <ScrollView ref={anotherRef} className="bg-blue-600">
+            <SafeAreaView>
+              <ScrollView className="w-full h-auto">
+                <GameDataDisplay
+                  filteredPositions={filteredPositions}
+                  filteredKickoutPositions={filteredKickoutPositions}
+                  filteredTurnoverPositions={filteredTurnoverPositions}
+                  filteredCustomPositions={filteredCustomPositions}
+                />
+              </ScrollView>
 
+              <View className="bg-red-600 h-[50vh] w-full ">
+                <Text className="text-blue-600 text-2xl font-bold my-auto justify-center mx-auto items-center">
+                  Hello you cunt
+                </Text>
+              </View>
+
+              <View className="   mx-auto w-full  rounded-md">
+                <Text></Text>
+                <Text></Text>
+
+                <FlatList
+                  ref={flatListRef}
+                  data={ListDataTest}
+                  renderItem={renderItem}
+                  keyExtractor={(item) => item.id.toString()}
+                  horizontal
+                  pagingEnabled
+                  showsHorizontalScrollIndicator={false}
+                  removeClippedSubviews={false} // Disable item clipping
+                  initialNumToRender={ListDataTest.length} // Render all items initially
+                  maxToRenderPerBatch={ListDataTest.length} // Render all items in one batch
+                  onViewableItemsChanged={onViewableItemsChanged}
+                  viewabilityConfig={viewabilityConfig}
+                />
+              </View>
+            </SafeAreaView>
+          </ScrollView>
           {summaryShotsPositionsFiltered
             .map((summary) => ({
               ...summary,
@@ -2485,6 +2503,7 @@ export default function App() {
           <Text></Text>
           <Text></Text>
         </ScrollView>
+
         <View
           id="top-navigation"
           className="w-full  z-50 h-[8vh] relative justify-center items-center rounded-t-3xl"
