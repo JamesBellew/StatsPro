@@ -70,11 +70,15 @@ export default function App() {
   const handleNameChange = (index, value) => {
     const updatedNames = [...names];
     if (!updatedNames[index]) {
-      updatedNames[index] = { number: index + 1, name: value }; // Initialize if undefined
+      updatedNames[index] = { number: index + 1, name: value };
     } else {
-      updatedNames[index].name = value; // Update name if object exists
+      updatedNames[index].name = value;
     }
     setNames(updatedNames);
+
+    // Check if all names have at least 2 characters
+    const allFilled = updatedNames.every((name) => name.name.length >= 2);
+    setAllNamesFilled(allFilled);
   };
 
   const handleDeleteLineout = () => {
@@ -194,7 +198,7 @@ export default function App() {
     }
   };
 
-  const [allNamesFilled, setAllNamesFilled] = useState(true);
+  const [allNamesFilled, setAllNamesFilled] = useState(false);
   const [actionsBtnsArray, setActionsBtnsArray] = useState([
     { label: "point", active: true, action: () => handleAction(1) },
     { label: "goal", active: true, action: () => handleAction(2) },
@@ -230,11 +234,11 @@ export default function App() {
     );
   };
 
-  // useEffect(() => {
-  //   const allFilled = names.every((name) => name.length >= 1);
-  //   setAllNamesFilled(allFilled);
-  // }, [names]);
-
+  useEffect(() => {
+    // Whenever the names array changes, check if all names are filled
+    const allFilled = names.every((name) => name.name.length >= 2);
+    setAllNamesFilled(allFilled);
+  }, [names]);
   const handleSaveLineout = () => {
     const updatedLineout = {
       label: lineoutOverallName,

@@ -11,6 +11,7 @@ import {
   ScrollView,
   Alert,
   StyleSheet,
+  Modal,
   ImageBackground,
 } from "react-native";
 import * as Print from "expo-print";
@@ -24,11 +25,26 @@ import { CommonActions } from "@react-navigation/native";
 export default function App({ route }) {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
+  const [showStartGameAlertModal, setShowStartGameAlertModal] = useState(false);
   const [showProfileMiniMenu, setShowProfileMiniMenu] = useState(false);
   const [showSavedGamesComp, setShowSavedGamesComp] = useState(false);
+  const [showSettingsModalMenu, setShowSettingsModalMenu] = useState(false);
   const [savedGameCount, setSavedGameCount] = useState(0);
   const [longPressedGame, setLongPressedGame] = useState(null);
   const [gameIndexClicked, setGameIndexClicked] = useState(null);
+  //the below two use states are used for checking to see if there are sufficiant in progress/completted games for rendering the category text
+  let inProgressRendered = false;
+  let completedRendered = false;
+  //this below bit is for the check when a user wants to start a game and will be notif if there is already an in game in progress
+  const [hasInProgressGame, setHasInProgressGame] = useState(false);
+  useEffect(() => {
+    // Check if there is any in-progress game
+    const inProgressExists = recentSavedGamesArray.some(
+      (game) => game.timer <= 3600
+    );
+    setHasInProgressGame(inProgressExists);
+  }, [recentSavedGamesArray]); // Re-run whenever recentSavedGamesArray changes
+  console.log(hasInProgressGame);
   const scrollViewRef = useRef();
   const handleStartGame = () => {
     console.log("clicked");
@@ -136,6 +152,19 @@ export default function App({ route }) {
       console.error("Error deleting game", e);
     }
   };
+  const SettingsModalContent = () => {
+    return (
+      <TouchableWithoutFeedback onPress={() => setShowSettingsModalMenu(false)}>
+        <View className="flex-1 justify-end bg-black/20 items-center">
+          <View className="bg-white p-4 rounded-md w-full h-1/2 rounded-t-3xl bottom-0 justify-end shadow-xl m-4">
+            <View className="items-center justify-center h-full">
+              <Text>Settings</Text>
+            </View>
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  };
   const handleOpenGame = (game) => {
     console.log("baiiiiii");
     console.log(game);
@@ -153,17 +182,30 @@ export default function App({ route }) {
     setSavedGameCount(savedGames.length);
   }, [savedGames]);
 
-  const recentSavedGamesArray = savedGames.slice().reverse();
+  // const recentSavedGamesArray = savedGames.slice().reverse();
+  const recentSavedGamesArray = savedGames.sort((a, b) => a.timer - b.timer);
   return (
     <SafeAreaView className="flex-1 bg-[#12131A]">
       <ScrollView ref={scrollViewRef}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showSettingsModalMenu}
+          onRequestClose={() => setShowStartGameAlertModal(false)}
+        >
+          <SettingsModalContent />
+        </Modal>
         {showSavedGamesComp && <SavedGamesComponent />}
-        <View className="flex flex-row justify-end  h-10  items-center">
-          <View className="w-auto m-2 flex-row h-10  items-center justify-center">
+        <View className="flex flex-row h-10 items-center justify-between">
+          {/* Left-aligned View */}
+          <View className="bg-red-600 w-10 h-2 ml-4"></View>
+
+          {/* Right-aligned View */}
+          <View className="w-auto m-2 flex-row h-10 items-center justify-center">
             <Text className="text-gray-200 mr-2">James</Text>
             <TouchableOpacity
               onPress={() => setShowProfileMiniMenu(!showProfileMiniMenu)}
-              className=" h-10 cursor-pointer wz-10 rounded-full justify-center items-center"
+              className="h-10 cursor-pointer w-10 rounded-full justify-center items-center"
             >
               {!showProfileMiniMenu ? (
                 <Image
@@ -176,6 +218,7 @@ export default function App({ route }) {
             </TouchableOpacity>
           </View>
         </View>
+
         {showProfileMiniMenu && (
           <View className="flex absolute right-0 top-16 justify-end items-end">
             <TouchableOpacity
@@ -209,7 +252,18 @@ export default function App({ route }) {
               style={{ flex: 1, borderRadius: 8 }}
             >
               <TouchableOpacity
+                // Would like to add in some sort of check here to see if there is an inprogress game and if so display a modal to complete it
+
                 onPress={() => navigation.navigate("StartGame")}
+                // onPress={() => {
+                //   console.log("pressed");
+                //   if (hasInProgressGame) {
+                //     // setShowStartGameAlertModal(true);
+                //     console.log("we have an in progress game");
+                //   } else {
+                //     console.log("we good");
+                //   }
+                // }}
                 style={{
                   width: "100%",
                   height: "100%",
@@ -238,6 +292,38 @@ export default function App({ route }) {
             </LinearGradient>
           </ImageBackground>
           <Text></Text>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={showStartGameAlertModal}
+            onRequestClose={() => setShowStartGameAlertModal(false)}
+          >
+            <View className="flex-1 justify-center items-center">
+              <View className="bg-white p-4 rounded-md w-auto shadow-xl m-4">
+                <Text className="text-lg text-center mb-4">
+                  There is a game in progress
+                </Text>
+
+                <View className="w-full flex-row">
+                  <TouchableOpacity className="bg-[#0b63fb] px-6 py-2 w-28 mx-auto rounded-md">
+                    <Text className="text-white text-center text-base">
+                      Save
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setShowStartGameAlertModal(false);
+                    }}
+                    className="bg-[#0b63fb] px-6 py-2 w-28 mx-auto rounded-md"
+                  >
+                    <Text className="text-white text-center text-base">
+                      Close
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
           {/* <ImageBackground
             source={require("../assets/stats.jpeg")}
             style={{ width: "100%", height: 108, borderRadius: 8 }}
@@ -308,115 +394,100 @@ export default function App({ route }) {
         </View>
 
         <View className="w-full rounded-2xl mt-1">
+          {/* <Text className="text-gray-300  mx-7 mb-2">In Progress</Text> */}
+
           <TouchableOpacity className="rounded-md w-full">
-            {recentSavedGamesArray.map((game, index) => (
-              <TouchableWithoutFeedback
-                key={index}
-                onPress={() => {
-                  if (longPressedGame === game.gameName) {
-                    setLongPressedGame(null);
-                  }
-                }}
-              >
-                <View>
-                  <TouchableOpacity
-                    onPress={() => {
-                      console.log("==========buko======================");
-                      console.log(game.gameName);
-                      setGameIndexClicked(index);
-                      console.log("====================================");
-                      // navigation.navigate("InGame", { gameData: game });
-                    }}
-                    onLongPress={() => setLongPressedGame(game.gameName)}
-                    className={`rounded-2xl mx-5 bg-[#191A22] 
+            {recentSavedGamesArray.map((game, index) => {
+              let sectionheader = null;
+              if (game.timer < 3600 && !inProgressRendered) {
+                sectionheader = (
+                  <Text className="text-gray-300 mx-7 mb-2">In Progress</Text>
+                );
+              } else if (
+                game.timer >= 3600 &&
+                game.timer <= 3700 &&
+                !completedRendered
+              ) {
+                sectionheader = (
+                  <Text className="text-gray-300 mx-7 mb-2">Finished</Text>
+                );
+                completedRendered = true;
+              }
+              return (
+                <TouchableWithoutFeedback
+                  key={index}
+                  onPress={() => {
+                    if (longPressedGame === game.gameName) {
+                      setLongPressedGame(null);
+                    }
+                  }}
+                >
+                  <View>
+                    {sectionheader}
+                    <TouchableOpacity
+                      onPress={() => {
+                        setGameIndexClicked(index);
+
+                        // navigation.navigate("InGame", { gameData: game });
+                      }}
+                      onLongPress={() => setLongPressedGame(game.gameName)}
+                      className={`rounded-2xl mx-5 bg-[#191A22] 
                    
                        my-auto mb-2 px-3 py-3`}
-                  >
-                    <View className="flex-row w-full ">
-                      <View className="w-[40%] px-2 py-1">
-                        <Text
-                          className={`text-lg text-gray-200  
+                    >
+                      <View className="flex-row w-full ">
+                        <View className="w-[40%] px-2 py-1">
+                          <Text
+                            className={`text-lg text-gray-200  
                         
                      ${index === gameIndexClicked ? "text-[#0b63fb]  " : ""}   
                         font-semibold`}
-                        >
-                          {game.gameName}
-                        </Text>
-                        <Text className="text-xs font-semibold capitalize text-zinc-400">
-                          {game.venue} {game.timestamp}
-                        </Text>
-                      </View>
-                      <View className="w-auto px-2 py-1 justify-center">
-                        <Text className="text-zinc-400 text-right">
-                          Kilkerley : {game.gameScoreGoal}:{game.gameScorePoint}
-                        </Text>
-                        <Text className="text-zinc-400 mt-2 text-right">
-                          {game.opponent} : 0:0
-                        </Text>
-                      </View>
-                      <View className="w-[15%] right-0 flex-1 justify-center items-end px-2 py-1">
-                        <Text className="text-gray-200 text-center">
-                          {game.timer >= 3600 && game.timer <= 3700
-                            ? "FT"
-                            : Math.floor(game.timer / 60)}
-                        </Text>
-                        {game.timer < 3600 ? (
-                          <Text className="text-gray-200 text-center">Min</Text>
-                        ) : (
-                          ""
-                        )}
-                      </View>
-                    </View>
-                    {index === gameIndexClicked && (
-                      // index === 1 &&\
-                      <>
-                        <View className="w-full h-12  mt-2 flex-row items-center justify-center">
-                          <TouchableOpacity
-                            onPress={() =>
-                              navigation.navigate("Statistics", {
-                                gameData: game,
-                              })
-                            }
-                            className="bg-[#0b63fb] mr-1 rounded-md px-4 py-2 w-1/3"
                           >
-                            <Text className="text-center  font-semibold">
-                              Statistics
-                            </Text>
-                          </TouchableOpacity>
-
-                          <TouchableOpacity
-                            onPress={() =>
-                              // navigation.navigate("InGame", { gameData: game })
-                              handleOpenGame(game)
-                            }
-                            className="border ml-1 bg-zinc-800 w-1/3 rounded-md px-4 py-2"
-                          >
-                            <Text className="text-center text-gray-200">
-                              Open Game
-                            </Text>
-                          </TouchableOpacity>
-                          <TouchableOpacity
-                            onPress={() =>
-                              // navigation.navigate("InGame", { gameData: game })
-                              navigation.navigate("InGame")
-                            }
-                            className="border ml-1 bg-zinc-800 w-1/4 rounded-md px-4 py-2"
-                          >
-                            <Text className="text-center text-gray-200">
-                              Edit
-                            </Text>
-                          </TouchableOpacity>
+                            {game.gameName}
+                          </Text>
+                          <Text className="text-xs font-semibold capitalize text-zinc-400">
+                            {game.venue} {game.timestamp}
+                          </Text>
                         </View>
-                        <View className="flex-row w-full  px-2 mt-2 items-center mx-auto just">
-                          <View className="w-2/4 h-12    flex-row items-center ">
-                            <TouchableOpacity className="bg-[#0b63fb] bg-zinc-800  mr-1 rounded-full px-4 py-2 h-10 w-10">
-                              <View className="w-full flex my-auto justify-center items-center">
-                                <FontAwesomeIcon
-                                  icon={faCloud}
-                                  size={20}
-                                  color="#787878"
-                                />
-                              </View>
+                        <View className="w-auto px-2 py-1 justify-center">
+                          <Text className="text-zinc-400 text-right">
+                            Kilkerley : {game.gameScoreGoal}:
+                            {game.gameScorePoint}
+                          </Text>
+                          <Text className="text-zinc-400 mt-2 text-right">
+                            {game.opponent} : 0:0
+                          </Text>
+                        </View>
+                        <View className="w-[15%] right-0 flex-1 justify-center items-end px-2 py-1">
+                          <Text className="text-gray-200 text-center">
+                            {game.timer >= 3600 && game.timer <= 3700
+                              ? "FT"
+                              : Math.floor(game.timer / 60)}
+                          </Text>
+                          {game.timer < 3600 ? (
+                            <Text className="text-gray-200 text-center">
+                              Min
+                            </Text>
+                          ) : (
+                            ""
+                          )}
+                        </View>
+                      </View>
+                      {index === gameIndexClicked && (
+                        // index === 1 &&\
+                        <>
+                          <View className="w-full h-12  mt-2 flex-row items-center justify-center">
+                            <TouchableOpacity
+                              onPress={() =>
+                                navigation.navigate("Statistics", {
+                                  gameData: game,
+                                })
+                              }
+                              className="bg-[#0b63fb] mr-1 rounded-md px-4 py-2 w-1/3"
+                            >
+                              <Text className="text-center  font-semibold">
+                                Statistics
+                              </Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
@@ -424,75 +495,113 @@ export default function App({ route }) {
                                 // navigation.navigate("InGame", { gameData: game })
                                 handleOpenGame(game)
                               }
-                              className="border ml-1 bg-zinc-800 w-10 h-10 rounded-full px-4 py-2"
+                              className="border ml-1 bg-zinc-800 w-1/3 rounded-md px-4 py-2"
                             >
-                              <View className="w-full my-auto flex justify-center items-center">
-                                <FontAwesomeIcon
-                                  icon={faEye}
-                                  size={22}
-                                  color="#787878"
-                                />
-                              </View>
+                              <Text className="text-center text-gray-200">
+                                Open Game
+                              </Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                               onPress={() =>
                                 // navigation.navigate("InGame", { gameData: game })
-                                handleOpenGame(game)
+                                navigation.navigate("InGame")
                               }
-                              className="border ml-1 bg-zinc-800 w-10 h-10 rounded-full px-4 py-2"
+                              className="border ml-1 bg-zinc-800 w-1/4 rounded-md px-4 py-2"
                             >
-                              <View className="w-full my-auto flex justify-center items-center">
-                                <FontAwesomeIcon
-                                  icon={faHeart}
-                                  size={22}
-                                  color="#787878"
-                                />
-                              </View>
+                              <Text className="text-center text-gray-200">
+                                Edit
+                              </Text>
                             </TouchableOpacity>
                           </View>
-                          <View className="w-2/4 h-12 t justify-center items-end ">
-                            <Text className="text-zinc-400">Last Modified</Text>
-                            <Text className="text-zinc-400">
-                              {game.timestamp}
-                            </Text>
+                          <View className="flex-row w-full  px-2 mt-2 items-center mx-auto just">
+                            <View className="w-2/4 h-12    flex-row items-center ">
+                              <TouchableOpacity className="bg-[#0b63fb] bg-zinc-800  mr-1 rounded-full px-4 py-2 h-10 w-10">
+                                <View className="w-full flex my-auto justify-center items-center">
+                                  <FontAwesomeIcon
+                                    icon={faCloud}
+                                    size={20}
+                                    color="#787878"
+                                  />
+                                </View>
+                              </TouchableOpacity>
+
+                              <TouchableOpacity
+                                onPress={() =>
+                                  // navigation.navigate("InGame", { gameData: game })
+                                  handleOpenGame(game)
+                                }
+                                className="border ml-1 bg-zinc-800 w-10 h-10 rounded-full px-4 py-2"
+                              >
+                                <View className="w-full my-auto flex justify-center items-center">
+                                  <FontAwesomeIcon
+                                    icon={faEye}
+                                    size={22}
+                                    color="#787878"
+                                  />
+                                </View>
+                              </TouchableOpacity>
+                              <TouchableOpacity
+                                onPress={() =>
+                                  // navigation.navigate("InGame", { gameData: game })
+                                  handleOpenGame(game)
+                                }
+                                className="border ml-1 bg-zinc-800 w-10 h-10 rounded-full px-4 py-2"
+                              >
+                                <View className="w-full my-auto flex justify-center items-center">
+                                  <FontAwesomeIcon
+                                    icon={faHeart}
+                                    size={22}
+                                    color="#787878"
+                                  />
+                                </View>
+                              </TouchableOpacity>
+                            </View>
+                            <View className="w-2/4 h-12 t justify-center items-end ">
+                              <Text className="text-zinc-400">
+                                Last Modified
+                              </Text>
+                              <Text className="text-zinc-400">
+                                {game.timestamp}
+                              </Text>
+                            </View>
                           </View>
-                        </View>
-                      </>
-                    )}
-                    {longPressedGame === game.gameName && (
-                      <TouchableWithoutFeedback>
-                        <View className="absolute bg-[#1E2226] w-full my-auto h-full top-[25%] left-3 mx-auto flex-row justify-center items-center inset-0">
-                          <TouchableOpacity
-                            onPress={() => deleteGame(game.gameName)}
-                            className="bg-gray-500 w-auto my-auto mx-3 justify-center items-center p-2 rounded-md h-auto py-2 px-4"
-                          >
-                            <Text className="text-white text-center">
-                              Cancel
-                            </Text>
-                          </TouchableOpacity>
-                          <TouchableOpacity
-                            onPress={() => deleteGame(game.gameName)}
-                            className="bg-gray-500 w-auto my-auto mx-3 justify-center items-center px-2 rounded-md h-auto py-2 px-4"
-                          >
-                            <Text className="text-white px-2 text-center">
-                              Edit
-                            </Text>
-                          </TouchableOpacity>
-                          <TouchableOpacity
-                            onPress={() => deleteGame(game.gameName)}
-                            className="bg-red-500 w-auto mx-3 my-auto justify-center items-center px-2 rounded-md h-auto py-2 px-4"
-                          >
-                            <Text className="text-white text-center">
-                              Delete
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                      </TouchableWithoutFeedback>
-                    )}
-                  </TouchableOpacity>
-                </View>
-              </TouchableWithoutFeedback>
-            ))}
+                        </>
+                      )}
+                      {longPressedGame === game.gameName && (
+                        <TouchableWithoutFeedback>
+                          <View className="absolute bg-[#1E2226] w-full my-auto h-full top-[25%] left-3 mx-auto flex-row justify-center items-center inset-0">
+                            <TouchableOpacity
+                              onPress={() => deleteGame(game.gameName)}
+                              className="bg-gray-500 w-auto my-auto mx-3 justify-center items-center p-2 rounded-md h-auto py-2 px-4"
+                            >
+                              <Text className="text-white text-center">
+                                Cancel
+                              </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              onPress={() => deleteGame(game.gameName)}
+                              className="bg-gray-500 w-auto my-auto mx-3 justify-center items-center px-2 rounded-md h-auto py-2 px-4"
+                            >
+                              <Text className="text-white px-2 text-center">
+                                Edit
+                              </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              onPress={() => deleteGame(game.gameName)}
+                              className="bg-red-500 w-auto mx-3 my-auto justify-center items-center px-2 rounded-md h-auto py-2 px-4"
+                            >
+                              <Text className="text-white text-center">
+                                Delete
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
+                        </TouchableWithoutFeedback>
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                </TouchableWithoutFeedback>
+              );
+            })}
           </TouchableOpacity>
         </View>
       </ScrollView>
