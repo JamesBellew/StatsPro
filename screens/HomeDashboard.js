@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import {
@@ -26,7 +26,11 @@ import {
   faSliders,
   faUserAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { useNavigation, useIsFocused } from "@react-navigation/native";
+import {
+  useNavigation,
+  useIsFocused,
+  useFocusEffect,
+} from "@react-navigation/native";
 import { CommonActions } from "@react-navigation/native";
 
 export default function App({ route }) {
@@ -44,13 +48,7 @@ export default function App({ route }) {
   let completedRendered = false;
   //this below bit is for the check when a user wants to start a game and will be notif if there is already an in game in progress
   const [hasInProgressGame, setHasInProgressGame] = useState(false);
-  useEffect(() => {
-    // Check if there is any in-progress game
-    const inProgressExists = recentSavedGamesArray.some(
-      (game) => game.timer <= 3600
-    );
-    setHasInProgressGame(inProgressExists);
-  }, [recentSavedGamesArray]); // Re-run whenever recentSavedGamesArray changes
+
   console.log(hasInProgressGame);
   const scrollViewRef = useRef();
   const handleStartGame = () => {
@@ -186,11 +184,26 @@ export default function App({ route }) {
   useEffect(() => {
     loadGameData();
   }, []);
+  const [inProgressUserFlagCheck, setInProgressUserFlagCheck] = useState(false);
+  useFocusEffect(
+    useCallback(() => {
+      // Check if there's any game with a timer less than 3600 (indicating it's in progress)
+      const inProgressExists = savedGames.some((game) => game.timer < 3600);
 
-  useEffect(() => {
-    setSavedGameCount(savedGames.length);
-  }, [savedGames]);
+      // Update the state so we can use it outside of the effect
+      setHasInProgressGame(inProgressExists);
 
+      console.log(`Is there an in-progress game? ${inProgressExists}`);
+    }, [savedGames])
+  );
+
+  // useEffect(() => {
+  //   // Check if there is any in-progress game
+  //   const inProgressExists = recentSavedGamesArray.some(
+  //     (game) => game.timer <= 3600
+  //   );
+  //   setHasInProgressGame(inProgressExists);
+  // }, [savedGames]); // Re-run whenever recentSavedGamesArray changes
   // const recentSavedGamesArray = savedGames.slice().reverse();
   const recentSavedGamesArray = savedGames.sort((a, b) => a.timer - b.timer);
   return (
@@ -277,16 +290,16 @@ export default function App({ route }) {
               <TouchableOpacity
                 // Would like to add in some sort of check here to see if there is an inprogress game and if so display a modal to complete it
 
-                onPress={() => navigation.navigate("StartGame")}
-                // onPress={() => {
-                //   console.log("pressed");
-                //   if (hasInProgressGame) {
-                //     // setShowStartGameAlertModal(true);
-                //     console.log("we have an in progress game");
-                //   } else {
-                //     console.log("we good");
-                //   }
-                // }}
+                // onPress={() => navigation.navigate("StartGame")}
+                onPress={() => {
+                  console.log("pressed");
+                  if (hasInProgressGame && !inProgressUserFlagCheck) {
+                    setShowStartGameAlertModal(true);
+                    console.log("we have an in progress game");
+                  } else {
+                    navigation.navigate("StartGame");
+                  }
+                }}
                 style={{
                   width: "100%",
                   height: "100%",
@@ -321,25 +334,32 @@ export default function App({ route }) {
             visible={showStartGameAlertModal}
             onRequestClose={() => setShowStartGameAlertModal(false)}
           >
-            <View className="flex-1 justify-center items-center">
-              <View className="bg-white p-4 rounded-md w-auto shadow-xl m-4">
-                <Text className="text-lg text-center mb-4">
+            <View className="flex-1 justify-center items-center bg-[#191A22]/50">
+              <View className="bg-[#1E2226] p-6 rounded-lg w-11/12 shadow-lg m-4">
+                <Text className="text-xl text-center mb-6 text-white">
                   There is a game in progress
                 </Text>
 
-                <View className="w-full flex-row">
-                  <TouchableOpacity className="bg-[#0b63fb] px-6 py-2 w-28 mx-auto rounded-md">
-                    <Text className="text-white text-center text-base">
-                      Save
+                <View className="w-full flex-row justify-between">
+                  <TouchableOpacity
+                    onPress={() => {
+                      setInProgressUserFlagCheck(true);
+                      setShowStartGameAlertModal(false);
+                      navigation.navigate("StartGame");
+                    }}
+                    className="bg-[#0b63fb] px-4 py-3 flex-1 mr-2 rounded-lg"
+                  >
+                    <Text className="text-white text-center text-base font-semibold">
+                      Continue
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => {
                       setShowStartGameAlertModal(false);
                     }}
-                    className="bg-[#0b63fb] px-6 py-2 w-28 mx-auto rounded-md"
+                    className="bg-gray-500 px-4 py-3 flex-1 ml-2 rounded-lg"
                   >
-                    <Text className="text-white text-center text-base">
+                    <Text className="text-white text-center text-base font-semibold">
                       Close
                     </Text>
                   </TouchableOpacity>
@@ -347,6 +367,7 @@ export default function App({ route }) {
               </View>
             </View>
           </Modal>
+
           {/* <ImageBackground
             source={require("../assets/stats.jpeg")}
             style={{ width: "100%", height: 108, borderRadius: 8 }}
