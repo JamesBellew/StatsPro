@@ -14,11 +14,18 @@ import {
   Modal,
   ImageBackground,
 } from "react-native";
+
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 import { captureRef } from "react-native-view-shot";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faHeart, faEye, faCloud } from "@fortawesome/free-solid-svg-icons";
+import {
+  faHeart,
+  faEye,
+  faCloud,
+  faSliders,
+  faUserAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { CommonActions } from "@react-navigation/native";
 
@@ -156,9 +163,11 @@ export default function App({ route }) {
     return (
       <TouchableWithoutFeedback onPress={() => setShowSettingsModalMenu(false)}>
         <View className="flex-1 justify-end bg-black/20 items-center">
-          <View className="bg-white p-4 rounded-md w-full h-1/2 rounded-t-3xl bottom-0 justify-end shadow-xl m-4">
+          <View className="bg-[#12131A] p-4   rounded-md w-full h-3/4 rounded-t-3xl bottom-0 justify-end shadow-xl m-4">
             <View className="items-center justify-center h-full">
-              <Text>Settings</Text>
+              <Text className="text-gray-200 font-semibold text-lg">
+                Settings
+              </Text>
             </View>
           </View>
         </View>
@@ -196,21 +205,35 @@ export default function App({ route }) {
           <SettingsModalContent />
         </Modal>
         {showSavedGamesComp && <SavedGamesComponent />}
-        <View className="flex flex-row h-10 items-center justify-between">
+        <View className="flex flex-row h-10  items-center justify-between">
           {/* Left-aligned View */}
-          <View className="bg-red-600 w-10 h-2 ml-4"></View>
+          <TouchableOpacity
+            onPress={() => {
+              setShowSettingsModalMenu(true);
+            }}
+            className=" w-10  bg-[#191A22]   items-center justify-center rounded-full h-10 ml-4"
+          >
+            <FontAwesomeIcon
+              icon={faSliders}
+              className="mx-auto text-center"
+              size={18}
+              color="#acadb4"
+            />
+          </TouchableOpacity>
 
           {/* Right-aligned View */}
           <View className="w-auto m-2 flex-row h-10 items-center justify-center">
-            <Text className="text-gray-200 mr-2">James</Text>
+            {/* <Text className="text-gray-200 mr-2">James</Text> */}
             <TouchableOpacity
               onPress={() => setShowProfileMiniMenu(!showProfileMiniMenu)}
-              className="h-10 cursor-pointer w-10 rounded-full justify-center items-center"
+              className="h-10 cursor-pointer bg-[#191A22]  w-10 rounded-full justify-center items-center"
             >
               {!showProfileMiniMenu ? (
-                <Image
-                  source={require("../../StatsPro/assets/pp.jpeg")}
-                  className="h-7 w-7 rounded-full"
+                <FontAwesomeIcon
+                  icon={faUserAlt}
+                  className="mx-auto text-center"
+                  size={18}
+                  color="#acadb4"
                 />
               ) : (
                 <Text>x</Text>
@@ -530,7 +553,7 @@ export default function App({ route }) {
                                   // navigation.navigate("InGame", { gameData: game })
                                   handleOpenGame(game)
                                 }
-                                className="border ml-1 bg-zinc-800 w-10 h-10 rounded-full px-4 py-2"
+                                className="border ml-1 bg-zinc-800  w-10 h-10 rounded-full px-4 py-2"
                               >
                                 <View className="w-full my-auto flex justify-center items-center">
                                   <FontAwesomeIcon
