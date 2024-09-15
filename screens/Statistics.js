@@ -2434,7 +2434,7 @@ export default function App() {
             className="w-[90%] mx-auto h-auto justify-center"
           ></View>
           <ScoresTimingsComponent />
-          <ScrollView ref={anotherRef} className="bg-blue-600">
+          <ScrollView ref={anotherRef} className="">
             <SafeAreaView>
               <ScrollView className="w-full h-auto">
                 <GameDataDisplay
@@ -2445,11 +2445,11 @@ export default function App() {
                 />
               </ScrollView>
 
-              <View className="bg-red-600 h-[50vh] w-full ">
+              {/* <View className="h-[50vh] w-full ">
                 <Text className="text-blue-600 text-2xl font-bold my-auto justify-center mx-auto items-center">
                   Hello you cunt
                 </Text>
-              </View>
+              </View> */}
 
               <View className="   mx-auto w-full  rounded-md">
                 <Text></Text>

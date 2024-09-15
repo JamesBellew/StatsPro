@@ -336,10 +336,12 @@ export default function App({ route }) {
           >
             <View className="flex-1 justify-center items-center bg-[#191A22]/50">
               <View className="bg-[#1E2226] p-6 rounded-lg w-11/12 shadow-lg m-4">
-                <Text className="text-xl text-center mb-6 text-white">
+                <Text className="text-xl text-center mb-4 text-white">
                   There is a game in progress
                 </Text>
-
+                <Text className="text-md text-center mb-6 text-gray-300">
+                  You should finish the game before starting a new one
+                </Text>
                 <View className="w-full flex-row justify-between">
                   <TouchableOpacity
                     onPress={() => {
@@ -353,6 +355,7 @@ export default function App({ route }) {
                       Continue
                     </Text>
                   </TouchableOpacity>
+
                   <TouchableOpacity
                     onPress={() => {
                       setShowStartGameAlertModal(false);
