@@ -43,6 +43,8 @@ export default function App({ route }) {
   const [savedGameCount, setSavedGameCount] = useState(0);
   const [longPressedGame, setLongPressedGame] = useState(null);
   const [gameIndexClicked, setGameIndexClicked] = useState(null);
+  const [showGeneralAlertComp, setShowGeneralAlertComp] = useState(false);
+  const [generalAlertMsg, setGeneralAlertMsg] = useState(":/");
   //the below two use states are used for checking to see if there are sufficiant in progress/completted games for rendering the category text
   let inProgressRendered = false;
   let completedRendered = false;
@@ -53,6 +55,26 @@ export default function App({ route }) {
   const scrollViewRef = useRef();
   const handleStartGame = () => {
     console.log("clicked");
+  };
+
+  const GeneralAlertComp = () => {
+    return (
+      <View className="bg-zinc-800 absolute z-50 w-full px-5 mx-auto text-center py-5 rounded-b-3xl">
+        <View
+          className="w-full items-center text-indigo-100 leading-none rounded-2xl flex-row flex-wrap"
+          role="alert"
+        >
+          <View className="bg-blue-600 rounded-md mr-3 px-2 py-1">
+            <Text className="uppercase text-center text-xs font-bold text-white">
+              New
+            </Text>
+          </View>
+          <Text className="font-semibold text-gray-200 text-left flex-auto">
+            {generalAlertMsg}
+          </Text>
+        </View>
+      </View>
+    );
   };
   const generatePdf = async () => {
     try {
@@ -206,9 +228,42 @@ export default function App({ route }) {
   // }, [savedGames]); // Re-run whenever recentSavedGamesArray changes
   // const recentSavedGamesArray = savedGames.slice().reverse();
   const recentSavedGamesArray = savedGames.sort((a, b) => a.timer - b.timer);
+
+  //this is the fucntion for when the user ckicks on the comoplete touchable within the savedgames comp
+  const completeGameHandler = (game) => {
+    console.log("clicked here baiii");
+    console.log(game);
+
+    // Update the game timer to 3600
+    const updatedGame = { ...game, timer: 3600 };
+
+    // Create a new array with the updated game
+    const updatedGamesArray = savedGames.map((g) =>
+      g.id === updatedGame.id ? updatedGame : g
+    );
+    // Update the state and AsyncStorage
+    setSavedGames(updatedGamesArray);
+    AsyncStorage.setItem("@game_data", JSON.stringify(updatedGamesArray))
+      .then(() => {
+        console.log("Game data updated in AsyncStorage");
+        // here i will pass the message for the notification
+        setShowGeneralAlertComp(true);
+        setGeneralAlertMsg("Game completed");
+        setTimeout(() => {
+          setShowGeneralAlertComp(false);
+        }, 2000);
+      })
+      .catch((error) => {
+        console.error("Error updating game data in AsyncStorage", error);
+      });
+  };
+
+  //!Main JSX return section
   return (
     <SafeAreaView className="flex-1 bg-[#12131A]">
       <ScrollView ref={scrollViewRef}>
+        {/* this bit is the notification rendering section of the main jsx return  */}
+        {showGeneralAlertComp && <GeneralAlertComp />}
         <Modal
           animationType="slide"
           transparent={true}
@@ -450,6 +505,7 @@ export default function App({ route }) {
                 sectionheader = (
                   <Text className="text-gray-300 mx-7 mb-2">In Progress</Text>
                 );
+                inProgressRendered = true;
               } else if (
                 game.timer >= 3600 &&
                 game.timer <= 3700 &&
@@ -523,7 +579,7 @@ export default function App({ route }) {
                       {index === gameIndexClicked && (
                         // index === 1 &&\
                         <>
-                          <View className="w-full h-12  mt-2 flex-row items-center justify-center">
+                          <View className="w-full  px-2 h-12  mt-2 flex-row items-center justify-center">
                             <TouchableOpacity
                               onPress={() =>
                                 navigation.navigate("Statistics", {
@@ -542,23 +598,27 @@ export default function App({ route }) {
                                 // navigation.navigate("InGame", { gameData: game })
                                 handleOpenGame(game)
                               }
-                              className="border ml-1 bg-zinc-800 w-1/3 rounded-md px-4 py-2"
+                              className=" ml-1 bg-zinc-800 w-1/3 rounded-md px-4 py-2"
                             >
                               <Text className="text-center text-gray-200">
-                                Open Game
+                                Open
                               </Text>
                             </TouchableOpacity>
-                            <TouchableOpacity
-                              onPress={() =>
-                                // navigation.navigate("InGame", { gameData: game })
-                                navigation.navigate("InGame")
-                              }
-                              className="border ml-1 bg-zinc-800 w-1/4 rounded-md px-4 py-2"
-                            >
-                              <Text className="text-center text-gray-200">
-                                Edit
-                              </Text>
-                            </TouchableOpacity>
+
+                            {/* only want this to render is the game on not yet finsihed */}
+                            {game.timer < 3600 && (
+                              <TouchableOpacity
+                                onPress={() =>
+                                  // navigation.navigate("InGame", { gameData: game })
+                                  completeGameHandler(game)
+                                }
+                                className=" ml-1 bg-zinc-800 w-1/3 rounded-md px-4 py-2"
+                              >
+                                <Text className="text-center text-gray-200">
+                                  Complete
+                                </Text>
+                              </TouchableOpacity>
+                            )}
                           </View>
                           <View className="flex-row w-full  px-2 mt-2 items-center mx-auto just">
                             <View className="w-2/4 h-12    flex-row items-center ">
@@ -577,7 +637,7 @@ export default function App({ route }) {
                                   // navigation.navigate("InGame", { gameData: game })
                                   handleOpenGame(game)
                                 }
-                                className="border ml-1 bg-zinc-800  w-10 h-10 rounded-full px-4 py-2"
+                                className=" ml-1 bg-zinc-800  w-10 h-10 rounded-full px-4 py-2"
                               >
                                 <View className="w-full my-auto flex justify-center items-center">
                                   <FontAwesomeIcon
@@ -592,7 +652,7 @@ export default function App({ route }) {
                                   // navigation.navigate("InGame", { gameData: game })
                                   handleOpenGame(game)
                                 }
-                                className="border ml-1 bg-zinc-800 w-10 h-10 rounded-full px-4 py-2"
+                                className=" ml-1 bg-zinc-800 w-10 h-10 rounded-full px-4 py-2"
                               >
                                 <View className="w-full my-auto flex justify-center items-center">
                                   <FontAwesomeIcon
@@ -616,23 +676,23 @@ export default function App({ route }) {
                       )}
                       {longPressedGame === game.gameName && (
                         <TouchableWithoutFeedback>
-                          <View className="absolute bg-[#1E2226] w-full my-auto h-full top-[25%] left-3 mx-auto flex-row justify-center items-center inset-0">
+                          <View className="absolute bg-[#1E2226] rounded-lg bg-[#191a22e7] top-3 left-3   w-full   h-full   mx-auto flex-row justify-center items-center inset-0">
                             <TouchableOpacity
-                              onPress={() => deleteGame(game.gameName)}
+                              onPress={() => setLongPressedGame(null)}
                               className="bg-gray-500 w-auto my-auto mx-3 justify-center items-center p-2 rounded-md h-auto py-2 px-4"
                             >
                               <Text className="text-white text-center">
                                 Cancel
                               </Text>
                             </TouchableOpacity>
-                            <TouchableOpacity
+                            {/* <TouchableOpacity
                               onPress={() => deleteGame(game.gameName)}
                               className="bg-gray-500 w-auto my-auto mx-3 justify-center items-center px-2 rounded-md h-auto py-2 px-4"
                             >
                               <Text className="text-white px-2 text-center">
                                 Edit
                               </Text>
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
                             <TouchableOpacity
                               onPress={() => deleteGame(game.gameName)}
                               className="bg-red-500 w-auto mx-3 my-auto justify-center items-center px-2 rounded-md h-auto py-2 px-4"
