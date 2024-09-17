@@ -136,6 +136,7 @@ export default function App({ route }) {
         if (Array.isArray(data)) {
           setSavedGames(data); // Set the array of saved games
           console.log("Data loaded", data);
+          setSavedGameCount(data.length);
         }
       }
     } catch (e) {
@@ -235,7 +236,7 @@ export default function App({ route }) {
     console.log(game);
 
     // Update the game timer to 3600
-    const updatedGame = { ...game, timer: 3600 };
+    const updatedGame = { ...game, timer: 3600, gameFinihsed: true };
 
     // Create a new array with the updated game
     const updatedGamesArray = savedGames.map((g) =>
@@ -509,7 +510,8 @@ export default function App({ route }) {
               } else if (
                 game.timer >= 3600 &&
                 game.timer <= 3700 &&
-                !completedRendered
+                !completedRendered &&
+                inProgressRendered
               ) {
                 sectionheader = (
                   <Text className="text-gray-300 mx-7 mb-2">Finished</Text>

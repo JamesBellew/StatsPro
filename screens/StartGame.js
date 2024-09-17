@@ -49,7 +49,27 @@ export default function App() {
   const [showEditView, setShowEditView] = useState(false); // Show edit view
   const [lineoutModalVisible, setLineoutModalVisible] = useState(false);
   const [names, setNames] = useState(Array(15).fill({ number: "", name: "" }));
-
+  const [generalAlertMsg, setGeneralAlertMsg] = useState(":/");
+  const [showGeneralAlertComp, setShowGeneralAlertComp] = useState(false);
+  const GeneralAlertComp = () => {
+    return (
+      <View className="bg-zinc-800 absolute z-50 w-full px-5 mx-auto text-center py-5 rounded-b-3xl">
+        <View
+          className="w-full items-center text-indigo-100 leading-none rounded-2xl flex-row flex-wrap"
+          role="alert"
+        >
+          <View className="bg-blue-600 rounded-md mr-3 px-2 py-1">
+            <Text className="uppercase text-center text-xs font-bold text-white">
+              New
+            </Text>
+          </View>
+          <Text className="font-semibold text-gray-200 text-left flex-auto">
+            {generalAlertMsg}
+          </Text>
+        </View>
+      </View>
+    );
+  };
   const incrementCount = () => {
     if (nameCount < 30) {
       setNameCount(nameCount + 1);
@@ -132,6 +152,11 @@ export default function App() {
       ]);
       setNewActionLabel("");
       setShowAddNewGameKPI(false);
+      setGeneralAlertMsg("Action Saved");
+      setShowGeneralAlertComp(true);
+      setTimeout(() => {
+        setShowGeneralAlertComp(false);
+      }, 2000);
     } else {
       alert("Please enter a valid action label.");
     }
@@ -316,6 +341,11 @@ export default function App() {
       saveLineout(updatedLineout);
       setShowEditView(false);
       setPlayerToBeEdited(null);
+      setGeneralAlertMsg("Player Saved");
+      setShowGeneralAlertComp(true);
+      setTimeout(() => {
+        setShowGeneralAlertComp(false);
+      }, 2000);
     }
   };
 
@@ -451,6 +481,7 @@ export default function App() {
         </View>
       </Modal>
       <View className="flex mx-auto h-36 bg-[#101010] rounded-b-3xl w-full relative">
+        {showGeneralAlertComp && <GeneralAlertComp />}
         <ImageBackground
           source={require("../assets/oneil.jpeg")}
           style={{ width: "100%", height: "100%", borderRadius: 9 }}

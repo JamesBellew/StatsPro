@@ -600,20 +600,20 @@ export default function App() {
   function UnsavedChangesModal() {
     return (
       <>
-        <View className="w-full z-50 h-1/3 rounded-t-md justify-center items-center bottom-0 absolute bg-[#191A22]">
+        <View className="w-full  z-50 h-1/3 rounded-t-md justify-center items-center bottom-0 absolute bg-[#191A22] ">
           <Text className="text-white">
             You have unsaved changes in this game
           </Text>
           <Text className="mt-2 text-white">
             This game data will be lost if not saved
           </Text>
-          <View className="flex-row mt-5 ">
+          <View className="flex-row w-full px-10 mx-auto items-center justify-center mt-5 ">
             <TouchableOpacity
               onPress={() => {
                 setShowUnsavedGameModal(false);
                 setShowSaveGameDataModal(true);
               }}
-              className="bg-[#0b63fb] mr-2  p-4 w-1/4 rounded-md"
+              className="bg-[#0b63fb] mr-2  p-4 w-1/2 rounded-md"
             >
               <Text className="text-center">Save Game</Text>
             </TouchableOpacity>
@@ -621,7 +621,7 @@ export default function App() {
               onPress={() => {
                 navigation.navigate("HomeDashboard");
               }}
-              className="bg-gray-400 ml-2 w-1/4 p-4 rounded-md"
+              className="bg-gray-400 ml-2 w-1/2 p-4 rounded-md"
             >
               <Text className="text-center">Continue</Text>
             </TouchableOpacity>
@@ -917,7 +917,7 @@ export default function App() {
         {showUnsavedGameModal && <UnsavedChangesModal />}
         <ScrollView>
           {showStartGameModal && <StartGameModal />}
-          {timerLimitReached && showTimerAlert && (
+          {timerLimitReached && showTimerAlert && !gameData.gameFinihsed && (
             <>
               <View className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
                 <Text className="font-bold">{minutes} minutes reached!</Text>
