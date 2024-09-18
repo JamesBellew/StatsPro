@@ -13,6 +13,7 @@ import {
   StyleSheet,
   Modal,
   ImageBackground,
+  TextInput,
 } from "react-native";
 
 import * as Print from "expo-print";
@@ -25,6 +26,9 @@ import {
   faCloud,
   faSliders,
   faUserAlt,
+  faEllipsis,
+  faFloppyDisk,
+  faCircleCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   useNavigation,
@@ -588,41 +592,79 @@ export default function App({ route }) {
                                   gameData: game,
                                 })
                               }
-                              className="bg-[#0b63fb] mr-1 rounded-md px-4 py-2 w-1/3"
+                              className="bg-[#0b63fb]  rounded-md px-4 py-2 w-1/3"
                             >
                               <Text className="text-center  font-semibold">
                                 Statistics
                               </Text>
                             </TouchableOpacity>
-
                             <TouchableOpacity
                               onPress={() =>
                                 // navigation.navigate("InGame", { gameData: game })
                                 handleOpenGame(game)
                               }
-                              className=" ml-1 bg-zinc-800 w-1/3 rounded-md px-4 py-2"
+                              className=" ml-1 bg-zinc-800 w-1/4 rounded-md px-4 py-2"
                             >
                               <Text className="text-center text-gray-200">
                                 Open
                               </Text>
                             </TouchableOpacity>
-
-                            {/* only want this to render is the game on not yet finsihed */}
                             {game.timer < 3600 && (
                               <TouchableOpacity
                                 onPress={() =>
                                   // navigation.navigate("InGame", { gameData: game })
                                   completeGameHandler(game)
                                 }
-                                className=" ml-1 bg-zinc-800 w-1/3 rounded-md px-4 py-2"
+                                className=" ml-1 bg-zinc-800 w-1/4 rounded-md px-4 py-2"
                               >
                                 <Text className="text-center text-gray-200">
-                                  Complete
+                                  Finish
                                 </Text>
                               </TouchableOpacity>
                             )}
+                            <TouchableOpacity
+                              onPress={() => {
+                                setLongPressedGame(game.gameName); // Trigger the long press section
+                              }}
+                              className=" ml-1 bg-zinc-800 w-1/6 rounded-md px-4 py-2"
+                            >
+                              <FontAwesomeIcon
+                                icon={faEllipsis}
+                                size={18}
+                                color="#787878"
+                              />
+                            </TouchableOpacity>
+
+                            {/* only want this to render is the game on not yet finsihed */}
                           </View>
-                          <View className="flex-row w-full  px-2 mt-2 items-center mx-auto just">
+                          <View className=" mt-3 w-full h-auto">
+                            <Text className="text-gray-200 px-3 font-semibold text-md ">
+                              Details of Game
+                            </Text>
+                            <Text className="text-gray-400 mt-2 mb-1 px-3 font-normal text-sm ">
+                              Name
+                            </Text>
+                            <View className="flex-row">
+                              <TextInput
+                                className=" w-1/2  bg-gray-700 text-white px-2 py-1 ml-2 mr-1 rounded-md"
+                                placeholder="Opponent"
+                                placeholderTextColor="#ccc"
+                                // value={lineoutOverallName}
+                                // onChangeText={setLineoutOverallName}
+                              />
+                              <TouchableOpacity className="w-auto bg-red-600 mr-1 h-8 justify-center px-2 rounded-md">
+                                <Text>Home</Text>
+                              </TouchableOpacity>
+                              <TouchableOpacity className="bg-blue-600 text-center py-2 px-3 rounded-md justify-center">
+                                <FontAwesomeIcon
+                                  icon={faCircleCheck}
+                                  size={18}
+                                  color="#000"
+                                />
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                          {/* <View className="flex-row w-full  px-2 mt-2 items-center mx-auto just">
                             <View className="w-2/4 h-12    flex-row items-center ">
                               <TouchableOpacity className="bg-[#0b63fb] bg-zinc-800  mr-1 rounded-full px-4 py-2 h-10 w-10">
                                 <View className="w-full flex my-auto justify-center items-center">
@@ -673,7 +715,7 @@ export default function App({ route }) {
                                 {game.timestamp}
                               </Text>
                             </View>
-                          </View>
+                          </View> */}
                         </>
                       )}
                       {longPressedGame === game.gameName && (
@@ -687,14 +729,14 @@ export default function App({ route }) {
                                 Cancel
                               </Text>
                             </TouchableOpacity>
-                            {/* <TouchableOpacity
+                            <TouchableOpacity
                               onPress={() => deleteGame(game.gameName)}
-                              className="bg-gray-500 w-auto my-auto mx-3 justify-center items-center px-2 rounded-md h-auto py-2 px-4"
+                              className="bg-blue-500 w-auto my-auto mx-3 justify-center items-center px-2 rounded-md h-auto py-2 px-4"
                             >
                               <Text className="text-white px-2 text-center">
                                 Edit
                               </Text>
-                            </TouchableOpacity> */}
+                            </TouchableOpacity>
                             <TouchableOpacity
                               onPress={() => deleteGame(game.gameName)}
                               className="bg-red-500 w-auto mx-3 my-auto justify-center items-center px-2 rounded-md h-auto py-2 px-4"
