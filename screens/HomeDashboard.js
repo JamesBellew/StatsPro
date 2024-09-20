@@ -222,7 +222,7 @@ export default function App({ route }) {
           <View className="bg-[#12131A] p-4   rounded-md w-full h-3/4 rounded-t-3xl bottom-0 justify-end shadow-xl m-4">
             <View className="items-center justify-center h-full">
               <Text className="text-gray-200 font-semibold text-lg">
-                Settings
+                Settings Page, not needed yet
               </Text>
             </View>
           </View>
