@@ -52,6 +52,7 @@ export default function App({ route }) {
   const [showGeneralAlertComp, setShowGeneralAlertComp] = useState(false);
   const [generalAlertMsg, setGeneralAlertMsg] = useState(":/");
   const [editGameName, setEditGameName] = useState("");
+  const [editGameVenue, setEditGameVenue] = useState(null);
   const [showEditGameSection, setShowEditGameSection] = useState(false);
   //the below two use states are used for checking to see if there are sufficiant in progress/completted games for rendering the category text
   let inProgressRendered = false;
@@ -297,53 +298,54 @@ export default function App({ route }) {
   console.log(savedGames);
 
   const editGameHandler = (game) => {
-    if (game.gameName === editGameName) {
-      console.log("no beuno, names are the same");
-    } else {
-      const newGameDetails = { ...game, gameName: editGameName };
+    let updatedGameDetails = { ...game }; // Create a copy of the game object
+    let changesMade = false; // Track if any changes are made
+
+    // Check if the game name needs updating
+    if (editGameName && game.gameName !== editGameName) {
+      updatedGameDetails.gameName = editGameName;
+      changesMade = true;
+    } else if (!editGameName || editGameName.trim() === "") {
+      console.log("You must enter a valid opponent name");
+    }
+
+    // Check if the venue needs updating
+    if (editGameVenue && game.venue !== editGameVenue) {
+      updatedGameDetails.venue = editGameVenue;
+      changesMade = true;
+    } else if (!editGameVenue || editGameVenue.trim() === "") {
+      console.log("Invalid input or venue is already the same");
+    }
+
+    // Only update if any changes were made
+    if (changesMade) {
       const updatedGamesArray = savedGames.map((g) =>
-        g.id === game.id ? newGameDetails : g
+        g.id === game.id ? updatedGameDetails : g
       );
       setSavedGames(updatedGamesArray);
+
       AsyncStorage.setItem("@game_data", JSON.stringify(updatedGamesArray))
         .then(() => {
           console.log("Game data updated in AsyncStorage");
-          // here i will pass the message for the notification
+          // Trigger notification
           setShowGeneralAlertComp(true);
           setGeneralAlertMsg("Game Updated");
           setTimeout(() => {
             setShowGeneralAlertComp(false);
           }, 2000);
-          setEditGameName("");
+          // Reset form fields
+          setEditGameName(""); // Reset name input
+          setEditGameVenue(""); // Reset venue input
           setShowEditGameSection(false);
         })
         .catch((error) => {
           console.error("Error updating game data in AsyncStorage", error);
         });
+    } else {
+      console.log("No changes to save");
     }
-
-    //  const updatedGame = { ...game, timer: 3600, gameFinihsed: true };
-
-    //  // Create a new array with the updated game
-    //  const updatedGamesArray = savedGames.map((g) =>
-    //    g.id === updatedGame.id ? updatedGame : g
-    //  );
-    //  // Update the state and AsyncStorage
-    //  setSavedGames(updatedGamesArray);
-    //  AsyncStorage.setItem("@game_data", JSON.stringify(updatedGamesArray))
-    //    .then(() => {
-    //      console.log("Game data updated in AsyncStorage");
-    //      // here i will pass the message for the notification
-    //      setShowGeneralAlertComp(true);
-    //      setGeneralAlertMsg("Game completed");
-    //      setTimeout(() => {
-    //        setShowGeneralAlertComp(false);
-    //      }, 2000);
-    //    })
-    //    .catch((error) => {
-    //      console.error("Error updating game data in AsyncStorage", error);
-    //    });
   };
+
   //!Main JSX return section
   return (
     <SafeAreaView className="flex-1 bg-[#12131A]">
@@ -620,6 +622,7 @@ export default function App({ route }) {
                         //also clear the edit names, this is temporary for the moment, it is a wuick way of getting rid of editing the wrong game when user clicks from one game to the next
                         setEditGameName("");
                         setShowEditGameSection(false);
+                        setLongPressedGame(null);
                         // navigation.navigate("InGame", { gameData: game });
                       }}
                       onLongPress={() => setLongPressedGame(game.gameName)}
@@ -730,20 +733,44 @@ export default function App({ route }) {
                               </Text>
                               <View className="flex-row">
                                 <TextInput
-                                  className=" w-2/5  bg-gray-700 text-white px-2 py-1 ml-2 mr-1 rounded-md"
+                                  className=" w-2/5  bg-zinc-800 text-white px-2 py-1 ml-2 mr-1 rounded-md"
                                   placeholder="Opponent"
-                                  placeholderTextColor="#ccc"
+                                  placeholderTextColor="#9ca3af"
                                   value={editGameName}
                                   onChangeText={setEditGameName}
                                 />
                                 <View className="w-32  flex-row space-x-1 my-auto mr-1 h-auto justify-center px-2 rounded-md">
-                                  <TouchableOpacity className="w-1/2 border-b-2 border-b-blue-600 bg-gray-600 px-2 rounded-md h-8 justify-center">
-                                    <Text className="text-center text-xs text-gray-200">
+                                  <TouchableOpacity
+                                    onPress={() => {
+                                      setEditGameVenue("home");
+                                    }}
+                                    className={`w-1/2  bg-zinc-800 px-2 rounded-md h-8 justify-center
+                                    
+                                    ${
+                                      game.venue === "home"
+                                        ? "border-b-2 border-b-blue-600"
+                                        : ""
+                                    }
+                                    
+                                    `}
+                                  >
+                                    <Text
+                                      className={`text-center text-xs font-medium     ${
+                                        game.venue === "home"
+                                          ? "text-blue-600"
+                                          : "text-gray-200"
+                                      }`}
+                                    >
                                       Home
                                     </Text>
                                   </TouchableOpacity>
-                                  <TouchableOpacity className="w-1/2 bg-gray-600 px-2 rounded-md h-8 justify-center">
-                                    <Text className="text-center text-xs text-gray-200">
+                                  <TouchableOpacity
+                                    onPress={() => {
+                                      setEditGameVenue("away");
+                                    }}
+                                    className="w-1/2 bg-zinc-800 px-2 rounded-md h-8 justify-center"
+                                  >
+                                    <Text className="text-center font-medium text-xs text-gray-400">
                                       Away
                                     </Text>
                                   </TouchableOpacity>
@@ -822,7 +849,7 @@ export default function App({ route }) {
                           <View className="absolute bg-[#1E2226] rounded-lg bg-[#191a22e7] top-3 left-3   w-full   h-full   mx-auto flex-row justify-center items-center inset-0">
                             <TouchableOpacity
                               onPress={() => setLongPressedGame(null)}
-                              className="bg-gray-500 w-auto my-auto mx-3 justify-center items-center p-2 rounded-md h-auto py-2 px-4"
+                              className="bg-gray-700 w-auto my-auto mx-3 justify-center items-center p-2 rounded-md h-auto py-2 px-4"
                             >
                               <Text className="text-white text-center">
                                 Cancel
@@ -833,7 +860,7 @@ export default function App({ route }) {
                                 setShowEditGameSection(true);
                                 setLongPressedGame(false);
                               }}
-                              className="bg-blue-500 w-auto my-auto mx-3 justify-center items-center px-2 rounded-md h-auto py-2 px-4"
+                              className="bg-blue-600 w-auto my-auto mx-3 justify-center items-center px-2 rounded-md h-auto py-2 px-4"
                             >
                               <Text className="text-white px-2 text-center">
                                 Edit
