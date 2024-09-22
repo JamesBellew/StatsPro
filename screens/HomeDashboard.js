@@ -53,6 +53,7 @@ export default function App({ route }) {
   const [generalAlertMsg, setGeneralAlertMsg] = useState(":/");
   const [editGameName, setEditGameName] = useState("");
   const [editGameVenue, setEditGameVenue] = useState(null);
+  const [gameSelectedVenue, setGameSelectedVenue] = useState(null);
   const [showEditGameSection, setShowEditGameSection] = useState(false);
   //the below two use states are used for checking to see if there are sufficiant in progress/completted games for rendering the category text
   let inProgressRendered = false;
@@ -100,7 +101,7 @@ export default function App({ route }) {
           className="w-full items-center text-indigo-100 leading-none rounded-2xl flex-row flex-wrap"
           role="alert"
         >
-          <View className="bg-blue-600 rounded-md mr-3 px-2 py-1">
+          <View className="bg-[#0b63fb] rounded-md mr-3 px-2 py-1">
             <Text className="uppercase text-center text-xs font-bold text-white">
               New
             </Text>
@@ -158,6 +159,14 @@ export default function App({ route }) {
     );
   };
   const [savedGames, setSavedGames] = useState([]);
+  const [isEditedGameValid, setIsEditedGameValid] = useState(false);
+  useEffect(() => {
+    if (editGameName === "" || editGameName === null) {
+      setIsEditedGameValid(false);
+    } else {
+      setIsEditedGameValid(true);
+    }
+  }, [editGameName]);
   useEffect(() => {
     if (isFocused || (route.params && route.params.newGameAdded)) {
       loadGameData();
@@ -555,7 +564,7 @@ export default function App({ route }) {
         </View>
         {/* <TouchableOpacity
           onPress={generatePdf}
-          className="px-5 w-32 rounded-md py-4 mx-auto bg-blue-600"
+          className="px-5 w-32 rounded-md py-4 mx-auto bg-[#0b63fb]"
         >
           <Text>Test</Text>
         </TouchableOpacity> */}
@@ -623,6 +632,8 @@ export default function App({ route }) {
                         setEditGameName("");
                         setShowEditGameSection(false);
                         setLongPressedGame(null);
+                        setGameSelectedVenue(game.venue);
+                        console.log(gameSelectedVenue + "boiiiiii");
                         // navigation.navigate("InGame", { gameData: game });
                       }}
                       onLongPress={() => setLongPressedGame(game.gameName)}
@@ -728,13 +739,20 @@ export default function App({ route }) {
                               <Text className="text-gray-200 px-3 font-semibold text-md ">
                                 Details of Game
                               </Text>
-                              <Text className="text-gray-400 mt-2 mb-1 px-3 font-normal text-sm ">
-                                Name
-                              </Text>
+                              <View className="flex-row mt-3 mb-1 px-3   items-start justify-start">
+                                <Text className="text-gray-400 mr-1 capitalize ">
+                                  {game.venue} vs
+                                </Text>
+                                <Text className="text-blue-600   ">
+                                  {game.gameName}
+                                </Text>
+                                <Text className="text-blue-600   "></Text>
+                              </View>
+
                               <View className="flex-row">
                                 <TextInput
                                   className=" w-2/5  bg-zinc-800 text-white px-2 py-1 ml-2 mr-1 rounded-md"
-                                  placeholder="Opponent"
+                                  placeholder="New Opponent"
                                   placeholderTextColor="#9ca3af"
                                   value={editGameName}
                                   onChangeText={setEditGameName}
@@ -743,11 +761,12 @@ export default function App({ route }) {
                                   <TouchableOpacity
                                     onPress={() => {
                                       setEditGameVenue("home");
+                                      setGameSelectedVenue("home");
                                     }}
                                     className={`w-1/2  bg-zinc-800 px-2 rounded-md h-8 justify-center
                                     
                                     ${
-                                      game.venue === "home"
+                                      gameSelectedVenue === "home"
                                         ? "border-b-2 border-b-blue-600"
                                         : ""
                                     }
@@ -756,7 +775,7 @@ export default function App({ route }) {
                                   >
                                     <Text
                                       className={`text-center text-xs font-medium     ${
-                                        game.venue === "home"
+                                        gameSelectedVenue === "home"
                                           ? "text-blue-600"
                                           : "text-gray-200"
                                       }`}
@@ -767,19 +786,39 @@ export default function App({ route }) {
                                   <TouchableOpacity
                                     onPress={() => {
                                       setEditGameVenue("away");
+                                      setGameSelectedVenue("away");
                                     }}
-                                    className="w-1/2 bg-zinc-800 px-2 rounded-md h-8 justify-center"
+                                    className={`w-1/2 bg-zinc-800      ${
+                                      gameSelectedVenue === "away"
+                                        ? "border-b-2 border-b-blue-600"
+                                        : ""
+                                    } px-2 rounded-md h-8 justify-center`}
                                   >
-                                    <Text className="text-center font-medium text-xs text-gray-400">
+                                    <Text
+                                      className={`text-center font-medium  text-xs text-gray-400 ${
+                                        gameSelectedVenue === "away"
+                                          ? "text-blue-600"
+                                          : "text-gray-200"
+                                      }`}
+                                    >
                                       Away
                                     </Text>
                                   </TouchableOpacity>
                                 </View>
                                 <TouchableOpacity
+                                  disabled={isEditedGameValid}
                                   onPress={() => {
                                     editGameHandler(game);
                                   }}
-                                  className="bg-blue-600 text-center py-2 px-3 rounded-md justify-center"
+                                  className={`
+                                  ${
+                                    isEditedGameValid
+                                      ? " bg-[#0b63fb]"
+                                      : " bg-zinc-800"
+                                  }
+                                 
+                                  
+                                  text-center py-2 px-3 rounded-md justify-center`}
                                 >
                                   <FontAwesomeIcon
                                     icon={faCheck}
@@ -860,7 +899,7 @@ export default function App({ route }) {
                                 setShowEditGameSection(true);
                                 setLongPressedGame(false);
                               }}
-                              className="bg-blue-600 w-auto my-auto mx-3 justify-center items-center px-2 rounded-md h-auto py-2 px-4"
+                              className="bg-[#0b63fb] w-auto my-auto mx-3 justify-center items-center px-2 rounded-md h-auto py-2 px-4"
                             >
                               <Text className="text-white px-2 text-center">
                                 Edit
