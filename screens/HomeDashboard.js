@@ -52,7 +52,7 @@ export default function App({ route }) {
   const [showGeneralAlertComp, setShowGeneralAlertComp] = useState(false);
   const [generalAlertMsg, setGeneralAlertMsg] = useState(":/");
   const [editGameName, setEditGameName] = useState("");
-  const [editGameVenue, setEditGameVenue] = useState(null);
+  const [editGameVenue, setEditGameVenue] = useState("");
   const [gameSelectedVenue, setGameSelectedVenue] = useState(null);
   const [showEditGameSection, setShowEditGameSection] = useState(false);
   //the below two use states are used for checking to see if there are sufficiant in progress/completted games for rendering the category text
@@ -161,12 +161,17 @@ export default function App({ route }) {
   const [savedGames, setSavedGames] = useState([]);
   const [isEditedGameValid, setIsEditedGameValid] = useState(false);
   useEffect(() => {
-    if (editGameName === "" || editGameName === null) {
+    console.log("in use effect, venue below");
+    console.log(editGameVenue);
+    console.log("name below");
+    console.log(editGameName);
+    if (editGameName === "" && editGameVenue === "") {
       setIsEditedGameValid(false);
     } else {
       setIsEditedGameValid(true);
     }
-  }, [editGameName]);
+  }, [editGameName, editGameVenue]);
+
   useEffect(() => {
     if (isFocused || (route.params && route.params.newGameAdded)) {
       loadGameData();
@@ -307,6 +312,7 @@ export default function App({ route }) {
   console.log(savedGames);
 
   const editGameHandler = (game) => {
+    console.log("we are in here now ya digger");
     let updatedGameDetails = { ...game }; // Create a copy of the game object
     let changesMade = false; // Track if any changes are made
 
@@ -630,6 +636,7 @@ export default function App({ route }) {
                         setGameIndexClicked(index);
                         //also clear the edit names, this is temporary for the moment, it is a wuick way of getting rid of editing the wrong game when user clicks from one game to the next
                         setEditGameName("");
+                        setEditGameVenue("");
                         setShowEditGameSection(false);
                         setLongPressedGame(null);
                         setGameSelectedVenue(game.venue);
@@ -751,12 +758,13 @@ export default function App({ route }) {
 
                               <View className="flex-row">
                                 <TextInput
-                                  className=" w-2/5  bg-zinc-800 text-white px-2 py-1 ml-2 mr-1 rounded-md"
+                                  className="w-2/5 bg-zinc-800 text-white px-2 py-1 ml-2 mr-1 rounded-md"
                                   placeholder="New Opponent"
                                   placeholderTextColor="#9ca3af"
-                                  value={editGameName}
-                                  onChangeText={setEditGameName}
+                                  value={editGameName} // Make sure this is bound correctly
+                                  onChangeText={(text) => setEditGameName(text)} // Properly set the state
                                 />
+
                                 <View className="w-32  flex-row space-x-1 my-auto mr-1 h-auto justify-center px-2 rounded-md">
                                   <TouchableOpacity
                                     onPress={() => {
@@ -806,7 +814,7 @@ export default function App({ route }) {
                                   </TouchableOpacity>
                                 </View>
                                 <TouchableOpacity
-                                  disabled={isEditedGameValid}
+                                  // disabled={isEditedGameValid}
                                   onPress={() => {
                                     editGameHandler(game);
                                   }}
