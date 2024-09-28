@@ -814,7 +814,7 @@ export default function App({ route }) {
                                   </TouchableOpacity>
                                 </View>
                                 <TouchableOpacity
-                                  // disabled={isEditedGameValid}
+                                  // disabled={isEditedGameValid} maybe
                                   onPress={() => {
                                     editGameHandler(game);
                                   }}
