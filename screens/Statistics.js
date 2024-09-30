@@ -1252,12 +1252,18 @@ export default function App() {
 
     return (
       <View
-        className={`w-full ${
-          type === "kickout" ? "h-[63vh]" : "h-[63vh]"
-        } border-gray-400 border-1 rounded-xl overflow-hidden`}
+        style={{
+          width: "100%",
+          height: type === "shot" ? pitchHeight / 2 : pitchHeight,
+          overflow: "hidden", // Clip the bottom part
+          borderColor: "gray",
+
+          borderRadius: 15,
+        }}
       >
         <View className="bg-[#191A22] rounded-3xl h-full relative">
-          <View className="h-full relative">
+          <View style={{ height: pitchHeight }}>
+            {/* Keep full height inside */}
             {showSections && renderSections()}
             {/* Pitch markings */}
             <View style={styles.pitchMarkings}>
@@ -1267,11 +1273,11 @@ export default function App() {
               <View style={[styles.line, { top: "15.5%" }]}></View>
               <View style={[styles.line, { top: "34%" }]}></View>
               <View style={[styles.line, { top: "50%" }]}></View>
+              {/* This would be at the halfway point */}
               <View style={[styles.line, { top: "64%" }]}></View>
               <View style={[styles.line, { top: "83.6%" }]}></View>
               <View style={[styles.line, { top: "89.5%" }]}></View>
             </View>
-
             {!showSections && mappedActions}
           </View>
         </View>
@@ -1718,7 +1724,7 @@ export default function App() {
           
           overflow-hidden  z-50`}
         >
-          <PitchComponent positions={item.setPlayData} />
+          <PitchComponent positions={item.setPlayData} type={item.pitchType} />
         </View>
       )}
 
