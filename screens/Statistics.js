@@ -1698,7 +1698,7 @@ export default function App() {
           {item.secondPitchTitle}
         </Text>
       </View>
-      {/* below is cuaing issue rendering when not existsed */}
+      {/* below is cuasing issue rendering when not existsed */}
       {item.secondPitchDataLegend && (
         <View className="items-start justify-start items-center w-[90%] h-auto flex-row mb-2">
           {item.secondPitchDataLegend.map((legend, index) => (
