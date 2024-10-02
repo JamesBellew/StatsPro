@@ -1249,15 +1249,25 @@ export default function App() {
 
       return sections;
     };
+    const highestY = Math.max(...positions.map((position) => position.y));
+
+    // Use the highestY to calculate the percentage of the pitch to render
+    // Assuming max possible y could be the same as pitchHeight, otherwise adjust it to match your max Y coordinate scale.
+    const renderPercentage = highestY / pitchHeight;
+
+    // Use this renderPercentage to scale the height dynamically
+    const renderHeight = pitchHeight * renderPercentage;
+
+    console.log("Highest Y value:", highestY);
+    console.log("Rendered pitch height:", renderHeight);
 
     return (
       <View
         style={{
           width: "100%",
-          height: type === "shot" ? pitchHeight / 2 : pitchHeight,
+          height: renderHeight + 40, // Dynamically adjust the pitch height
           overflow: "hidden", // Clip the bottom part
           borderColor: "gray",
-
           borderRadius: 15,
         }}
       >
