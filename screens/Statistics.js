@@ -1249,24 +1249,38 @@ export default function App() {
 
       return sections;
     };
-    const highestY = Math.max(...positions.map((position) => position.y));
+    // Calculate highest y from positions
+    const highestY =
+      positions.length > 0
+        ? Math.max(...positions.map((position) => position.y))
+        : 0;
 
-    // Use the highestY to calculate the percentage of the pitch to render
-    // Assuming max possible y could be the same as pitchHeight, otherwise adjust it to match your max Y coordinate scale.
+    // Calculate the percentage of the pitch height for the highest Y value
     const renderPercentage = highestY / pitchHeight;
 
-    // Use this renderPercentage to scale the height dynamically
-    const renderHeight = pitchHeight * renderPercentage;
-
+    // If the highest Y is more than 85% of the pitch height, set the pitch to 100%
+    // Conditional logic for rendering the pitch height
+    const finalPitchHeight =
+      renderPercentage >= 0.75
+        ? pitchHeight // If renderPercentage is more than 75%, render full pitch
+        : renderPercentage > 0.2 && renderPercentage <= 0.5
+        ? pitchHeight / 1.7 // If renderPercentage is between 20% and 50%, render half the pitch
+        : renderPercentage > 0 && renderPercentage < 0.2
+        ? pitchHeight / 4
+        : pitchHeight * renderPercentage + 40; // Otherwise, render proportionally based on renderPercentage plus the margin for ux ui
+    console.log("for ", type);
+    console.log("--------------------------");
     console.log("Highest Y value:", highestY);
-    console.log("Rendered pitch height:", renderHeight);
+    console.log("render%", renderPercentage);
+    console.log("Rendered pitch height:", finalPitchHeight);
+    console.log("--------------------------");
 
     return (
       <View
         style={{
           width: "100%",
-          height: renderHeight + 40, // Dynamically adjust the pitch height
-          overflow: "hidden", // Clip the bottom part
+          height: finalPitchHeight, // Adjust based on the render logic
+          overflow: "hidden",
           borderColor: "gray",
           borderRadius: 15,
         }}
@@ -1595,7 +1609,7 @@ export default function App() {
       text: "This is some text for page 1",
       firstChartPercentage: turnoverPercentage,
       pitchData: filteredTurnoverPositions, // Pass filteredPositions directly
-      pitchType: "kickout",
+      pitchType: "turnover",
       firstPitchDataLegend: [
         { title: "Won", color: "0b63fb" },
         { title: "Loss", color: "ef233c" },
