@@ -1279,7 +1279,7 @@ export default function App() {
       <View
         style={{
           width: "100%",
-          height: finalPitchHeight, // Adjust based on the render logic
+          height: finalPitchHeight, // Adjust based on the render logicc
           overflow: "hidden",
           borderColor: "gray",
           borderRadius: 15,
