@@ -1205,12 +1205,12 @@ export default function App() {
           );
           const borderStyle =
             data.won === 0 && data.loss === 0
-              ? "border-gray-700 bg-gray-700/20" // If both won and loss are 0, use gray-500
+              ? "border-gray-700 bg-gray-700/10" // If both won and loss are 0, use gray-500
               : data.won === data.loss
-              ? "border-zinc-400 bg-zinc-400/20" // If won and loss are equal (but not zero), use gray-200
+              ? "border-zinc-400 bg-zinc-400/40" // If won and loss are equal (but not zero), use gray-200
               : data.won > data.loss
-              ? "border-[#0b63fb] bg-[#0b63fb]/20" // If won is greater than loss, use blue-600
-              : "border-[#d62839] bg-[#d62839]/20"; // If loss is greater than won, use red-600
+              ? "border-[#0b63fb] bg-[#0b63fb]/40" // If won is greater than loss, use blue-600
+              : "border-[#d62839] bg-[#d62839]/40"; // If loss is greater than won, use red-600
           sections.push(
             <View
               key={sectionKey}
@@ -1261,7 +1261,7 @@ export default function App() {
     // If the highest Y is more than 85% of the pitch height, set the pitch to 100%
     // Conditional logic for rendering the pitch height
     const finalPitchHeight =
-      renderPercentage >= 0.75
+      renderPercentage >= 0.65
         ? pitchHeight // If renderPercentage is more than 75%, render full pitch
         : renderPercentage > 0.2 && renderPercentage <= 0.5
         ? pitchHeight / 1.7 // If renderPercentage is between 20% and 50%, render half the pitch
@@ -1292,6 +1292,7 @@ export default function App() {
             {/* Pitch markings */}
             <View style={styles.pitchMarkings}>
               <View className="w-[15%] absolute left-[42.5%] h-6 border border-b-zinc-600 border-l-zinc-600 border-r-zinc-600"></View>
+
               <View style={[styles.line, { top: "10%" }]}></View>
               <View className="w-[30%] left-[35%] h-14 rounded-b-full border border-zinc-600 top-[15.5%]"></View>
               <View style={[styles.line, { top: "15.5%" }]}></View>
@@ -1302,6 +1303,7 @@ export default function App() {
               <View style={[styles.line, { top: "83.6%" }]}></View>
               <View style={[styles.line, { top: "89.5%" }]}></View>
             </View>
+
             {!showSections && mappedActions}
           </View>
         </View>
@@ -1730,7 +1732,7 @@ export default function App() {
               <React.Fragment key={index}>
                 <View
                   key={index}
-                  className={`${legend.color} w-3 h-3 mr-2 rounded-full`}
+                  className={`${legend.color} w-3 h-3 mr-1 rounded-full`}
                 ></View>
                 <Text className="text-white capitalize mr-2">
                   {legend.title}
