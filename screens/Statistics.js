@@ -465,7 +465,7 @@ export default function App() {
       // Add more mappings as needed
     };
 
-    // Helper function to render a sectionnnsvsnnn
+    // Helper function to render a sectionnnsvsnnn;lj;l
     const renderSection = (title, data, category) => (
       <View className="w-full h-auto mb-6">
         <Text className="font-bold text-xl mb-2 text-white">
