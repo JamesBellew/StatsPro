@@ -442,7 +442,7 @@ export default function App() {
     // Function to trim the action name
     const trimActionName = (action, category) => {
       if (category === "T/O") {
-        // Handle Turnovers specifically since the category is abbreviated
+        // Handle Turnovers specifically since the category is abbreviated;lm;lm;l
         if (action.toLowerCase().startsWith("turnover")) {
           return action
             .slice(8)
