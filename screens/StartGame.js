@@ -128,7 +128,7 @@ export default function App() {
                 JSON.stringify(updatedLineoutOptions)
               );
               console.log("Lineout deleted successfully.");
-              setShowEditLineoutModal(false); // Close the modal
+              setShowEditLineoutModal(false); // Close the modalklmlk
             } catch (error) {
               console.error("Failed to delete the lineout", error);
             }
