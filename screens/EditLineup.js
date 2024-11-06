@@ -76,12 +76,7 @@ export default function App() {
         <TouchableOpacity
           onPress={() => navigation.navigate("HomeDashboard")}
           className="h-14 w-14 bg-white rounded-full mx-auto text-center"
-        >
-          <Image
-            source={require("../../StatsPro/assets/ball.png")}
-            className="h-1/2 p-4 w-1/2 mx-auto justify-center flex my-auto rounded-full"
-          />
-        </TouchableOpacity>
+        ></TouchableOpacity>
       </View>
     </SafeAreaView>
   );
