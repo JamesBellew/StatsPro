@@ -136,6 +136,30 @@ export default function App() {
         backgroundColor: "#191A22",
       },
     },
+    "Two Score": {
+      style: {
+        width: 8,
+        height: 8,
+        borderRadius: 10,
+        backgroundColor: "#0b63fb",
+      },
+    },
+    "Three Score": {
+      style: {
+        width: 8,
+        height: 8,
+        borderRadius: 10,
+        backgroundColor: "#66ff99",
+      },
+    },
+    "FreeThrow Score": {
+      style: {
+        width: 8,
+        height: 8,
+        borderRadius: 10,
+        backgroundColor: "#66ff99",
+      },
+    },
     point: {
       style: {
         width: 8,
@@ -1217,17 +1241,17 @@ export default function App() {
                   ? "border-b-2 border-b-[#0b63fb]"
                   : ""
               }
-              w-1/5 rounded-md mx-auto mx-1 py-2  items-center justify-center`}
+              w-1/5 rounded-md mx-auto mx-1 py-2   items-center justify-center`}
               >
                 <Text className="text-center text-white">None</Text>
               </TouchableOpacity>
             </View>
           )}
           <View
-            className={`w-[96%] mt-5 border-[.5px] border-gray-700
+            className={`w-[96%] mt-5 border-[.5px] border-gray-300
         ${
           tempPosition ? "shadow shadow-[#0b63fb]/20" : ""
-        }   mx-auto  rounded-md h-[63vh] bg-[#191A22]   relative`}
+        }   mx-auto  rounded-md h-[45vh] bg-[#191A22]     relative`}
             onStartShouldSetResponder={() => true}
             onResponderRelease={handlePitchPress}
             style={{ zIndex: 1 }}
@@ -1237,102 +1261,77 @@ export default function App() {
               <>
                 <TouchableOpacity
                   onPress={() => shootingDirectionClickHandler("up")}
-                  className="bg-[#0b63fb]/50 w-full z-50 mx-auto text-center items-center jus h-[10%] absolute"
+                  className="bg-[#0b63fb]/50  bg-blue-600 w-full z-50 mx-auto text-center items-center jus h-[10%] absolute "
                 ></TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => shootingDirectionClickHandler("down")}
-                  className="bg-[#0b63fb]/50 w-full z-50  bottom-0  h-[10%] absolute"
+                  className="bg-[#0b63fb]/50   w-full z-50  bottom-0  h-[10%] absolute"
                 ></TouchableOpacity>
               </>
             )}
 
             {/* Pitch markings */}
-            <View className="absolute w-full h-full" style={{ zIndex: 0 }}>
+            <View className="absolute w-full h-full  " style={{ zIndex: 0 }}>
               <View
-                className="h-[1px] w-[20%] left-[40%] bg-gray-700 absolute"
-                style={{ top: "57.5%" }}
-              ></View>
-              <View
-                className="h-[1px] w-full bg-gray-700 absolute"
-                style={{ top: "10%" }}
-              ></View>
-              <View
-                className="absolute border-[1px] border-gray-600 w-28 h-12 rounded-bl-full rounded-br-full"
-                style={{
-                  top: "15.4%",
-                  left: "50%",
-                  zIndex: 0,
-                  transform: [{ translateX: -56 }],
-                }}
-              ></View>
-              <View
-                className="absolute border-[1px] border-gray-600 w-28 h-12 rounded-bl-full rounded-br-full"
-                style={{
-                  top: "84.6%",
-                  zIndex: 0,
-                  left: "50%",
-                  transform: [
-                    { translateX: -56 },
-                    { scaleY: -1 },
-                    { translateY: 47 },
-                  ],
-                }}
-              ></View>
-              <View
-                className="w-28 border-l-[1px] border-r-[1px] border-gray-700 absolute"
-                style={{
-                  top: "90%",
-                  height: "10%",
-                  left: "50%",
-                  transform: [{ translateX: -56 }],
-                }}
-              ></View>
-              <View
-                className="w-28 border-l-[1px] border-r-[1px] border-gray-700 absolute"
+                className="absolute border-[1px] border-gray-400 w-[85%] h-80 rounded-bl-full rounded-br-full"
                 style={{
                   top: "0%",
-                  height: "10%",
+                  left: "18%",
+                  zIndex: 0,
+                  transform: [{ translateX: -40 }],
+                }}
+              ></View>
+
+              <View
+                className="w-28 border-l-[1px] border-b-[1px] border-r-[1px] border-gray-300 absolute"
+                style={{
+                  top: "0%",
+                  height: "50%",
                   left: "50%",
                   transform: [{ translateX: -56 }],
                 }}
               ></View>
               <View
-                className="h-[1px] w-full bg-gray-700 absolute"
-                style={{ top: "15.4%" }}
+                className="absolute border-t-[1px] border-gray-300 w-14 h-1 rounded-bl-full rounded-br-full"
+                style={{
+                  top: "15%",
+                  left: "55%",
+                  zIndex: 0,
+                  transform: [{ translateX: -49 }],
+                }}
               ></View>
               <View
-                className="h-[1px] w-full bg-gray-700 absolute"
-                style={{ top: "34.6%" }}
+                className="absolute border-b-[1px] border-r-[1px] border-l-[1px] border-gray-300 w-14 h-10 rounded-bl-full rounded-br-full"
+                style={{
+                  top: "25%",
+                  left: "55%",
+                  zIndex: 0,
+                  transform: [{ translateX: -49 }],
+                }}
               ></View>
               <View
-                className="h-[1px] w-full bg-gray-700 absolute"
-                style={{ top: "50%" }}
-              ></View>
-              <View
-                className="h-[1px] w-full bg-gray-700 absolute"
-                style={{ top: "65%" }}
-              ></View>
-              <View
-                className="h-[1px] w-full bg-gray-700 absolute"
-                style={{ top: "90%" }}
-              ></View>
-              <View
-                className="h-[1px] w-full bg-gray-700 absolute"
-                style={{ top: "84.6%" }}
+                className="absolute border-[1px] border-gray-300 w-28 h-14 rounded-bl-full rounded-br-full"
+                style={{
+                  top: "50%",
+                  left: "48%",
+                  zIndex: 0,
+                  transform: [{ translateX: -49 }],
+                }}
               ></View>
             </View>
             {/* semi circles */}
 
             {shootingDirect === "up" ? (
               <>
-                <View
+                {/* come back to this, */}
+                {/* <View
                   style={{ zIndex: 0 }}
                   className="absolute h-2 border-b-[1px] w-[10%] left-[45%] border-l-[1px] border-r-[1px] border-green-50"
                 ></View>
                 <View
                   style={{ zIndex: 0 }}
                   className="absolute h-4 top-2 w-[10%] left-[45%] border-l-[1px] border-r-[1px] border-green-50"
-                ></View>
+                ></View> */}
               </>
             ) : shootingDirect === "down" ? (
               <>
@@ -1453,7 +1452,7 @@ export default function App() {
           )}
           {tempPosition && (
             <>
-              <View className="h-auto border-white/10 p-2 rounded-md w-full  mx-auto">
+              <View className="h-auto border-white/10  p-2 rounded-md w-full  mx-auto">
                 <FlatList
                   // inverted={actionCategorySelected === "shot"}
                   data={lineUp.filter((player) => player.onPitch)}
@@ -1571,6 +1570,54 @@ export default function App() {
                   : ""
               }`}
             >
+              <View className="mt-2 h-12 w-full rounded-md px-2 py-1 flex-row space-x-1 mx-auto">
+                <TouchableOpacity
+                  onPress={() => {
+                    gameStatClickHandler("Two Score", "shot");
+                    setActionSelected("TwoScore");
+                  }}
+                  className="h-full w-1/4 bg-white mx-auto rounded-md"
+                >
+                  <Text className="text-center my-auto font-bold">2 Score</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    gameStatClickHandler("Three Score", "shot");
+                    setActionSelected("Three Score");
+                  }}
+                  className="h-full w-1/4 bg-white mx-auto rounded-md"
+                >
+                  <Text className="text-center my-auto font-bold">3 Score</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    gameStatClickHandler("FreeThrow Score", "shot");
+                    setActionSelected("FreeThrow Score");
+                  }}
+                  className="h-full w-2/4 bg-white mx-auto rounded-md"
+                >
+                  <Text className="text-center my-auto font-bold">
+                    Freethrow Score
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View className=" h-12 w-full rounded-md px-2 py-1 flex-row space-x-1 mx-auto">
+                <TouchableOpacity className="h-full w-1/4 bg-gray-600 mx-auto rounded-md">
+                  <Text className="text-center text-white my-auto font-bold">
+                    2 Miss
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity className="h-full w-1/4 bg-gray-600 mx-auto rounded-md">
+                  <Text className="text-center text-white my-auto font-bold">
+                    3 Miss
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity className="h-full w-2/4 bg-gray-600 mx-auto rounded-md">
+                  <Text className="text-center text-white my-auto font-bold">
+                    Freethrow Miss
+                  </Text>
+                </TouchableOpacity>
+              </View>
               <View className="h-10 w-[97%] mx-auto   flex-row items-center justify-center px-1">
                 {/* Left buttons */}
                 <View className="flex-row space-x-1 mx-auto items-center justify-center w-[40%]">
@@ -1666,8 +1713,8 @@ export default function App() {
                   </TouchableOpacity>
                 </View>
               </View>
-              {showActionMenu && (
-                <View className="z-50  justify-center translate-y-[0px] w-[99%]  items-center mx-auto left-0 h-auto flex-row flex-wrap ">
+              {/* {showActionMenu && (
+                <View className="z-50 bg-red-600 justify-center translate-y-[0px] w-[99%]  items-center mx-auto left-0 h-auto flex-row flex-wrap ">
                   {actions
                     .filter(
                       (item) => item.category === actionMenuActionCategory
@@ -1694,7 +1741,7 @@ export default function App() {
                       </TouchableOpacity>
                     ))}
                 </View>
-              )}
+              )} */}
             </View>
           )}
 
