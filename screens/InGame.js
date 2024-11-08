@@ -160,6 +160,14 @@ export default function App() {
         backgroundColor: "#66ff99",
       },
     },
+    "Three Miss": {
+      style: {
+        width: 8,
+        height: 8,
+        borderRadius: 10,
+        backgroundColor: "#f21b3f",
+      },
+    },
     point: {
       style: {
         width: 8,
@@ -1570,13 +1578,50 @@ export default function App() {
                   : ""
               }`}
             >
-              <View className="mt-2 h-12 w-full rounded-md px-2 py-1 flex-row space-x-1 mx-auto">
+              {/* This can be a quick stats page */}
+              {/* headings */}
+              <View className=" w-full h-5 px-2  mt-3 flex-row">
+                <View className="w-2/6  h-full  ">
+                  <Text className="text-center text-white font-bold my-auto">
+                    FG 50%
+                  </Text>
+                </View>
+                <View className="w-2/6  h-full  ">
+                  <Text className="text-center text-white font-bold my-auto">
+                    3PT 45%
+                  </Text>
+                </View>
+                <View className="w-2/6  h-full  ">
+                  <Text className="text-center text-white font-bold my-auto">
+                    FT 35%
+                  </Text>
+                </View>
+              </View>
+              {/* stats */}
+              <View className=" w-full px-2 space-x-1  rounded-lg flex-row self-center h-8">
+                <View className=" rounded-lg mx-auto h-full px-1 w-2/6">
+                  <Text className="text-center text-white font-bold my-auto">
+                    12-24
+                  </Text>
+                </View>
+                <View className=" mx-auto h-full px-1 w-2/6">
+                  <Text className="text-center text-white font-bold my-auto">
+                    5-12
+                  </Text>
+                </View>
+                <View className=" mx-auto h-full px-1 w-2/6">
+                  <Text className="text-center text-white font-bold  my-auto">
+                    14-20
+                  </Text>
+                </View>
+              </View>
+              <View className="  h-12 w-full rounded-md px-2 py-1 flex-row space-x-1 mx-auto">
                 <TouchableOpacity
                   onPress={() => {
                     gameStatClickHandler("Two Score", "shot");
-                    setActionSelected("TwoScore");
+                    setActionSelected("Two Score");
                   }}
-                  className="h-full w-1/4 bg-white mx-auto rounded-md"
+                  className="h-full  w-[30%] bg-white mx-auto rounded-md"
                 >
                   <Text className="text-center my-auto font-bold">2 Score</Text>
                 </TouchableOpacity>
@@ -1585,7 +1630,7 @@ export default function App() {
                     gameStatClickHandler("Three Score", "shot");
                     setActionSelected("Three Score");
                   }}
-                  className="h-full w-1/4 bg-white mx-auto rounded-md"
+                  className="h-full  w-[30%] bg-white mx-auto rounded-md"
                 >
                   <Text className="text-center my-auto font-bold">3 Score</Text>
                 </TouchableOpacity>
@@ -1594,124 +1639,94 @@ export default function App() {
                     gameStatClickHandler("FreeThrow Score", "shot");
                     setActionSelected("FreeThrow Score");
                   }}
-                  className="h-full w-2/4 bg-white mx-auto rounded-md"
+                  className="h-full  w-[30%] bg-white mx-auto rounded-md"
                 >
                   <Text className="text-center my-auto font-bold">
-                    Freethrow Score
+                    FT Score
                   </Text>
                 </TouchableOpacity>
               </View>
               <View className=" h-12 w-full rounded-md px-2 py-1 flex-row space-x-1 mx-auto">
-                <TouchableOpacity className="h-full w-1/4 bg-gray-600 mx-auto rounded-md">
+                <TouchableOpacity
+                  onPress={() => {
+                    gameStatClickHandler("Two Miss", "shot");
+                    setActionSelected("Two Miss");
+                  }}
+                  className={`h-full bg-gray-600 ${
+                    actionSelected === "Two Miss" ? "bg-blue-600" : ""
+                  }  w-[30%]  mx-auto rounded-md`}
+                >
                   <Text className="text-center text-white my-auto font-bold">
                     2 Miss
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity className="h-full w-1/4 bg-gray-600 mx-auto rounded-md">
+                <TouchableOpacity
+                  onPress={() => {
+                    gameStatClickHandler("Three Miss", "shot");
+                    setActionSelected("Three Miss");
+                  }}
+                  className={`h-full bg-gray-600 ${
+                    actionSelected === "Three Miss" ? "bg-blue-600" : ""
+                  }  w-[30%]  mx-auto rounded-md`}
+                >
                   <Text className="text-center text-white my-auto font-bold">
                     3 Miss
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity className="h-full w-2/4 bg-gray-600 mx-auto rounded-md">
+                <TouchableOpacity
+                  onPress={() => {
+                    gameStatClickHandler("FT Miss", "shot");
+                    setActionSelected("FT Miss");
+                  }}
+                  className={`h-full bg-gray-600 ${
+                    actionSelected === "FT Miss" ? "bg-blue-600" : ""
+                  }  w-[30%]  mx-auto rounded-md`}
+                >
                   <Text className="text-center text-white my-auto font-bold">
-                    Freethrow Miss
+                    FT Miss
                   </Text>
                 </TouchableOpacity>
               </View>
-              <View className="h-10 w-[97%] mx-auto   flex-row items-center justify-center px-1">
-                {/* Left buttons */}
-                <View className="flex-row space-x-1 mx-auto items-center justify-center w-[40%]">
-                  <TouchableOpacity className="bg-[#191A22] w-[50%] p-2 rounded">
-                    <Text className="text-white text-center">Save</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => {
-                      if (
-                        actionMenuActionCategory === "kickout" &&
-                        showActionMenu === true
-                      ) {
-                        setShowActionMenu(false);
-                      } else {
-                        setShowActionMenu(true);
-                      }
-                      setActionMenuActionCategory("kickout");
-                    }}
-                    className={`${
-                      actionMenuActionCategory == "kickout"
-                        ? "border-b border-b-[#fff]"
-                        : ""
-                    } bg-[#191A22] w-[50%] p-2 rounded`}
-                  >
-                    <Text className="text-white text-center">Kickout</Text>
-                  </TouchableOpacity>
-                </View>
-
-                {/* Home and Away buttons */}
-                <View className="flex-row space-x-1  mx-auto w-[20%] mx-3 justify-center">
-                  <TouchableOpacity
-                    className={`${
-                      actionMenuActionCategory == "shot"
-                        ? "border-b border-b-[#fff]"
-                        : ""
-                    } p-2 w-[100%] rounded bg-[#191A22]`}
-                    onPress={() => {
-                      if (
-                        actionMenuActionCategory === "shot" &&
-                        showActionMenu === true
-                      ) {
-                        setShowActionMenu(false);
-                      } else {
-                        setShowActionMenu(true);
-                      }
-                      setActionMenuActionCategory("shot");
-                    }}
-                  >
-                    <Text className="text-white text-center">Shot</Text>
-                  </TouchableOpacity>
-                </View>
-
-                {/* Right buttons */}
-                <View className="flex-row space-x-1 mx-auto items-center justify-center w-[40%]">
-                  <TouchableOpacity
-                    onPress={() => {
-                      if (
-                        actionMenuActionCategory === "T/O" &&
-                        showActionMenu === true
-                      ) {
-                        setShowActionMenu(false);
-                      } else {
-                        setShowActionMenu(true);
-                      }
-
-                      setActionMenuActionCategory("T/O");
-                    }}
-                    className={`${
-                      actionMenuActionCategory == "T/O"
-                        ? "border-b border-b-[#fff]"
-                        : ""
-                    } bg-[#191A22] w-[50%] p-2 rounded`}
-                  >
-                    <Text className="text-white text-center">T/O</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => {
-                      if (
-                        actionMenuActionCategory === "custom" &&
-                        showActionMenu === true
-                      ) {
-                        setShowActionMenu(false);
-                      } else {
-                        setShowActionMenu(true);
-                      }
-
-                      setActionMenuActionCategory("custom");
-                    }}
-                    className="bg-[#191A22] w-[50%] p-2 rounded"
-                  >
-                    <Text className="text-white text-center">Custom</Text>
-                  </TouchableOpacity>
-                </View>
+              <View className=" h-12 w-full rounded-md px-2 py-1 flex-row space-x-1 mx-auto">
+                <TouchableOpacity
+                  onPress={() => {
+                    gameStatClickHandler("Two Miss", "shot");
+                    setActionSelected("Two Miss");
+                  }}
+                  className={`h-full bg-gray-600 ${
+                    actionSelected === "Two Miss" ? "bg-blue-600" : ""
+                  }  w-[30%]  mx-auto rounded-md `}
+                >
+                  <Text className="text-center text-white my-auto font-bold">
+                    T/O
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    gameStatClickHandler("Two Miss", "shot");
+                    setActionSelected("Two Miss");
+                  }}
+                  className={`h-full bg-gray-600 ${
+                    actionSelected === "Two Miss" ? "bg-blue-600" : ""
+                  }  w-[30%] mx-auto rounded-md`}
+                >
+                  <Text className="text-center text-white my-auto font-bold">
+                    Steal
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    gameStatClickHandler("Two Miss", "shot");
+                    setActionSelected("Two Miss");
+                  }}
+                  className={`h-full bg-gray-600 ${
+                    actionSelected === "Two Miss" ? "bg-blue-600" : ""
+                  } w-[30%]  mx-auto rounded-md`}
+                >
+                  <Text className="text-center text-white my-auto font-bold">
+                    Block
+                  </Text>
+                </TouchableOpacity>
               </View>
               {/* {showActionMenu && (
                 <View className="z-50 bg-red-600 justify-center translate-y-[0px] w-[99%]  items-center mx-auto left-0 h-auto flex-row flex-wrap ">
